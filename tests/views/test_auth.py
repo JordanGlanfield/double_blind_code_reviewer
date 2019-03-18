@@ -9,7 +9,7 @@ from tapp import User
 @pytest.mark.parametrize('route', ['/', '/login', '/logout'])
 def test_home(test_client, route):
     """
-    GIVEN an emark application client
+    GIVEN an application client
     WHEN any of the authentication routes is requested (GET)
     THEN the client sends back the login page
     """
@@ -29,7 +29,7 @@ def test_home(test_client, route):
 )
 def test_invalid_login(test_client, username, password):
     """
-    GIVEN an emark application client
+    GIVEN an application client
     WHEN the authentication fails
     THEN the client redirects to the login page with a failure message
     """
@@ -50,7 +50,7 @@ def test_invalid_login(test_client, username, password):
 )
 def test_valid_login_adds_user_in_db(test_client, test_db, test_auth, title, username, password):
     """
-    GIVEN an emark application client
+    GIVEN an application client
     WHEN the authentication succeeds for a new user
     THEN user entry is stored into the database
     """
@@ -60,7 +60,7 @@ def test_valid_login_adds_user_in_db(test_client, test_db, test_auth, title, use
 
 def test_valid_login_does_not_add_user_already_in_db(test_client, test_db, test_auth):
     """
-    GIVEN an emark application client
+    GIVEN an application client
     WHEN the authentication succeeds for an already-seen user
     THEN nothing changes into the database
     """
@@ -79,7 +79,7 @@ def test_valid_login_does_not_add_user_already_in_db(test_client, test_db, test_
 )
 def test_login_required(test_client, route):
     """
-    GIVEN an emark application client
+    GIVEN an application client
     WHEN a protected route is requested by an anonymous user (GET)
     THEN the client redirects to login page
     """
