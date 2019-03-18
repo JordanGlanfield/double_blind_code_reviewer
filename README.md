@@ -73,6 +73,11 @@ instance, database and authentication handler are defined.
 To run the tests, from the top directory of the project run `pytest` (with `-v` if you like to see many lines of text
  on your screen). 
 
+## Continuous Integration
+For your benefit, you are provided with a simple GitLabCI script in `txt` format. To use it for your project,
+change the extension to `yml` and push it to your remote repository. 
+Note that you need to have a [GitLab Runner](https://docs.gitlab.com/runner/) spinning somewhere for the pipeline to be executed. 
+
 ## General Development Conventions
 
 ### Global references 
