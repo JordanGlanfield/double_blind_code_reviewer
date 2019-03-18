@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block topbar %}
+<!--Top bar-->
+<div class="w3-container w3-center w3-bar">
+    <h1 class="w3-text-indigo">TAPP: the Template App</h1>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<!--Login form-->
+<div class="w3-content">
+    <form method="POST" role="form" class="w3-container w3-card w3-padding w3-margin">
+        {{ form.csrf_token }}
+        <p>
+            <label class="w3-text-indigo">{{ form.username.label }}</label>
+            {{ form.username(class="w3-input") }}
+        </p>
+        <p>
+            <label class="w3-text-indigo">{{ form.password.label }}</label>
+            {{ form.password(class="w3-input") }}
+        </p>
+        <button type="submit" class="w3-btn w3-indigo w3-block w3-section w3-ripple w3-padding">Login</button>
+    </form>
+</div>
+
+{% endblock %}

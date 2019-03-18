@@ -1,0 +1,12 @@
+{
+  "logan": {
+    "givenName": "Logan",
+    "sn": "Howlett",
+    "distinguishedName": {
+      "OU": [
+        "doc"
+      ]
+    },
+    "extensionAttribute6": "Staff"
+  }
+}
