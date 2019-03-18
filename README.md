@@ -11,7 +11,7 @@ It's easy:
 3. Remove the `.git` folder and create a fresh repo for your project
 
 Don't forget to replace the name `tapp` with your project's new name. Beware its presence in strings (which aren't taken care of by the "Rename"
-option in IntelliJ Idea \*sigh\* (tips: look into `config.py`, `fake_ldap_handler.py` and patches in tests)/
+option in IntelliJ Idea \*sigh\* (tips: look into `config.py`, `fake_ldap_handler.py` and patches in tests).
 
 
 ## Overview
@@ -57,7 +57,7 @@ To do so, run:
 (venv) $ FLASK_ENV=development FLASK_APP=tapp FLASK_DEBUG=True flask run 
 ```
 
-In a staging/production environemnt, the app is run "behind" a gunicorn web-server. The code to start (and *re*start)
+In a staging/production environment, the app is run "behind" a gunicorn web-server. The code to start (and *re*start)
 the web-server, executed during the deployment stage of the pipeline defined in `.gitlab-ci.yml`, is in `scripts/restart`.
 
 ### Logging in with the default configuration
@@ -67,10 +67,11 @@ with one user, *Logan Howlett* (sounds familiar?). To log into the application, 
 character you wish as password (the actual value is ignored by the fake LDAP).
 
 ## Testing
-A stub test-suite is provided for the *auth* view. You can find there examples of how to test routes and how to use
-pytest's parameterisation. The interesting bit is however in `conftest.py`, where fixtures for a dummy application 
-instance, database and authentication operations are defined.
-To run tests, from the top directory of the project run `pytest` (with `-v` if you are the wordy type). 
+A stub test-suite is provided for the *auth* view. In `tests/views/test_auth.py`, you can find examples of how to test routes and how to use
+pytest's parameterization. The interesting bit is however in `conftest.py`, where fixtures for a dummy application 
+instance, database and authentication handler are defined.
+To run the tests, from the top directory of the project run `pytest` (with `-v` if you like to see many lines of text
+ on your screen). 
 
 ## General Development Conventions
 
@@ -83,10 +84,10 @@ the opportunity to seamlessly choose to use a different implementation of an app
 according to configuration-dependant factors.
 
 The actual binding between these fundamental objects and the app itself happens
-in the factory method, by calling the `init_app()` method on each of these
+in the factory method, through the call to the `init_app()` method on each of these
 objects' instance.
 
-## Requirements
+## System Requirements
 
 This should do to get all the needed requirements on the machine where you need/wish to run the app:
 ```
