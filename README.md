@@ -6,11 +6,11 @@ This repository contains the python Flask application template adopted to develo
 ## How to use this template
 
 It's easy:
-1. Clone it
+1. Fork it
 2. Explore the code
-3. Remove the `.git` folder and create a fresh repo for your project
+3. Code a new app
 
-Don't forget to replace the name `tapp` with your project's new name. Beware its presence in strings (which aren't taken care of by the "Rename"
+Don't forget to replace the name `tapp` with your project's new name in the project's files. Beware of its presence in strings, which aren't taken care of by the "Rename"
 option in IntelliJ Idea \*sigh\* (tips: look into `config.py`, `fake_ldap_handler.py` and patches in tests).
 
 
