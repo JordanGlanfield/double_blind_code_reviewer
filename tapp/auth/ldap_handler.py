@@ -64,7 +64,7 @@ class LdapConnectionHandler:
 ###################################################################
 def parse_ldap_attributes(attributes):
     return {k: ldap_attributes_to_dictionary(vs)
-    if k in ATTRIBUTES_TO_SERIALISE else vs[0].decode('utf-8')
+            if k in ATTRIBUTES_TO_SERIALISE else vs[0].decode('utf-8')
             for k, vs in attributes}
 
 

@@ -1,5 +1,5 @@
 from ..auth.ldap_constants import DN, MEMBERSHIPS, TITLE, NAME, SURNAME
-from tapp import LDAP
+from .. import LDAP
 
 WHITE_LIST = [
     'ictsec'
