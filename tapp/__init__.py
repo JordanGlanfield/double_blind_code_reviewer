@@ -11,7 +11,6 @@ from .messages import messages
 
 configuration_switch = {
     'default': 'tapp.config.DevConfig',  # Development configuration (fake LDAP)
-    'dev_real': '.config.DevRealConfig',  # Development configuration (real LDAP)
     'staging': 'tapp.config.StagingConfig',  # Staging configuration (should be as close as possible to prod)
     'production': 'tapp.config.ProductionConfig'  # Production configuration
 }
