@@ -1,0 +1,23 @@
+<div class="w3-container w3-animate-opacity">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                {% set style = message['style'] %}
+                <div class="w3-panel
+                            w3-{{ style['bg'] }}
+                            w3-leftbar
+                            w3-border-{{ style['highlight'] }}
+                            w3-animate-right
+                            w3-display-content">
+                    <span onclick="this.parentElement.style.display='none'"
+                          class="w3-button
+                                 w3-hover-{{ style['highlight'] }}
+                                 w3-display-topright
+                                 w3-large">&times;</span>
+                        {{ message['header'] }}
+                        {{ message['body'] }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>

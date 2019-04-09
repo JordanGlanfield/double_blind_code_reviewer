@@ -16,17 +16,18 @@ def login(username, password):
     :return: Attributes name, surname, title and memberships of user
              on successful login; ldap.INVALID_CREDENTIALS exception otherwise
     """
-    dict_attrs = LDAP.ldap_login(username, password, query_attrs=(TITLE, NAME, SURNAME, DN, MEMBERSHIPS))
+    ldap_attributes = LDAP.ldap_login(username, password, query_attrs=(TITLE, NAME, SURNAME, DN, MEMBERSHIPS))
+    return custom_authentication_checks(username, ldap_attributes)
 
+
+def custom_authentication_checks(username, ldap_attributes):
     # ADD HERE CUSTOM HIGHER-LEVEL CHECKS
     # e.g.:
     #
     # if 'doc' not in dict_attrs[DN]['OU']: # is 'doc' in the organisation sub-attribute?
     #     if 'doc-all-students' not in dict_attrs[MEMBERSHIPS]['CN']: # is 'doc-all-students' among the memberships?
     #         raise ldap.INVALID_CREDENTIALS # raise INVALID_CREDENTIALS exception
-    return dict_attrs
-
-
+    return ldap_attributes
 
 # To enforce a distinction between "student" and "staff", the `ldap_constant_TITLE` ldap attribute is
 # requested (see above) and associated to the user model. The following decorator is then an example

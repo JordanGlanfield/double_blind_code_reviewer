@@ -1,0 +1,33 @@
+<!-- Sidebar/menu -->
+<div class="w3-sidebar w3-bar-block w3-animate-left" id="mySidebar" style="z-index:3;display:none">
+    <div class="w3-container">
+        <h3 style="vertical-align:middle"><strong>Menu</strong></h3>
+    </div>
+    <hr>
+    <div class="w3-bar-block">
+        <a href="https://gitlab.doc.ic.ac.uk" target="_blank"
+           class="w3-bar-item w3-button w3-padding w3-hover-indigo">
+            <i class="fa fa-gitlab fa-fw"></i> GitLab
+        </a>
+        <a href="https://teaching.doc.ic.ac.uk/labts" target="_blank"
+           class="w3-bar-item w3-button w3-padding w3-hover-indigo">
+            <i class="fa fa-flask fa-fw"></i> LabTS
+        </a>
+        <a href="https://cate.doc.ic.ac.uk" target="_blank"
+           class="w3-bar-item w3-button w3-padding  w3-hover-indigo">
+            <i class="fa fa-users fa-fw"></i> CATe
+        </a>
+    </div>
+    <hr>
+    <div class="w3-container w3-bar-item w3-padding">
+        <p>Found any bugs?</p>
+        <button class="w3-btn w3-teal" onclick="showElement('issue-modal')">
+            Let us know <i class="fa fa-comment-o w3-large"></i></button>
+    </div>
+    <div class="w3-container w3-bar-item w3-margin-bottom">
+        <p class="w3-tiny">Created by ip914</p>
+    </div>
+    <br>
+</div>
+
+{% include "modals/issue_modal.html" %}
