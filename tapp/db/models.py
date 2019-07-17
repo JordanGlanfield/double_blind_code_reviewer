@@ -24,14 +24,17 @@ class User(db.Model, Representable):
     def get_id(self):
         return self.username
 
+    @property
     def is_authenticated(self):
         """Authentication handled by LDAP"""
         return True
 
+    @property
     def is_anonymous(self):
         """Anonymous users not supported"""
         return False
 
+    @property
     def is_active(self):
         """All users are active"""
         return True

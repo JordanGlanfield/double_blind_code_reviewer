@@ -9,12 +9,7 @@ WHITE_LIST = [
 def login(username, password):
     """
     Perform (a) LDAP authentication and (b) additional (app specific) verifications
-    before granting access and returning the user LDAP attributes
-    'name, surname, title and memberships'
-    :param username: user login name
-    :param password: user password
-    :return: Attributes name, surname, title and memberships of user
-             on successful login; ldap.INVALID_CREDENTIALS exception otherwise
+    before granting access and returning the user LDAP attributes 'name, surname, title and memberships'.
     """
     ldap_attributes = LDAP.ldap_login(username, password, query_attrs=(TITLE, NAME, SURNAME, DN, MEMBERSHIPS))
     return custom_authentication_checks(username, ldap_attributes)
