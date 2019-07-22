@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask
+from flask_jwt_extended import JWTManager
 from flask_login import LoginManager
 
 from .auth import ldap_handler
@@ -25,6 +26,7 @@ LOGIN_MANAGER.login_message = messages.LOGIN_MANAGER_MESSAGE
 
 LDAP = fake_ldap_handler.FAKE_LDAP if ENV == 'default' else ldap_handler.LDAP
 DB = database.DB
+JWT_MANAGER = JWTManager()
 
 
 # ===================================================
@@ -44,6 +46,7 @@ def create_app(test_configuration=None):
     ######################################################
     LDAP.init_app(app)
     LOGIN_MANAGER.init_app(app)
+    JWT_MANAGER.init_app(app)
     DB.init_app(app)
 
     with app.app_context():

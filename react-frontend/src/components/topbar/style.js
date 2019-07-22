@@ -4,7 +4,7 @@ import drawerWidth from "../layoutConstants";
 const useStyles = makeStyles(theme => ({
     toolbar: {
     },
-    menuButton: {
+    drawerButton: {
         marginRight: theme.spacing(2),
         [theme.breakpoints.up('md')]: {
             display: 'none',
@@ -16,6 +16,9 @@ const useStyles = makeStyles(theme => ({
             width: `calc(100% - ${drawerWidth}px)`,
         },
     },
+    menu: {
+        border: '1px solid #d3d4d5'
+    }
 }))
 
 export default useStyles

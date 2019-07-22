@@ -1,13 +1,11 @@
 import React from 'react'
 import {Redirect, Route} from 'react-router-dom'
-import useAuthenticationCheck from "./useAuthenticationCheck";
+import authentication from '../authenticationService'
 
 export default function ProtectedRoute({component: Component, ...rest}) {
-    const [authenticated] = useAuthenticationCheck()
-
     return (
         <Route {...rest} render={props =>
-            authenticated
+            authentication.userIsLoggedIn()
                 ? (<Component {...props} />)
                 : (<Redirect to={{
                     pathname: "/login",

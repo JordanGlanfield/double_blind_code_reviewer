@@ -2,6 +2,7 @@ from urllib.parse import urlparse, urljoin
 
 import ldap
 from flask import request, url_for, g, Blueprint, jsonify
+from flask_jwt_extended import create_access_token, create_refresh_token, set_access_cookies, set_refresh_cookies
 from flask_login import current_user, logout_user, login_user
 from werkzeug.utils import redirect
 
@@ -24,42 +25,24 @@ def get_current_user():
     g.user = current_user
 
 
-@bp.route('/authstatus')
-def is_authenticated():
-    return jsonify(authenticated=current_user.is_authenticated)
-
-
-@bp.route('/login', methods=('GET', 'POST'))
+@bp.route('/login', methods=['POST'])
 def login():
-    next_pg = request.args.get('next')
+    username, password = request.json['username'], request.json['password']
+    try:
+        attributes = auth.login(username, password)
+    except ldap.INVALID_CREDENTIALS:
+        return jsonify(error=True), 401
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        user = User(username=username,
+                    firstname=attributes.get(ldap_constants.NAME, username.upper()),
+                    surname=attributes.get(ldap_constants.SURNAME, ''))
+        DB.add(user)
+    # login_user(user)
 
-    if request.method == 'GET' and current_user.is_authenticated:
-        if next_pg and is_safe_url(request.host_url, next_pg):
-            return jsonify({'status': 'SUCCESS', 'redirect': next_pg})
-        return jsonify({'status': 'SUCCESS', 'redirect': url_for('home.hello')})
-
-    if request.method == 'POST':
-        username, password = request.json['username'], request.json['password']
-        try:
-            attributes = auth.login(username, password)
-        except ldap.INVALID_CREDENTIALS:
-            return jsonify(error=True), 401
-        user = User.query.filter_by(username=username).first()
-        if not user:
-            user = User(username=username,
-                        firstname=attributes.get(ldap_constants.NAME, username.upper()),
-                        surname=attributes.get(ldap_constants.SURNAME, ''))
-            DB.add(user)
-        login_user(user)
-        if next_pg and is_safe_url(request.host_url, next_pg):
-            return jsonify({'redirect': next_pg})
-        return jsonify({'redirect': url_for('home.hello')})
-    #
-    # if form.errors:
-    #     flash(messages.LOGIN_UNSUCCESSFUL_ERROR)
-
-    # User not authenticated tries to 'GET' or 'POST' invalid form
-    return jsonify(error=True), 401
+    access_token = create_access_token(identity=username)
+    refresh_token = create_refresh_token(identity=username)
+    return jsonify(access_token=access_token, refresh_token=refresh_token)
 
 
 # @bp.route('/login', methods=('GET', 'POST'))
@@ -97,11 +80,16 @@ def login():
 #     # User not authenticated tries to 'GET' or 'POST' invalid form
 #     return render_template('login.html', form=form)
 
-
 @bp.route('/logout')
 def logout():
-    logout_user()
-    return redirect(url_for('auth.login'))
+    # logout_user()
+    return jsonify(msg='Logged out')
+
+
+# @bp.route('/logout')
+# def logout():
+#     logout_user()
+#     return redirect(url_for('auth.login'))
 
 
 ##################################################################

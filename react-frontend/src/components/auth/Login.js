@@ -8,24 +8,31 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import Typography from '@material-ui/core/Typography/index'
 import Container from '@material-ui/core/Container/index'
 import useStyles from './style'
-import useAuthentication from './useAutentication'
+import authentication from '../authenticationService'
 
-export default function SignIn(props) {
+export default function SignIn() {
     const classes = useStyles()
     const destination = '/'
     const [username, setUser] = useState('')
     const [password, setPassword] = useState('')
-    const [authenticate, error, allowRedirection] = useAuthentication()
+    const [error, setError] = useState(false)
+    const [allowRedirection, setAllowRedirection] = useState(false)
 
-    const authenticateAndResetTextFields = (event) => {
-        authenticate(event, username, password)
-        setUser('')
-        setPassword('')
+    const login = async (event) => {
+        event.preventDefault()
+        const success = await authentication.login(username, password)
+        if (success)
+            setAllowRedirection(success)
+        else {
+            setUser('')
+            setPassword('')
+            setError(!success)
+        }
+
     }
 
     if (allowRedirection) return <Redirect to={destination} />
     return (
-        //
         <Container component="main" maxWidth="xs">
             <CssBaseline/>
             <div className={classes.paper}>
@@ -35,7 +42,7 @@ export default function SignIn(props) {
                 <Typography component="h1" variant="h5">
                     Log in
                 </Typography>
-                <form className={classes.form} onSubmit={authenticateAndResetTextFields}>
+                <form className={classes.form} onSubmit={login}>
                     <TextField
                         error={error}
                         variant="outlined"

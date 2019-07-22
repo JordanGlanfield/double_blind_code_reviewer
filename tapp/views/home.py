@@ -1,9 +1,9 @@
 import os
 
-from flask import render_template, Blueprint, jsonify, request
-from flask_login import login_required
+from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
-bp = Blueprint('home', __name__)
+bp = Blueprint('home', __name__, url_prefix='/api')
 
 the_todos = [
     {'title': 'House Chores', 'done': False, 'id': '237r523474'},
@@ -11,11 +11,13 @@ the_todos = [
 ]
 
 @bp.route('/todos')
+@jwt_required
 def todos():
     return jsonify(the_todos)
 
 
 @bp.route('/add', methods=['POST'])
+@jwt_required
 def add():
     newTodo = {
         'title': request.json,
@@ -27,6 +29,7 @@ def add():
 
 
 @bp.route('/check/<todo_id>', methods=['POST'])
+@jwt_required
 def check(todo_id):
     i = next((index for index, d in enumerate(the_todos) if d['id'] == todo_id))
     the_todos[i]['done'] = not the_todos[i]['done']
@@ -34,6 +37,7 @@ def check(todo_id):
 
 
 @bp.route('/remove/<todo_id>', methods=['POST'])
+@jwt_required
 def remove(todo_id):
     global the_todos
     the_todos = [todo for todo in the_todos if todo['id'] != todo_id]
@@ -41,6 +45,8 @@ def remove(todo_id):
 
 
 @bp.route('/hello')
-@login_required
+@jwt_required
 def hello():
-    return render_template('hello.html')
+    current_user = get_jwt_identity()
+    return jsonify(current_user)
+    # return render_template('hello.html')
