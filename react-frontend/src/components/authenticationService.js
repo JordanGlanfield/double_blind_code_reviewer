@@ -1,15 +1,15 @@
-const ACCESS_TOKEN = 'currentUser'
-const REFRESH_TOKEN = 'currentUserRefresh'
+import authConstants from '../constants/auth'
+import routes from "../constants/routes";
 
 
-function storeTokens({access_token, refresh_token}) {
-    sessionStorage.setItem(ACCESS_TOKEN, access_token)
-    sessionStorage.setItem(REFRESH_TOKEN, refresh_token)
+function storeTokens({ access_token }) {
+    sessionStorage.setItem(authConstants.ACCESS_TOKEN, access_token)
+    // sessionStorage.setItem(authConstants.REFRESH_TOKEN, refresh_token)
 }
 
 function removeTokens() {
-    sessionStorage.removeItem(ACCESS_TOKEN)
-    sessionStorage.removeItem(REFRESH_TOKEN)
+    sessionStorage.removeItem(authConstants.ACCESS_TOKEN)
+    // sessionStorage.removeItem(authConstants.REFRESH_TOKEN)
 }
 
 async function login(username, password) {
@@ -19,21 +19,18 @@ async function login(username, password) {
         body: JSON.stringify({username, password})
     }
 
-    const response = await fetch('/login', requestOptions)
+    const response = await fetch(routes.LOGIN, requestOptions)
     if (response.ok) {
-        const tokens = await response.json()
-        storeTokens(tokens)
+        const data = await response.json()
+        storeTokens(data)
         return true
     }
     return false
 }
 
-function logout() {
-    removeTokens()
-}
-
-function userIsLoggedIn() {
-    return sessionStorage.getItem(ACCESS_TOKEN) !== null
+const logout = () => removeTokens()
+const userIsLoggedIn = () => {
+    return sessionStorage.getItem(authConstants.ACCESS_TOKEN) !== null
 }
 
 export default {

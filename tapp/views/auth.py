@@ -2,7 +2,8 @@ from urllib.parse import urlparse, urljoin
 
 import ldap
 from flask import request, url_for, g, Blueprint, jsonify
-from flask_jwt_extended import create_access_token, create_refresh_token, set_access_cookies, set_refresh_cookies
+from flask_jwt_extended import create_access_token, create_refresh_token, set_access_cookies, set_refresh_cookies, \
+    get_jwt_identity, jwt_refresh_token_required, unset_jwt_cookies
 from flask_login import current_user, logout_user, login_user
 from werkzeug.utils import redirect
 
@@ -38,11 +39,19 @@ def login():
                     firstname=attributes.get(ldap_constants.NAME, username.upper()),
                     surname=attributes.get(ldap_constants.SURNAME, ''))
         DB.add(user)
-    # login_user(user)
 
     access_token = create_access_token(identity=username)
-    refresh_token = create_refresh_token(identity=username)
-    return jsonify(access_token=access_token, refresh_token=refresh_token)
+    # refresh_token = create_refresh_token(identity=username)
+    response = jsonify(access_token=access_token)
+    return response
+
+
+@bp.route('/token/refresh', methods=['POST'])
+@jwt_refresh_token_required
+def refresh():
+    curr_user = get_jwt_identity()
+    access_token = create_access_token(identity=curr_user)
+    return jsonify(access_token=access_token)
 
 
 # @bp.route('/login', methods=('GET', 'POST'))
@@ -82,8 +91,9 @@ def login():
 
 @bp.route('/logout')
 def logout():
-    # logout_user()
-    return jsonify(msg='Logged out')
+    resp = jsonify(logged_out=True)
+    unset_jwt_cookies(resp)
+    return resp
 
 
 # @bp.route('/logout')

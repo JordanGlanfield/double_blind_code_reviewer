@@ -10,8 +10,6 @@ class BaseConfig:
     WTF_CSRF_SECRET_KEY = os.environb.get(b'WTF_CSRF_SECRET_KEY', 'dev_wtf_secret_key')
 
     # JWT =======================================================
-    # JWT_BLACKLIST_ENABLED = True
-    # JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
 
     # LDAP Service ==============================================
     LDAP_URL = 'ldaps://ldaps-vip.cc.ic.ac.uk:636'

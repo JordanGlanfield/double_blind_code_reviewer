@@ -1,9 +1,7 @@
 import {makeStyles} from "@material-ui/core";
-import drawerWidth from "../layoutConstants";
+import drawerWidth from "../../constants/layout";
 
 const useStyles = makeStyles(theme => ({
-    toolbar: {
-    },
     drawerButton: {
         marginRight: theme.spacing(2),
         [theme.breakpoints.up('md')]: {
@@ -16,8 +14,11 @@ const useStyles = makeStyles(theme => ({
             width: `calc(100% - ${drawerWidth}px)`,
         },
     },
+    lastItemLeft: {
+        flexGrow: 1
+    },
     menu: {
-        border: '1px solid #d3d4d5'
+        border: '1px solid #d3d4d5',
     }
 }))
 

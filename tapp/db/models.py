@@ -3,13 +3,7 @@ from .database import DB
 db = DB.the_database
 
 
-class Representable:
-
-    def __repr__(self):
-        return '<' + self.__class__.__name__ + '=> ' + ', '.join(('%s: %s' % (k, v) for k, v in self.__dict__)) + '>'
-
-
-class User(db.Model, Representable):
+class User(db.Model):
     """
     Model for application user.
     Attributes
@@ -38,3 +32,12 @@ class User(db.Model, Representable):
     def is_active(self):
         """All users are active"""
         return True
+
+    def save(self):
+        """Save instance to DB"""
+        DB.add(self)
+
+    @classmethod
+    def find_by_username(cls, username):
+        return cls.query.filter_by(username=username).first()
+

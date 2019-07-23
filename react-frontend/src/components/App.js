@@ -1,11 +1,19 @@
 import React from 'react'
-import {BrowserRouter as Router, Route} from 'react-router-dom'
+import {Switch, Route, BrowserRouter} from 'react-router-dom'
 import Layout from "./layout/Layout";
 import Login from "./auth/Login";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import routes from "../constants/routes";
 
-export default () =>
-    <Router>
-        <ProtectedRoute exact path="/" component={Layout} />
-        <Route exact path="/login" component={Login} />
-    </Router>
+export default () => {
+    return (
+        <BrowserRouter>
+            <Switch>
+                <Route exact path={routes.LOGIN} component={Login}/>
+                <ProtectedRoute path='/' component={Layout}/>
+            </Switch>
+        </BrowserRouter>
+
+    )
+
+}

@@ -1,6 +1,6 @@
 import React from 'react'
 import TodoItem from './TodoItem.js'
-import List from '@material-ui/core/List'
+import List from '@material-ui/core/List/index'
 
 export default props => {
   return (

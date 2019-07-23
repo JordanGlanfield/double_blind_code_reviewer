@@ -5,12 +5,12 @@ import {
   IconButton,
   ListItemText,
   Checkbox
-} from '@material-ui/core'
+} from '@material-ui/core/index'
 import { 
   Delete,
   CheckCircleOutline as Checked,
   RadioButtonUnchecked as Unchecked
-} from '@material-ui/icons'
+} from '@material-ui/icons/index'
 
 const TodoItem = props => {
   const item = props.item

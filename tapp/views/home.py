@@ -3,12 +3,23 @@ import os
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
+from tapp import User
+
 bp = Blueprint('home', __name__, url_prefix='/api')
 
 the_todos = [
     {'title': 'House Chores', 'done': False, 'id': '237r523474'},
     {'title': 'Gym', 'done': True, 'id': '384792385dfh278'},
 ]
+
+
+@bp.route('/userinfo')
+@jwt_required
+def user_info():
+    username = get_jwt_identity()
+    user = User.find_by_username(username)
+    return jsonify(firstname=user.firstname)
+
 
 @bp.route('/todos')
 @jwt_required

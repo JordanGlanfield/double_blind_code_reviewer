@@ -12,7 +12,7 @@ import authentication from '../authenticationService'
 
 export default function SignIn() {
     const classes = useStyles()
-    const destination = '/'
+    const destination = '/todos'
     const [username, setUser] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState(false)
