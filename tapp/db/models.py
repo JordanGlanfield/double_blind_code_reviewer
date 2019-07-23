@@ -4,13 +4,6 @@ db = DB.the_database
 
 
 class User(db.Model):
-    """
-    Model for application user.
-    Attributes
-        username: unique college username (adopted as primary key)
-        firstname: college-LDAP name
-        surname: college-LDAP surname
-    """
     username = db.Column(db.String(10), primary_key=True)
     firstname = db.Column(db.String)
     surname = db.Column(db.String)
