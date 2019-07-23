@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography/index'
 import Container from '@material-ui/core/Container/index'
 import useStyles from './style'
 import authentication from '../utils/authenticationService'
+import routes from "../../constants/routes";
 
 export default props => {
     const classes = useStyles()
@@ -16,7 +17,7 @@ export default props => {
     const [password, setPassword] = useState('')
     const [error, setError] = useState(false)
     const [allowRedirection, setAllowRedirection] = useState(false)
-    let { from } = props.location.state || { from: { pathname: "/" } }
+    let { from } = props.location.state || { from: { pathname: routes.HOME } }
 
     const login = async (event) => {
         event.preventDefault()
@@ -36,11 +37,11 @@ export default props => {
         <Container component="main" maxWidth="xs">
             <CssBaseline/>
             <div className={classes.paper}>
-                <Avatar className={classes.avatar}>
-                    <LockOutlinedIcon/>
-                </Avatar>
-                <Typography component="h1" variant="h5">
-                    Log in
+                <Typography component="h1" variant="h3" color="primary">
+                    TApp
+                </Typography>
+                <Typography component="h1" variant="h6" color="textSecondary">
+                    The Template Application
                 </Typography>
                 <form className={classes.form} onSubmit={login}>
                     <TextField
