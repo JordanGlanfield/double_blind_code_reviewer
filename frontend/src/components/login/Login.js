@@ -1,12 +1,12 @@
 import React, {useState} from 'react'
 import {Redirect} from 'react-router-dom'
-import Avatar from '@material-ui/core/Avatar/index'
-import Button from '@material-ui/core/Button/index'
-import CssBaseline from '@material-ui/core/CssBaseline/index'
-import TextField from '@material-ui/core/TextField/index'
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
-import Typography from '@material-ui/core/Typography/index'
-import Container from '@material-ui/core/Container/index'
+import {
+    Button,
+    CssBaseline,
+    TextField,
+    Typography,
+    Container,
+} from '@material-ui/core'
 import useStyles from './style'
 import authentication from '../utils/authenticationService'
 import routes from "../../constants/routes";
@@ -29,7 +29,6 @@ export default props => {
             setPassword('')
             setError(!success)
         }
-
     }
 
     if (allowRedirection) return <Redirect to={from} />

@@ -6,7 +6,7 @@ import {CssBaseline} from '@material-ui/core/index'
 import authenticationService from "../utils/authenticationService";
 import routes from '../../constants/routes'
 import {BrowserRouter, Route} from "react-router-dom";
-import Landing from "../home/Home";
+import Home from "../home/Home";
 
 const AppLayout = props => {
     const sidebarHandle = useResponsiveSidebar()
@@ -28,7 +28,7 @@ const AppLayout = props => {
                         toggleSidebar={sidebarHandle.toggleSidebar}/>
                 <Sidebar useResponsiveSidebar={sidebarHandle}/>
                 <Route exact path={routes.HOME} render={(routeProps) => (
-                    <Landing {...routeProps} setPageTitle={setPageTitle}/>
+                    <Home {...routeProps} setPageTitle={setPageTitle}/>
                 )}/>
             </div>
         </BrowserRouter>
