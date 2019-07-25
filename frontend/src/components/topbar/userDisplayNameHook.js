@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import performOrRedirect from "../utils/redirection";
+import performOrRedirect from "../../utils/redirection";
 import routes from "../../constants/routes";
 import authConstants from '../../constants/auth'
 

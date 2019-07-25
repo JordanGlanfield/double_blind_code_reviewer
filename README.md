@@ -1,4 +1,4 @@
-# TAPP: The Template App
+# TApp: The Template App
 
 This repository contains the python Flask application template adopted to develop all the applications in the
 *edtech* family. Such applications are used by staff and students in the Department of Computing.
@@ -16,17 +16,22 @@ option in IntelliJ Idea \*sigh\* (tips: look into `config.py`, `fake_ldap_handle
 
 ## Overview
 
-The template offers a standard application structure under the `tapp/`
-folder. A quick overview of the application's organisation is given below:
+The template, developed in Python and React.js, offers a standard application structure. The backend API is available under `tapp/`, 
+while the frontend logic can be found under (have a guess) the `frontend/` folder.
+ A quick overview of the application's organisation is given below:
 
 | Package | Content Description |
 |---------|--------------------------|
-| `auth/` | LDAP authentication wrapper and utilities. |
-| `db/` | Database wrapper (to remove database-specific code duplications) and models. |
-| `mocks/` | Fake implementation of third-party modules (like LDAP). |
-| `messages/` | Library to build and encode HTML messages. |
-| `static/`, `templates/` | Standard Flask application folders for static content and HTML templates. |
-| `views/` | Application [blueprints](http://flask.pocoo.org/docs/1.0/tutorial/views/). |
+| `tapp/auth/` | LDAP authentication wrapper and utilities. |
+| `tapp/db/` | Database wrapper (to remove database-specific code duplications) and models. |
+| `tapp/mocks/` | Fake implementation of third-party modules (like LDAP). |
+| `tapp/messages/` | Library to build and encode HTML messages. |
+| `tapp/views/` | Application [blueprints](http://flask.pocoo.org/docs/1.0/tutorial/views/). |
+| `tapp/static/` | Location of the frontend's production-build. |
+| `frontend/public` | Frontend entry-point. |
+| `frontend/src/assets` | Static elements to serve (like images). |
+| `frontend/src/{components,constants,utils}` | React.js components and various utilities. |
+
 
 ### Configuration
 
@@ -51,14 +56,21 @@ To download all the required dependencies:
 - **activate the environment** by running `source venv/bin/activate`
 - **install the dependencies** by executing `pip install --upgrade pip && pip install -r requirements.txt`
 
-In a local development environment, the app can be run directly with flask (by default on localhost, port 5000).
+In a local development environment, the backend API can be run directly with flask (by default on localhost, port 5000).
 To do so, run:
 ```
-(venv) $ FLASK_ENV=development FLASK_APP=tapp FLASK_DEBUG=True flask run 
+(venv) $ source scripts/dev_exports.sh
+(venv) $ flask run 
 ```
-
 In a staging/production environment, the app is run "behind" a gunicorn web-server. The code to start (and *re*start)
-the web-server, executed during the deployment stage of the pipeline defined in `.gitlab-ci.yml`, is in `scripts/restart`.
+the web-server, executed during the deployment stage of the pipeline defined in `.gitlab-ci.yml`, is in `scripts/restart.sh`.
+
+To start the frontend development server:
+- **install all the JS dependencies** by running `npm install`
+- **start the server** by running `npm start`.
+
+Both API and frontend dev server come with hot-reloading (meaning they will automatically restart on any relevant code change).
+
 
 ### Logging in with the default configuration
 As already mentioned, the default configuration runs with a fake instance of the LDAP service (to make things easier

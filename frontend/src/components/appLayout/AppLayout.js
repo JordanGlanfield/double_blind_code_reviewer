@@ -1,9 +1,9 @@
 import React, {useState} from 'react'
 import Header from '../topbar/TopBar.js'
-import Sidebar from '../../sidebar/Sidebar.js'
-import useResponsiveSidebar from '../../sidebar/responsiveSidebarHook.js'
+import Sidebar from '../sidebar/Sidebar.js'
+import useResponsiveSidebar from '../sidebar/responsiveSidebarHook.js'
 import {CssBaseline} from '@material-ui/core/index'
-import authenticationService from "../utils/authenticationService";
+import authenticationService from "../../utils/authenticationService";
 import routes from '../../constants/routes'
 import {BrowserRouter, Route} from "react-router-dom";
 import Home from "../home/Home";

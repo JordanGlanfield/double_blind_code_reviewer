@@ -1,7 +1,7 @@
 import {Container} from "@material-ui/core";
 import React, {useEffect} from "react";
 import useStyles from "./style";
-import coding from '../../static/coding.gif'
+import coding from '../../assets/coding.gif'
 import Grid from "@material-ui/core/Grid";
 
 const Home = props => {

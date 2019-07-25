@@ -1,0 +1,29 @@
+stages:
+  - build
+
+before_script:
+  - whoami
+  - id
+  - pwd
+  - python3 -m venv venv
+  - source venv/bin/activate
+  - pip install --upgrade pip
+  - pip install -r requirements.txt
+
+linter:
+  stage: build
+  script:
+    - echo "[INFO] Running pylint style checks..."
+    - python scripts/linter.py tapp --disable=all --enable=design,invalid-name,cyclic-import,imports
+    - echo "[INFO] done."
+  tags:
+    - build
+
+unit test:
+  stage: build
+  script:
+    - echo "[INFO] Running pytest unit tests suite..."
+    - pytest
+    - echo "[INFO] done."
+  tags:
+  - build

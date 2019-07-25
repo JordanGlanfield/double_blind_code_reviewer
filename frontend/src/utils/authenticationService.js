@@ -1,5 +1,5 @@
-import authConstants from '../../constants/auth'
-import routes from "../../constants/routes";
+import authConstants from '../constants/auth'
+import routes from "../constants/routes";
 
 
 function storeTokens({ access_token }) {

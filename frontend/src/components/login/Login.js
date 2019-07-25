@@ -8,7 +8,7 @@ import {
     Container,
 } from '@material-ui/core'
 import useStyles from './style'
-import authentication from '../utils/authenticationService'
+import authentication from '../../utils/authenticationService'
 import routes from "../../constants/routes";
 
 export default props => {
