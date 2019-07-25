@@ -22,8 +22,8 @@ linter:
 unit test:
   stage: build
   script:
-    - echo "[INFO] Running pytest unit tests suite..."
-    - pytest
+    - echo "[INFO] Running pytest with coverage..."
+    - pytest --cov=tapp tests
     - echo "[INFO] done."
   tags:
   - build
