@@ -8,11 +8,10 @@ from pylint import lint
 THRESHOLD = 8
 
 if len(sys.argv) < 2:
-    print('Usage: python linter.py <file/directory> <pylint options>')
+    print("Usage: python linter.py <file/directory> <pylint options>")
     sys.exit(1)
 run = lint.Run(sys.argv[1:], do_exit=False)
-score = run.linter.stats['global_note']
+score = run.linter.stats["global_note"]
 
 if score < THRESHOLD:
     sys.exit(1)
-

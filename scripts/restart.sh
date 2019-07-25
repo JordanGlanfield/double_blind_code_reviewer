@@ -3,7 +3,7 @@
 export PATH=$PWD/venv/bin:$PATH
 
 if ! pgrep -x "gunicorn" > /dev/null
-then 
+then
   gunicorn tapp.wsgi:app \
            --workers 8 \
            --bind 0.0.0.0:8000 \
@@ -14,7 +14,7 @@ then
            --enable-stdio-inheritance \
            --daemon
 else
-  sudo killall -HUP gunicorn 
+  sudo killall -HUP gunicorn
 fi
 
 

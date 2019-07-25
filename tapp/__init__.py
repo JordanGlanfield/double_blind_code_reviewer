@@ -11,25 +11,26 @@ from .db import database
 from .messages import messages
 
 configuration_switch = {
-    'default': 'tapp.config.DevConfig',  # Development configuration (fake LDAP)
-    'staging': 'tapp.config.StagingConfig',  # Staging configuration (should be as close as possible to prod)
-    'production': 'tapp.config.ProductionConfig'  # Production configuration
+    "default": "tapp.config.DevConfig",  # Development configuration (fake LDAP)
+    "staging": "tapp.config.StagingConfig",  # Staging configuration (should be as close as possible to prod)
+    "production": "tapp.config.ProductionConfig",  # Production configuration
 }
 
-ENV = os.environ.get('ENV', 'default')
+ENV = os.environ.get("ENV", "default")
 
 # SET UP =====================================
 
 LOGIN_MANAGER = LoginManager()
-LOGIN_MANAGER.login_view = 'auth.login'
+LOGIN_MANAGER.login_view = "auth.login"
 LOGIN_MANAGER.login_message = messages.LOGIN_MANAGER_MESSAGE
 
-LDAP = fake_ldap_handler.FAKE_LDAP if ENV == 'default' else ldap_handler.LDAP
+LDAP = fake_ldap_handler.FAKE_LDAP if ENV == "default" else ldap_handler.LDAP
 DB = database.DB
 JWT_MANAGER = JWTManager()
 
 
 # ===================================================
+
 
 def create_app(test_configuration=None):
     """Application factory method"""
@@ -54,6 +55,7 @@ def create_app(test_configuration=None):
     ############################################################
 
     from .views import auth, home
+
     app.register_blueprint(auth.bp)
     app.register_blueprint(home.bp)
 

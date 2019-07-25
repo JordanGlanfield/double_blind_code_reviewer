@@ -16,7 +16,7 @@ option in IntelliJ Idea \*sigh\* (tips: look into `config.py`, `fake_ldap_handle
 
 ## Overview
 
-The template, developed in Python and React.js, offers a standard application structure. The backend API is available under `tapp/`, 
+The template, developed in Python and React.js, offers a standard application structure. The backend API is available under `tapp/`,
 while the frontend logic can be found under (have a guess) the `frontend/` folder.
  A quick overview of the application's organisation is given below:
 
@@ -35,7 +35,7 @@ while the frontend logic can be found under (have a guess) the `frontend/` folde
 
 ### Configuration
 
-The application's configuration (in `config.py`) is object-based. Many preconfigured configurations 
+The application's configuration (in `config.py`) is object-based. Many preconfigured configurations
 are provided, one per standard deployment environment. The available
 configurations are *development*, *staging* and *production*.
 Any configuration other than *development* (selected by default) can be enabled
@@ -49,7 +49,7 @@ The application's instantiation is performed through the `create_app()` method i
 testing purposes, which -when provided- overrides the object-based
 configuration.
 
-## Running the Application 
+## Running the Application
 Before running the application, its dependencies must be available.
 To download all the required dependencies:
 - **create a virtual environment** by running `python3 -m venv venv`
@@ -60,7 +60,7 @@ In a local development environment, the backend API can be run directly with fla
 To do so, run:
 ```
 (venv) $ source scripts/dev_exports.sh
-(venv) $ flask run 
+(venv) $ flask run
 ```
 In a staging/production environment, the app is run "behind" a gunicorn web-server. The code to start (and *re*start)
 the web-server, executed during the deployment stage of the pipeline defined in `.gitlab-ci.yml`, is in `scripts/restart.sh`.
@@ -80,21 +80,21 @@ character you wish as password (the actual value is ignored by the fake LDAP).
 
 ## Testing
 A stub test-suite is provided for the *auth* view. In `tests/views/test_auth.py`, you can find examples of how to test routes and how to use
-pytest's parameterization. The interesting bit is however in `conftest.py`, where fixtures for a dummy application 
+pytest's parameterization. The interesting bit is however in `conftest.py`, where fixtures for a dummy application
 instance, database and authentication handler are defined.
 To run the tests, from the top directory of the project run `pytest` (with `-v` if you like to see many lines of text
- on your screen). 
+ on your screen).
 
 ## Continuous Integration
 For your benefit, you are provided with a simple GitLabCI script in `txt` format. To use it for your project,
-change the extension to `yml` and push it to your remote repository. 
-Note that you need to have a [GitLab Runner](https://docs.gitlab.com/runner/) spinning somewhere for the pipeline to be executed. 
+change the extension to `yml` and push it to your remote repository.
+Note that you need to have a [GitLab Runner](https://docs.gitlab.com/runner/) spinning somewhere for the pipeline to be executed.
 
 ## General Development Conventions
 
-### Global references 
+### Global references
 Objects that are supposed to be globally accessible across the application (like Flask's
-login manager, the database object or the ldap service) should be instantiated and assigned to an upper-case-named constant in 
+login manager, the database object or the ldap service) should be instantiated and assigned to an upper-case-named constant in
 the main file of their respective package (see `db/database.py`) and exposed to the app from `tapp/__init__.py` file.
 This approach ensures one entry point for all the global references, and gives
 the opportunity to seamlessly choose to use a different implementation of an application module
@@ -112,18 +112,18 @@ sudo apt-get install \
     build-essential \
     python3-dev     \
     python3-venv    \
-    libldap2-dev    \ 
-    libsasl2-dev    \ 
-    slapd           \ 
-    ldap-utils      \ 
+    libldap2-dev    \
+    libsasl2-dev    \
+    slapd           \
+    ldap-utils      \
     python-tox      \
     lcov            \
-    valgrind      
+    valgrind
 ```
 
-## The Logo 
+## The Logo
 
-Logos for applications in the *edtech* group are created with [Faviator](https://www.faviator.xyz/). Not from the 
+Logos for applications in the *edtech* group are created with [Faviator](https://www.faviator.xyz/). Not from the
 web interface though. We do it from the command-line, like real men.
 ```
 $ npm install -g faviator

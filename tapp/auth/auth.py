@@ -1,9 +1,7 @@
 from ..auth.ldap_constants import DN, MEMBERSHIPS, TITLE, NAME, SURNAME
 from .. import LDAP
 
-WHITE_LIST = [
-    'ictsec'
-]
+WHITE_LIST = ["ictsec"]
 
 
 def login(username, password):
@@ -11,7 +9,9 @@ def login(username, password):
     Perform (a) LDAP authentication and (b) additional (app specific) verifications
     before granting access and returning the user LDAP attributes 'name, surname, title and memberships'.
     """
-    ldap_attributes = LDAP.ldap_login(username, password, query_attrs=(TITLE, NAME, SURNAME, DN, MEMBERSHIPS))
+    ldap_attributes = LDAP.ldap_login(
+        username, password, query_attrs=(TITLE, NAME, SURNAME, DN, MEMBERSHIPS)
+    )
     return custom_authentication_checks(username, ldap_attributes)
 
 
@@ -23,6 +23,7 @@ def custom_authentication_checks(username, ldap_attributes):
     #     if 'doc-all-students' not in dict_attrs[MEMBERSHIPS]['CN']: # is 'doc-all-students' among the memberships?
     #         raise ldap.INVALID_CREDENTIALS # raise INVALID_CREDENTIALS exception
     return ldap_attributes
+
 
 # To enforce a distinction between "student" and "staff", the `ldap_constant_TITLE` ldap attribute is
 # requested (see above) and associated to the user model. The following decorator is then an example
