@@ -11,4 +11,4 @@ bp = Blueprint("home", __name__, url_prefix="/api")
 def user_info():
     username = get_jwt_identity()
     user = User.find_by_username(username)
-    return jsonify(firstname=user.firstname)
+    return jsonify(firstname=user.firstname, lastname=user.surname)
