@@ -14,7 +14,7 @@ from ..auth import auth
 from ..auth import ldap_constants
 from ..db.models import User
 
-bp = Blueprint("auth", __name__)
+bp = Blueprint("auth", __name__, url_prefix="/api/auth")
 
 
 @LOGIN_MANAGER.user_loader
