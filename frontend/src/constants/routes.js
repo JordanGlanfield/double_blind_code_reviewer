@@ -1,5 +1,5 @@
 export default {
-    LOGIN: '/login',
-    REFRESH: '/token/refresh',
-    HOME: '/home'
+  LOGIN: "/",
+  REFRESH: "/token/refresh",
+  HOME: "/home"
 }
