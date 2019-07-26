@@ -46,7 +46,7 @@ export default (props) => {
             ))}</List>
             <Divider/>
             <div className={classes.drawerCenteredBlock}>
-                <Button variant="contained" color="primary" href={issuesLink}>
+                <Button variant="contained" color="secondary" href={issuesLink}>
                     Found a bug? <BugReportIcon className={classes.rightIcon}/>
                 </Button>
             </div>
