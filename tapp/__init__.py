@@ -34,7 +34,11 @@ JWT_MANAGER = JWTManager()
 
 def create_app(test_configuration=None):
     """Application factory method"""
-    app = Flask(__name__)
+    app = Flask(
+        __name__,
+        static_folder="../frontend/build/static",
+        template_folder="../frontend/build",
+    )
 
     # Configure the application
     if test_configuration:
@@ -54,9 +58,9 @@ def create_app(test_configuration=None):
         DB.create_all()
     ############################################################
 
-    from .views import auth, home
+    from .views import auth, index
 
     app.register_blueprint(auth.bp)
-    app.register_blueprint(home.bp)
+    app.register_blueprint(index.bp)
 
     return app

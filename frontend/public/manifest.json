@@ -3,6 +3,6 @@
   "name": "The Template Application",
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
+  "theme_color": "#003d72",
   "background_color": "#ffffff"
 }

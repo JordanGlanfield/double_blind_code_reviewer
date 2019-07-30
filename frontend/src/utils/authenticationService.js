@@ -17,7 +17,7 @@ async function login(username, password) {
     body: JSON.stringify({ username, password })
   }
 
-  const response = await fetch("/api/auth/login", requestOptions)
+  const response = await fetch("/api/login", requestOptions)
   if (response.ok) {
     const data = await response.json()
     storeTokens(data)

@@ -6,6 +6,7 @@ from flask_jwt_extended import (
     create_access_token,
     get_jwt_identity,
     jwt_refresh_token_required,
+    jwt_required,
 )
 from flask_login import current_user
 
@@ -14,7 +15,7 @@ from ..auth import auth
 from ..auth import ldap_constants
 from ..db.models import User
 
-bp = Blueprint("auth", __name__, url_prefix="/api/auth")
+bp = Blueprint("auth", __name__, url_prefix="/api")
 
 
 @LOGIN_MANAGER.user_loader
@@ -47,6 +48,14 @@ def login():
     access_token = create_access_token(identity=username)
     response = jsonify(access_token=access_token)
     return response
+
+
+@bp.route("/userinfo")
+@jwt_required
+def user_info():
+    username = get_jwt_identity()
+    user = User.find_by_username(username)
+    return jsonify(firstname=user.firstname, lastname=user.surname)
 
 
 @bp.route("/token/refresh", methods=["POST"])
