@@ -16,9 +16,9 @@ import {
   School as SchoolIcon
 } from "@material-ui/icons/index"
 import useStyles from "./style"
-import Avatar from "@material-ui/core/Avatar"
-import Typography from "@material-ui/core/Typography"
-import Container from "@material-ui/core/Container"
+import Avatar from "@material-ui/core/Avatar/index"
+import Typography from "@material-ui/core/Typography/index"
+import Container from "@material-ui/core/Container/index"
 
 const linksToIcons = [
   ["Gitlab", "https://gitlab.doc.ic.ac.uk", <CodeIcon />],

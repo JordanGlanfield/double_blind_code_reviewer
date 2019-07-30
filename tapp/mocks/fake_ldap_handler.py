@@ -1,6 +1,6 @@
 import ldap
 
-from ..backend.utils import file_utils
+from ..utils import file_utils
 
 
 class FakeLdapConnectionHandler:

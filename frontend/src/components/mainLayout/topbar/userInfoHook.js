@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
-import performOrRedirect from "../../utils/redirection"
-import routes from "../../constants/routes"
-import authConstants from "../../constants/auth"
+import performOrRedirect from "../../../utils/redirection"
+import routes from "../../../constants/routes"
+import authConstants from "../../../constants/auth"
 
 export default history => {
   const [userFstName, setUserFstName] = useState("")

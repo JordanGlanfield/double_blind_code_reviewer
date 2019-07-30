@@ -6,7 +6,10 @@ import {
   Typography,
   useScrollTrigger
 } from "@material-ui/core/index"
-import { ExitToApp as ExitIcon, Menu as MenuIcon } from "@material-ui/icons"
+import {
+  ExitToApp as ExitIcon,
+  Menu as MenuIcon
+} from "@material-ui/icons/index"
 import { useStyles } from "./style"
 
 function ElevationScroll({ children, window }) {
