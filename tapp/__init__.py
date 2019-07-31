@@ -34,11 +34,7 @@ JWT_MANAGER = JWTManager()
 
 def create_app(test_configuration=None):
     """Application factory method"""
-    app = Flask(
-        __name__,
-        static_folder="../frontend/build/static",
-        template_folder="../frontend/build",
-    )
+    app = Flask(__name__, static_folder="../build/static", template_folder="../build")
 
     # Configure the application
     if test_configuration:
