@@ -1,4 +1,4 @@
-import storage
+from . import storage
 
 user_id = -1
 active_pseudonym = ""

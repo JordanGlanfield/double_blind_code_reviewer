@@ -1,5 +1,5 @@
 import mysql.connector
-from comments import Comment
+from .comments import Comment
 
 # DB interaction set up
 

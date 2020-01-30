@@ -3,10 +3,9 @@
 import click
 from click_shell import shell
 from git import Repo
-import anonymiser
-import comments as cmts
-import users
-import storage
+from . import comments as cmts
+from . import users
+from . import storage
 
 @shell(prompt="anonymiser > ", intro="Starting anonymiser")
 def app():
