@@ -1,5 +1,6 @@
 import * as React from "react"
 import useStyles from "./style"
+import ViewRepos from "../view_repos/ViewRepos";
 // import coding from "../../../assets/coding.gif"
 // import Grid from "@material-ui/core/Grid/index"
 
@@ -9,13 +10,7 @@ const Home = () => {
   return (
     <div>
       Testing
-      {/*<Grid container justify="center" className={classes.gridContainer}>*/}
-      {/*  <Grid item xs={12}>*/}
-      {/*    <div style={{ textAlign: "center" }}>*/}
-      {/*      <img className={classes.image} src={coding} alt="ncvi" />*/}
-      {/*    </div>*/}
-      {/*  </Grid>*/}
-      {/*</Grid>*/}
+      <ViewRepos data={["gson", "banter_repo", "linux_kernel"]}/>
     </div>
   )
 }
