@@ -15,8 +15,8 @@ export default () => {
       <BrowserRouter>
         <Switch>
           <Route exact path={routes.LOGIN} component={Login} />
+          <ProtectedRoute path={routes.HOME} component={Home} />
           <ProtectedRoute path={routes.REPO} component={ViewRepo} />
-          <ProtectedRoute path="/" component={Frame}/>
         </Switch>
       </BrowserRouter>
     </ThemeProvider>
