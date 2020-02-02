@@ -13,6 +13,7 @@ const Home = () => {
   return (
     <div>
         <Title level={2}>Available repositories:</Title>
+        
         <ViewRepos data={["gson", "banter_repo", "linux_kernel"]}/>
     </div>
   )

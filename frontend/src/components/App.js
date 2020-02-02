@@ -6,6 +6,8 @@ import ProtectedRoute from "./routes/ProtectedRoute"
 import routes from "../constants/routes"
 import theme from "../theme"
 import { ThemeProvider } from "@material-ui/styles"
+import ViewRepo from "./routes/view_repo/ViewRepo";
+import Home from "./routes/home/Home";
 
 export default () => {
   return (
@@ -13,7 +15,8 @@ export default () => {
       <BrowserRouter>
         <Switch>
           <Route exact path={routes.LOGIN} component={Login} />
-          <ProtectedRoute path="/" component={Frame} />
+          <ProtectedRoute path={routes.REPO} component={ViewRepo} />
+          <ProtectedRoute path="/" component={Frame}/>
         </Switch>
       </BrowserRouter>
     </ThemeProvider>

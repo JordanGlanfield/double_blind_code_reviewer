@@ -17,7 +17,7 @@ export default props => {
   const [password, setPassword] = useState("")
   const [error, setError] = useState(false)
   const [allowRedirection, setAllowRedirection] = useState(false)
-  let { from } = props.location.state || { from: { pathname: routes.HOME } }
+  let { from } = props.location.state || { from: { pathname: routes.getHome(username) } }
 
   const login = async event => {
     event.preventDefault()
