@@ -4,5 +4,5 @@ export default {
   HOME: "/:user/home",
   REPO: "/:user/repo/:repo",
   getHome: (user: string) => "/" + user + "/home",
-  getRepo: (user: string, repo: string) => "/" + user + "/repo" + repo
+  getRepo: (user: string, repo: string) => "/" + user + "/repo/" + repo
 }
