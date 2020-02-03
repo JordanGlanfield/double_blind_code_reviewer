@@ -1,8 +1,11 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
-import { List } from "antd";
+import { useParams, RouteComponentProps } from "react-router-dom";
+import { List, Typography } from "antd";
+import RepoEntry from "./RepoEntry";
+import routes from "../../../constants/routes";
+import { extractPath } from "../../../utils/route_util";
 
-interface Props {
+interface Props extends RouteComponentProps {
 }
 
 interface DirEntry {
@@ -33,6 +36,13 @@ const ViewRepo = (props: Props) => {
     const [dirContents, setDirContents] = useState([] as DirEntry[]);
 
     let {user, repo} = useParams();
+    let currentDir = extractPath(props.match.url, props.location.pathname);
+
+    if (!user) {
+        return <div>
+            {user}: Invalid user
+        </div>
+    }
 
     if (!repo) {
         return <div>
@@ -44,10 +54,8 @@ const ViewRepo = (props: Props) => {
 
     if (dirContents.length == 0) {
         try {
-            getDirectory(repo, "").then(directory => {
+            getDirectory(repo, currentDir).then(directory => {
                 const newDirContents = [];
-
-                console.log(directory);
 
                 for (let dir of directory.directories) {
                     newDirContents.push({ name: dir, isDir: true })
@@ -71,13 +79,21 @@ const ViewRepo = (props: Props) => {
     }
 
     return <div>
+        <Typography>Current directory: {currentDir === "" ? "/" : ""}{currentDir}</Typography>
         <List
           dataSource={dirContents}
           renderItem={item => <List.Item>
-              {item.isDir ? "Directory: " : "File: "} {item.name}
+              <RepoEntry name={item.name}
+                         isDir={item.isDir}
+                         href={item.isDir
+                           ? routes.getRepoDir(user as string, repo as string) + currentDir + "/" + item.name
+                           : routes.getRepoFile(user as string, repo as string) + currentDir + "/" + item.name
+                         }
+              />
           </List.Item>}
         />
     </div>;
 };
+
 
 export default ViewRepo;

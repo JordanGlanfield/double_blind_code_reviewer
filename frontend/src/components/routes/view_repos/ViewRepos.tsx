@@ -22,7 +22,7 @@ const ViewRepos = (props: Props) => {
             size="large"
             dataSource={props.data}
             renderItem={item => <List.Item>
-                <Button type="primary" href={routes.getRepo(userString, item)}>{item}</Button>
+                <Button type="primary" href={routes.getRepoDir(userString, item)}>{item}</Button>
             </List.Item>}
         />
     </div>
