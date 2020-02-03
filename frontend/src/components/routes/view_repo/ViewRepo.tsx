@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams, RouteComponentProps } from "react-router-dom";
-import { List, Typography } from "antd";
+import { Button, List, Typography } from "antd";
 import RepoEntry from "./RepoEntry";
 import routes from "../../../constants/routes";
 import { extractPath } from "../../../utils/route_util";
@@ -10,7 +10,8 @@ interface Props extends RouteComponentProps {
 
 interface DirEntry {
     name: string,
-    isDir: boolean
+    isDir: boolean,
+    href: string
 }
 
 async function get(uriSuffix: string) {
@@ -37,6 +38,7 @@ const ViewRepo = (props: Props) => {
 
     let {user, repo} = useParams();
     let currentDir = extractPath(props.match.url, props.location.pathname);
+    let atTopLevel = currentDir === "";
 
     if (!user) {
         return <div>
@@ -57,12 +59,22 @@ const ViewRepo = (props: Props) => {
             getDirectory(repo, currentDir).then(directory => {
                 const newDirContents = [];
 
+                if (!atTopLevel) {
+                    newDirContents.push({name: "..",
+                        isDir: true,
+                        href: routes.getRepoDir(user as string, repo as string) + getNextDirUp(currentDir)})
+                }
+
                 for (let dir of directory.directories) {
-                    newDirContents.push({ name: dir, isDir: true })
+                    newDirContents.push({name: dir,
+                        isDir: true,
+                        href: routes.getRepoDir(user as string, repo as string) + currentDir + "/" + dir})
                 }
 
                 for (let file of directory.files) {
-                    newDirContents.push({ name: file, isDir: false })
+                    newDirContents.push({name: file,
+                        isDir: false,
+                        href: routes.getRepoFile(user as string, repo as string) + currentDir + "/" + file})
                 }
                 setDirContents(newDirContents);
             })
@@ -85,15 +97,21 @@ const ViewRepo = (props: Props) => {
           renderItem={item => <List.Item>
               <RepoEntry name={item.name}
                          isDir={item.isDir}
-                         href={item.isDir
-                           ? routes.getRepoDir(user as string, repo as string) + currentDir + "/" + item.name
-                           : routes.getRepoFile(user as string, repo as string) + currentDir + "/" + item.name
-                         }
+                         href={item.href}
               />
           </List.Item>}
         />
     </div>;
 };
+
+function getNextDirUp(path: string): string {
+    if (path === "") {
+        return "";
+    }
+
+    const lastSlash = path.lastIndexOf("/");
+    return path.substring(0, lastSlash);
+}
 
 
 export default ViewRepo;
