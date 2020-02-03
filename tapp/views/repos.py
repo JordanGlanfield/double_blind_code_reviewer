@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify, abort
 bp = Blueprint("repos", __name__, url_prefix="/api/v1.0/repos")
 
 repos = {
-    0: {
+    "gson": {
         "name": "gson",
         "files": ["log.txt", "test.txt", "oh_no.txt"],
         "directories": {
@@ -21,9 +21,9 @@ repos = {
 }
 
 
-@bp.route("/view/<int:repo_id>/", defaults={"path": ""})
-@bp.route("/view/<int:repo_id>/<path:path>", methods=["GET"])
-def get_repo(repo_id: int, path: str):
+@bp.route("/view/<string:repo_id>/", defaults={"path": ""}, methods=["GET"])
+@bp.route("/view/<string:repo_id>/<path:path>", methods=["GET"])
+def get_repo(repo_id: str, path: str):
     if not repo_id in repos:
         abort(404)
 
