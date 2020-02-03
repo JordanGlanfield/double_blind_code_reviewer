@@ -11,7 +11,10 @@ interface Props {
 
 const RepoEntry = (props: Props) => {
   return <Button href={props.href}>
-    <Icon type={props.isDir ? "folder" : "file"} />{props.name}
+    <Icon type={props.isDir ? "folder" : "file"}
+          theme={props.isDir ? "filled" : "outlined"}
+    />
+    {props.name}
   </Button>
 };
 
