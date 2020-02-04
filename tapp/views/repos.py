@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, abort
+from flask import Blueprint, jsonify, abort, send_from_directory
 
 bp = Blueprint("repos", __name__, url_prefix="/api/v1.0/repos")
 
@@ -21,8 +21,8 @@ repos = {
 }
 
 
-@bp.route("/view/<string:repo_id>/", defaults={"path": ""}, methods=["GET"])
-@bp.route("/view/<string:repo_id>/<path:path>", methods=["GET"])
+@bp.route("/view/dir/<string:repo_id>/", defaults={"path": ""}, methods=["GET"])
+@bp.route("/view/dir/<string:repo_id>/<path:path>", methods=["GET"])
 def get_repo(repo_id: str, path: str):
     if not repo_id in repos:
         abort(404)
@@ -30,7 +30,7 @@ def get_repo(repo_id: str, path: str):
     dir_contents = repos[repo_id]
 
     if not path == "":
-        dirs = path.split("/")
+        dirs = split_path(path)
 
         for dir in dirs:
 
@@ -51,3 +51,15 @@ def flatten_directories(dir_contents):
     flattened["files"] = dir_contents["files"][:]
 
     return flattened
+
+
+@bp.route("/view/file/<string:repo_id>/<path:path>")
+def get_file(repo_id: str, path: str):
+    if not repo_id in repos:
+        abort(404)
+
+    return send_from_directory(repo_id, path)
+
+
+def split_path(path: str):
+    return path.split("/")

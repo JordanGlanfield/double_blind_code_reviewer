@@ -126,6 +126,10 @@ To use pre-commit (RECOMMENDED):
 
 ### Backend Development
 
+To test endpoints:
+- 'curl -i http://localhost:5000/tapp/api/v1.0/repos/view/dir/gson/' for example
+
+
 #### Global References
 
 Objects that are supposed to be globally accessible across the application (like Flask's

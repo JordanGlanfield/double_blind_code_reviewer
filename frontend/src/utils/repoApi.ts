@@ -3,7 +3,7 @@ async function get(uriSuffix: string) {
     method: "GET"
   };
 
-  const response = await fetch("/api/v1.0/repos/view" + uriSuffix);
+  const response = await fetch("/api/v1.0/repos/view/dir" + uriSuffix);
 
   if (response.ok) {
     return await response.json();
