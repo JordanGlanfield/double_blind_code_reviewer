@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import { useParams, RouteComponentProps } from "react-router-dom";
-import { Button, List, Typography } from "antd";
+import React, {useState} from "react";
+import {RouteComponentProps, useParams} from "react-router-dom";
+import {List, Typography} from "antd";
 import RepoEntry from "./RepoEntry";
 import routes from "../../../constants/routes";
-import { extractPath } from "../../../utils/route_util";
+import {extractPathFromRoute, getNextDirUp} from "../../../utils/route_util";
+import {getFile} from "../../../utils/repoApi";
 
 interface Props extends RouteComponentProps {
 }
@@ -14,30 +15,11 @@ interface DirEntry {
     href: string
 }
 
-async function get(uriSuffix: string) {
-    const requestOptions = {
-        method: "GET"
-    };
-
-    const response = await fetch("/api/v1.0/repos/view" + uriSuffix);
-
-    if (response.ok) {
-        return await response.json();
-    }
-
-    throw response
-}
-
-function getDirectory(repoId: string, path: string) {
-    // TODO - safety of using path here?
-    return get("/" + repoId + "/" + path)
-}
-
 const ViewRepo = (props: Props) => {
     const [dirContents, setDirContents] = useState([] as DirEntry[]);
 
     let {user, repo} = useParams();
-    let currentDir = extractPath(props.match.url, props.location.pathname);
+    let currentDir = extractPathFromRoute(props);
     let atTopLevel = currentDir === "";
 
     if (!user) {
@@ -56,7 +38,7 @@ const ViewRepo = (props: Props) => {
 
     if (dirContents.length == 0) {
         try {
-            getDirectory(repo, currentDir).then(directory => {
+            getFile(repo, currentDir).then(directory => {
                 const newDirContents = [];
 
                 if (!atTopLevel) {
@@ -103,15 +85,6 @@ const ViewRepo = (props: Props) => {
         />
     </div>;
 };
-
-function getNextDirUp(path: string): string {
-    if (path === "") {
-        return "";
-    }
-
-    const lastSlash = path.lastIndexOf("/");
-    return path.substring(0, lastSlash);
-}
 
 
 export default ViewRepo;
