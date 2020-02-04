@@ -2,7 +2,8 @@ export default {
   LOGIN: "/",
   REFRESH: "/token/refresh",
   HOME: "/:user/home",
-  REPO: "/:user/repo/:repo/",
+  REPO_DIRS: "/:user/repo/:repo/",
+  REPO_FILES: "/:user/repofiles/:repo",
   TEST: "/test/:item",
   getHome: (user: string) => "/" + user + "/home",
   getRepoDir: (user: string, repo: string) => {
