@@ -53,12 +53,13 @@ def flatten_directories(dir_contents):
     return flattened
 
 
-@bp.route("/view/file/<string:repo_id>/<path:path>")
+@bp.route("/view/file/<string:repo_id>/<path:path>", methods=["GET"])
 def get_file(repo_id: str, path: str):
     if not repo_id in repos:
         abort(404)
 
-    return send_from_directory(repo_id, path)
+    file = send_from_directory("", "log.txt")
+    return file
 
 
 def split_path(path: str):

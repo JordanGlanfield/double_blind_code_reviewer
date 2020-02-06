@@ -3,7 +3,11 @@ async function get(uriSuffix: string) {
     method: "GET"
   };
 
-  const response = await fetch("/api/v1.0/repos/view/dir" + uriSuffix);
+  const uri = "/api/v1.0/repos/view/" + uriSuffix;
+
+  console.log("GET:" + uri);
+
+  const response = await fetch(uri);
 
   if (response.ok) {
     return await response.json();
@@ -12,7 +16,11 @@ async function get(uriSuffix: string) {
   throw response
 }
 
-export function getFile(repoId: string, path: string) {
+export function getDir(repoId: string, path: string) {
   // TODO - safety of using path here?
-  return get("/" + repoId + "/" + path)
+  return get("dir/" + repoId + "/" + path);
+}
+
+export function getFile(repoId: string, path: string) {
+  return get("file/" + repoId + "/" + path);
 }

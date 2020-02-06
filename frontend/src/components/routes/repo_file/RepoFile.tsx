@@ -3,7 +3,7 @@ import SyntaxHighlighter from "react-syntax-highlighter";
 import {Button, Typography} from "antd";
 import {extractPathFromRoute, getNextDirUp} from "../../../utils/route_util";
 import { RouteComponentProps, useParams } from "react-router-dom";
-import {getFile} from "../../../utils/repoApi";
+import { getFile } from "../../../utils/repoApi";
 import routes from "../../../constants/routes";
 
 interface Props extends RouteComponentProps {
@@ -25,10 +25,9 @@ const RepoFile = (props: Props) => {
 
   if (!fileContents) {
     getFile(repo, filePath).then(file => {
-      setFileContents(file.contents);
+      setFileContents(file);
     }).catch(err => {
       console.log(err);
-      alert(err);
     });
 
     return <div>Loading...</div>
@@ -44,3 +43,5 @@ const RepoFile = (props: Props) => {
     </SyntaxHighlighter>
   </div>
 };
+
+export default RepoFile;

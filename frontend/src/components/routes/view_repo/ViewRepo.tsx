@@ -4,7 +4,7 @@ import {List, Typography} from "antd";
 import RepoEntry from "./RepoEntry";
 import routes from "../../../constants/routes";
 import {extractPathFromRoute, getNextDirUp} from "../../../utils/route_util";
-import {getFile} from "../../../utils/repoApi";
+import {getDir} from "../../../utils/repoApi";
 
 interface Props extends RouteComponentProps {
 }
@@ -38,7 +38,7 @@ const ViewRepo = (props: Props) => {
 
     if (dirContents.length == 0) {
         try {
-            getFile(repo, currentDir).then(directory => {
+            getDir(repo, currentDir).then(directory => {
                 const newDirContents = [];
 
                 if (!atTopLevel) {
@@ -50,13 +50,13 @@ const ViewRepo = (props: Props) => {
                 for (let dir of directory.directories) {
                     newDirContents.push({name: dir,
                         isDir: true,
-                        href: routes.getRepoDir(user as string, repo as string) + currentDir + "/" + dir})
+                        href: routes.getRepoDir(user as string, repo as string) + "/" + currentDir + "/" + dir})
                 }
 
                 for (let file of directory.files) {
                     newDirContents.push({name: file,
                         isDir: false,
-                        href: routes.getRepoFile(user as string, repo as string) + currentDir + "/" + file})
+                        href: routes.getRepoFile(user as string, repo as string) + "/" + currentDir + "/" + file})
                 }
                 setDirContents(newDirContents);
             })
