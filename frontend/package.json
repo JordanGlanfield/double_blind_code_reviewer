@@ -23,7 +23,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "test": "react-scripts test",
+    "test": "jest",
     "build": "react-scripts build",
     "postbuild": "rm -rf ../build && mv build ..",
     "eject": "react-scripts eject"
@@ -43,5 +43,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/jest": "^25.1.1",
+    "jest": "^25.1.0",
+    "ts-jest": "^25.2.0"
   }
 }
