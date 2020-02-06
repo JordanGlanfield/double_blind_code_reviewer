@@ -60,25 +60,32 @@ const RepoDir = (props: Props) => {
 function getDirectoryEntries(user: string, repo: string, currentDir: string,
                              callback: (dirEntries: DirEntry[]) => void) {
     const atTopLevel = currentDir === "";
+    console.log(currentDir)
     getDir(repo, currentDir).then(directory => {
         const dirEntries = [];
 
         if (!atTopLevel) {
             dirEntries.push({name: "..",
                 isDir: true,
-                href: routes.getRepoDir(user as string, repo as string, getNextDirUp(currentDir))})
+                href: routes.getRepoDir(user, repo, getNextDirUp(currentDir))})
+        }
+
+        let path = currentDir;
+
+        if (currentDir !== "") {
+            path = currentDir + "/";
         }
 
         for (let dir of directory.directories) {
             dirEntries.push({name: dir,
                 isDir: true,
-                href: routes.getRepoDir(user as string, repo as string, currentDir + "/" + dir)})
+                href: routes.getRepoDir(user, repo, path + dir)})
         }
 
         for (let file of directory.files) {
             dirEntries.push({name: file,
                 isDir: false,
-                href: routes.getRepoFile(user as string, repo as string, "/" + currentDir + "/" + file)})
+                href: routes.getRepoFile(user, repo, path + file)})
         }
         callback(dirEntries);
     })

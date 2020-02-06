@@ -3,6 +3,9 @@ import {RouteComponentProps} from "react-router-dom";
 export function extractPath(prefix: string, fullPath: string): string {
   let parts = fullPath.split(prefix);
 
+  console.log(prefix);
+  console.log(fullPath);
+
   if (parts.length < 2) {
     return "";
   }
