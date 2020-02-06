@@ -26,8 +26,6 @@ const RepoFile = (props: Props) => {
   if (!fileContents) {
     getFile(repo, filePath).then(file => {
       setFileContents(file);
-    }).catch(err => {
-      console.log(err);
     });
 
     return <div>Loading...</div>

@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, abort, send_from_directory
 
-bp = Blueprint("repos", __name__, url_prefix="/api/v1.0/repos")
+bp = Blueprint("repos", __name__, url_prefix="/api/v1.0/repos", static_folder="static")
 
 repos = {
     "gson": {
@@ -8,7 +8,7 @@ repos = {
         "files": ["log.txt", "test.txt", "oh_no.txt"],
         "directories": {
             "build": {
-                "files": ["build_process.md", "build_banter.docx", "build_results.txt"],
+                "files": ["build_process.yaml", "build_banter.docx", "build_results.txt"],
                 "directories": {
                     "issues": {
                         "files": ["broken_pipeline.txt", "errors.txt"],
@@ -19,6 +19,20 @@ repos = {
         }
     }
 }
+
+
+# Return tuple of path and filename. Path will not end with a slash
+def splitFilePath(path: str):
+    last = path.rfind("/")
+
+    if last < 0:
+        return "", path
+
+    return path[:last], path[last+1:]
+
+
+def split_path(path: str):
+    return path.split("/")
 
 
 @bp.route("/view/dir/<string:repo_id>/", defaults={"path": ""}, methods=["GET"])
@@ -58,9 +72,8 @@ def get_file(repo_id: str, path: str):
     if not repo_id in repos:
         abort(404)
 
-    file = send_from_directory("", "log.txt")
-    return file
+    file_path, file_name = splitFilePath(path)
 
+    full_file_path = bp.static_folder + "/" + repo_id + "/" + file_path
 
-def split_path(path: str):
-    return path.split("/")
+    return send_from_directory(full_file_path, file_name)
