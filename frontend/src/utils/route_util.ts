@@ -7,6 +7,10 @@ function extractPath(prefix: string, fullPath: string): string {
     return "";
   }
 
+  if (parts[1].startsWith("/")) {
+    return parts[1].substring(1);
+  }
+
   return parts[1];
 }
 
