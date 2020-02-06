@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {RouteComponentProps, useParams} from "react-router-dom";
+import { Redirect, RouteComponentProps, useParams } from "react-router-dom";
 import {List, Typography} from "antd";
 import RepoEntry from "./RepoEntry";
 import routes from "../../../constants/routes";
@@ -20,46 +20,17 @@ const ViewRepo = (props: Props) => {
 
     let {user, repo} = useParams();
     let currentDir = extractPathFromRoute(props);
-    let atTopLevel = currentDir === "";
 
-    if (!user) {
-        return <div>
-            {user}: Invalid user
-        </div>
+    if (!user || !repo) {
+        return <Redirect to={{
+            pathname: routes.HOME,
+            state: {from: props.location}
+        }} />
     }
-
-    if (!repo) {
-        return <div>
-            {repo}: No such repository exists
-        </div>
-    }
-
-    let directory;
 
     if (dirContents.length == 0) {
         try {
-            getDir(repo, currentDir).then(directory => {
-                const newDirContents = [];
-
-                if (!atTopLevel) {
-                    newDirContents.push({name: "..",
-                        isDir: true,
-                        href: routes.getRepoDir(user as string, repo as string) + getNextDirUp(currentDir)})
-                }
-
-                for (let dir of directory.directories) {
-                    newDirContents.push({name: dir,
-                        isDir: true,
-                        href: routes.getRepoDir(user as string, repo as string) + currentDir + "/" + dir})
-                }
-
-                for (let file of directory.files) {
-                    newDirContents.push({name: file,
-                        isDir: false,
-                        href: routes.getRepoFile(user as string, repo as string) + "/" + currentDir + "/" + file})
-                }
-                setDirContents(newDirContents);
-            })
+            getDirectoryEntries(user, repo, currentDir, setDirContents);
         } catch (err) {
             console.log(err);
             return <div>
@@ -86,5 +57,31 @@ const ViewRepo = (props: Props) => {
     </div>;
 };
 
+function getDirectoryEntries(user: string, repo: string, currentDir: string,
+                             callback: (dirEntries: DirEntry[]) => void) {
+    const atTopLevel = currentDir === "";
+    getDir(repo, currentDir).then(directory => {
+        const dirEntries = [];
+
+        if (!atTopLevel) {
+            dirEntries.push({name: "..",
+                isDir: true,
+                href: routes.getRepoDir(user as string, repo as string) + getNextDirUp(currentDir)})
+        }
+
+        for (let dir of directory.directories) {
+            dirEntries.push({name: dir,
+                isDir: true,
+                href: routes.getRepoDir(user as string, repo as string) + currentDir + "/" + dir})
+        }
+
+        for (let file of directory.files) {
+            dirEntries.push({name: file,
+                isDir: false,
+                href: routes.getRepoFile(user as string, repo as string) + "/" + currentDir + "/" + file})
+        }
+        callback(dirEntries);
+    })
+}
 
 export default ViewRepo;
