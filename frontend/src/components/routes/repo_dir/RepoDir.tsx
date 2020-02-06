@@ -28,7 +28,7 @@ const RepoDir = (props: Props) => {
         }} />
     }
 
-    if (dirContents.length == 0) {
+    if (dirContents.length === 0) {
         try {
             getDirectoryEntries(user, repo, currentDir, setDirContents);
         } catch (err) {
