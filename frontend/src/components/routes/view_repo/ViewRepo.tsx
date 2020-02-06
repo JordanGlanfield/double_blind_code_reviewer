@@ -50,7 +50,7 @@ const ViewRepo = (props: Props) => {
                 for (let dir of directory.directories) {
                     newDirContents.push({name: dir,
                         isDir: true,
-                        href: routes.getRepoDir(user as string, repo as string) + "/" + currentDir + "/" + dir})
+                        href: routes.getRepoDir(user as string, repo as string) + currentDir + "/" + dir})
                 }
 
                 for (let file of directory.files) {
