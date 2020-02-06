@@ -4,6 +4,7 @@
 export default {
   LOGIN: "/",
   REFRESH: "/token/refresh",
+  NAV: "/:user",
   HOME: "/:user/home",
   REPO_DIRS: "/:user/repo/:repo/",
   REPO_FILES: "/:user/repofiles/:repo",

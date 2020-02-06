@@ -17,7 +17,7 @@ export default () => {
         <Switch>
           <Route exact path={routes.LOGIN} component={Login} />
           <Route>
-            <ProtectedRoute path="/" component={TopBar} />
+            <ProtectedRoute path={routes.NAV} component={TopBar} />
             <Switch>
               <ProtectedRoute path={routes.HOME} component={Home} />
               <ProtectedRoute path={routes.REPO_DIRS} component={RepoDir} />
