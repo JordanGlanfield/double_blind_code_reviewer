@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import {Button, Typography} from "antd";
-import {extractPathFromRoute, getNextDirUp} from "../../../utils/route_util";
+import {extractPathFromRoute, getNextDirUp} from "../../../utils/routeUtil";
 import { RouteComponentProps, useParams } from "react-router-dom";
 import { getFile } from "../../../utils/repoApi";
 import routes from "../../../constants/routes";

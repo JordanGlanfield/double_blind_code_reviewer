@@ -3,7 +3,7 @@ import {RouteComponentProps, useParams} from "react-router-dom";
 import {List, Typography} from "antd";
 import RepoEntry from "./RepoEntry";
 import routes from "../../../constants/routes";
-import {extractPathFromRoute, getNextDirUp} from "../../../utils/route_util";
+import {extractPathFromRoute, getNextDirUp} from "../../../utils/routeUtil";
 import {getDir} from "../../../utils/repoApi";
 
 interface Props extends RouteComponentProps {
