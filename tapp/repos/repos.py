@@ -35,6 +35,17 @@ def split_path(path: str):
     return path.split("/")
 
 
+def flatten_directories(dir_contents):
+    flattened = {"directories": []}
+
+    for dir in dir_contents["directories"]:
+        flattened["directories"].append(dir)
+
+    flattened["files"] = dir_contents["files"][:]
+
+    return flattened
+
+
 @bp.route("/view/dir/<string:repo_id>/", defaults={"path": ""}, methods=["GET"])
 @bp.route("/view/dir/<string:repo_id>/<path:path>", methods=["GET"])
 def get_repo(repo_id: str, path: str):
@@ -54,17 +65,6 @@ def get_repo(repo_id: str, path: str):
             dir_contents = dir_contents["directories"][dir]
 
     return jsonify(flatten_directories(dir_contents))
-
-
-def flatten_directories(dir_contents):
-    flattened = {"directories": []}
-
-    for dir in dir_contents["directories"]:
-        flattened["directories"].append(dir)
-
-    flattened["files"] = dir_contents["files"][:]
-
-    return flattened
 
 
 @bp.route("/view/file/<string:repo_id>/<path:path>", methods=["GET"])
