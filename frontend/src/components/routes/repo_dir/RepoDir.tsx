@@ -60,7 +60,7 @@ const RepoDir = (props: Props) => {
 function getDirectoryEntries(user: string, repo: string, currentDir: string,
                              callback: (dirEntries: DirEntry[]) => void) {
     const atTopLevel = currentDir === "";
-    console.log(currentDir)
+
     getDir(repo, currentDir).then(directory => {
         const dirEntries = [];
 
