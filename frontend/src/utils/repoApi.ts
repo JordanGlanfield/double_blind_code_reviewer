@@ -10,7 +10,17 @@ async function get(uriSuffix: string) {
   const response = await fetch(uri);
 
   if (response.ok) {
-    return await response.json();
+    let data:any = await response;
+
+    let contentType = response.headers.get("Content-Type");
+
+    if (contentType && contentType.indexOf("application/json") > -1) {
+        data = response.json();
+    } else {
+      data = response.text();
+    }
+
+    return data;
   }
 
   throw response
