@@ -15,7 +15,7 @@ interface DirEntry {
     href: string
 }
 
-const ViewRepo = (props: Props) => {
+const RepoDir = (props: Props) => {
     const [dirContents, setDirContents] = useState([] as DirEntry[]);
 
     let {user, repo} = useParams();
@@ -84,4 +84,4 @@ function getDirectoryEntries(user: string, repo: string, currentDir: string,
     })
 }
 
-export default ViewRepo;
+export default RepoDir;
