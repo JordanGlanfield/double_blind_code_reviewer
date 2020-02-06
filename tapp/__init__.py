@@ -54,7 +54,8 @@ def create_app(test_configuration=None):
         DB.create_all()
     ############################################################
 
-    from .views import auth, index, repos
+    from .views import auth, index
+    from .repos import repos
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(index.bp)
