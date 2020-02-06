@@ -31,7 +31,7 @@ const RepoFile = (props: Props) => {
     return <div>Loading...</div>
   }
 
-  const dirHref = routes.getRepoDir(user, repo) + getNextDirUp(filePath);
+  const dirHref = routes.getRepoDir(user, repo, getNextDirUp(filePath));
 
   return <div>
     <Button href={dirHref}>Back To Folder</Button>
