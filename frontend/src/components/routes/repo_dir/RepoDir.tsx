@@ -66,19 +66,19 @@ function getDirectoryEntries(user: string, repo: string, currentDir: string,
         if (!atTopLevel) {
             dirEntries.push({name: "..",
                 isDir: true,
-                href: routes.getRepoDir(user as string, repo as string) + getNextDirUp(currentDir)})
+                href: routes.getRepoDir(user as string, repo as string, getNextDirUp(currentDir))})
         }
 
         for (let dir of directory.directories) {
             dirEntries.push({name: dir,
                 isDir: true,
-                href: routes.getRepoDir(user as string, repo as string) + currentDir + "/" + dir})
+                href: routes.getRepoDir(user as string, repo as string, currentDir + "/" + dir)})
         }
 
         for (let file of directory.files) {
             dirEntries.push({name: file,
                 isDir: false,
-                href: routes.getRepoFile(user as string, repo as string) + "/" + currentDir + "/" + file})
+                href: routes.getRepoFile(user as string, repo as string, "/" + currentDir + "/" + file)})
         }
         callback(dirEntries);
     })
