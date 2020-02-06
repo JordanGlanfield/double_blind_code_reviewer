@@ -23,7 +23,7 @@ const RepoFile = (props: Props) => {
     return <div>Invalid repo: {repo}</div>
   }
 
-  if (!fileContents) {
+  if (fileContents === undefined) {
     getFile(repo, filePath).then(file => {
       setFileContents(file);
     });
