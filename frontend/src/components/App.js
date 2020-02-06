@@ -6,7 +6,7 @@ import ProtectedRoute from "./routes/ProtectedRoute"
 import routes from "../constants/routes"
 import theme from "../theme"
 import { ThemeProvider } from "@material-ui/styles"
-import ViewRepo from "./routes/view_repo/ViewRepo";
+import ViewRepo from "./routes/repo_dir/ViewRepo";
 import Home from "./routes/home/Home";
 import RepoFile from "./routes/repo_file/RepoFile";
 
