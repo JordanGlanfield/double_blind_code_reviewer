@@ -1,4 +1,4 @@
-// Contains constants representing the structures of URL routes as well as functions for constructing URLs
+// Contains constants representing the structures of URI routes as well as functions for constructing URLs
 // for routes.
 
 export default {
@@ -18,7 +18,13 @@ function getHome(user: string) {
 }
 
 function getRepoDir(user: string, repo: string, path: string) {
-  return "/" + user + "/repo/" + repo + "/" + path;
+  let baseUri = "/" + user + "/repo/" + repo;
+
+  if (path !== "") {
+    return baseUri + "/" + path;
+  }
+
+  return baseUri
 }
 
 function getRepoFile(user: string, repo: string, path: string) {
