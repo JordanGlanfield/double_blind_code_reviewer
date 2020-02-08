@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, abort, send_from_directory
 
-bp = Blueprint("repos", __name__, url_prefix="/api/v1.0/repos", static_folder="static")
+repos_bp = Blueprint("repos", __name__, url_prefix="/api/v1.0/repos", static_folder="static")
 
 repos = {
     "gson": {
@@ -46,8 +46,8 @@ def flatten_directories(dir_contents):
     return flattened
 
 
-@bp.route("/view/dir/<string:repo_id>/", defaults={"path": ""}, methods=["GET"])
-@bp.route("/view/dir/<string:repo_id>/<path:path>", methods=["GET"])
+@repos_bp.route("/view/dir/<string:repo_id>/", defaults={"path": ""}, methods=["GET"])
+@repos_bp.route("/view/dir/<string:repo_id>/<path:path>", methods=["GET"])
 def get_repo(repo_id: str, path: str):
     if not repo_id in repos:
         abort(404)
@@ -67,13 +67,13 @@ def get_repo(repo_id: str, path: str):
     return jsonify(flatten_directories(dir_contents))
 
 
-@bp.route("/view/file/<string:repo_id>/<path:path>", methods=["GET"])
+@repos_bp.route("/view/file/<string:repo_id>/<path:path>", methods=["GET"])
 def get_file(repo_id: str, path: str):
     if not repo_id in repos:
         abort(404)
 
     file_path, file_name = splitFilePath(path)
 
-    full_file_path = bp.static_folder + "/" + repo_id + "/" + file_path
+    full_file_path = repos_bp.static_folder + "/" + repo_id + "/" + file_path
 
     return send_from_directory(full_file_path, file_name)
