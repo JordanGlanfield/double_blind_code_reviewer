@@ -59,6 +59,6 @@ def create_app(test_configuration=None):
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(index.bp)
-    app.register_blueprint(repos.bp)
+    app.register_blueprint(repos.repos_bp)
 
     return app
