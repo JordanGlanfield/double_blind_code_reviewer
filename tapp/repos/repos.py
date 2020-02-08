@@ -45,6 +45,9 @@ def flatten_directories(dir_contents):
 
     return flattened
 
+@repos_bp.route("/banter/<string:name>")
+def reply(name):
+    return "The banter is with you" + name
 
 @repos_bp.route("/view/dir/<string:repo_id>/", defaults={"path": ""}, methods=["GET"])
 @repos_bp.route("/view/dir/<string:repo_id>/<path:path>", methods=["GET"])
