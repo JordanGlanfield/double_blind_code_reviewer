@@ -1,11 +1,27 @@
-import React, {useState} from "react";
+import React, { useEffect, useState } from "react";
+
 import {Button, Typography} from "antd";
+import Prism from "prismjs";
+import "./prism-vs.css"
 import { extractPathFromRoute, getFileExtension, getFileName, getNextDirUp } from "../../../utils/routeUtil";
+
 import { RouteComponentProps, useParams } from "react-router-dom";
 import { getFile } from "../../../utils/repoApi";
 import routes from "../../../constants/routes";
-import Highlight from "react-highlight.js";
-import "./atom-one-light.min.css"
+
+import "prismjs/plugins/line-numbers/prism-line-numbers";
+import "prismjs/plugins/line-numbers/prism-line-numbers.css";
+
+import "prismjs/components/prism-yaml";
+import "prismjs/components/prism-java";
+import "prismjs/components/prism-c";
+import "prismjs/components/prism-csharp";
+import "prismjs/components/prism-javascript";
+import "prismjs/components/prism-ruby";
+import "prismjs/components/prism-rust";
+import "prismjs/components/prism-go";
+import "prismjs/components/prism-typescript";
+import "prismjs/components/prism-css";
 
 interface Props extends RouteComponentProps {
 }
@@ -15,6 +31,10 @@ const RepoFile = (props: Props) => {
   const [fileContents, setFileContents] = useState(undefined as string | undefined);
   const {user, repo} = useParams();
   const filePath = extractPathFromRoute(props);
+
+  useEffect(() => {
+    Prism.highlightAll();
+  });
 
   if (!user || !repo) {
     return <div>Invalid parameters</div>;
@@ -29,13 +49,16 @@ const RepoFile = (props: Props) => {
   }
 
   const dirHref = routes.getRepoDir(user, repo, getNextDirUp(filePath));
+  const language = getFileExtension(getFileName(filePath));
 
   return <div>
     <Button href={dirHref}>Back To Folder</Button>
     <Typography>{filePath}</Typography>
-    <Highlight language={getFileExtension(getFileName(filePath))}>
-      {fileContents}
-    </Highlight>
+    <pre className="line-numbers">
+      <code className={"language-" + language}>
+        {fileContents}
+      </code>
+    </pre>
   </div>
 };
 
