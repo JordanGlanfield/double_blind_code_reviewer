@@ -1,6 +1,6 @@
 import * as React from "react"
 import useStyles from "./style"
-import ViewRepos from "../view_repos/ViewRepos";
+import ViewRepos from "../ViewRepos/ViewRepos";
 import { Typography } from "antd";
 // import coding from "../../../assets/coding.gif"
 // import Grid from "@material-ui/core/Grid/index"

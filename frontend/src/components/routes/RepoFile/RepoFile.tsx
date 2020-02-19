@@ -15,12 +15,8 @@ const RepoFile = (props: Props) => {
   const {user, repo} = useParams();
   const filePath = extractPathFromRoute(props);
 
-  if (!user) {
-    return <div>Invalid user: {user}</div>
-  }
-
-  if (!repo) {
-    return <div>Invalid repo: {repo}</div>
+  if (!user || !repo) {
+    return <div>Invalid parameters</div>;
   }
 
   if (fileContents === undefined) {

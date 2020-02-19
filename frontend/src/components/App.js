@@ -1,13 +1,13 @@
 import React from "react"
 import { Switch, Route, BrowserRouter } from "react-router-dom"
-import Login from "./routes/login/Login"
+import Login from "./routes/Login/Login"
 import ProtectedRoute from "./routes/ProtectedRoute"
 import routes from "../constants/routes"
 import theme from "../theme"
 import { ThemeProvider } from "@material-ui/styles"
-import RepoDir from "./routes/repo_dir/RepoDir";
-import Home from "./routes/home/Home";
-import RepoFile from "./routes/repo_file/RepoFile";
+import RepoDir from "./routes/RepoDir/RepoDir";
+import Home from "./routes/Home/Home";
+import RepoFile from "./routes/RepoFile/RepoFile";
 import TopBar from "./mainLayout/TopBar/TopBar";
 
 export default () => {
