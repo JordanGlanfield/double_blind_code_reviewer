@@ -1,10 +1,10 @@
 import React, {useState} from "react";
-import SyntaxHighlighter from "react-syntax-highlighter";
 import {Button, Typography} from "antd";
 import {extractPathFromRoute, getNextDirUp} from "../../../utils/routeUtil";
 import { RouteComponentProps, useParams } from "react-router-dom";
 import { getFile } from "../../../utils/repoApi";
 import routes from "../../../constants/routes";
+import SyntaxHighlighter from "../../SyntaxHighlighter/SyntaxHighlighter";
 
 interface Props extends RouteComponentProps {
 }
@@ -32,7 +32,7 @@ const RepoFile = (props: Props) => {
   return <div>
     <Button href={dirHref}>Back To Folder</Button>
     <Typography>{filePath}</Typography>
-    <SyntaxHighlighter language={"text"}>
+    <SyntaxHighlighter>
       {fileContents}
     </SyntaxHighlighter>
   </div>
