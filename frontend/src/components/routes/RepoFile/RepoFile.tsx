@@ -1,10 +1,11 @@
 import React, {useState} from "react";
 import {Button, Typography} from "antd";
-import {extractPathFromRoute, getNextDirUp} from "../../../utils/routeUtil";
+import { extractPathFromRoute, getFileExtension, getFileName, getNextDirUp } from "../../../utils/routeUtil";
 import { RouteComponentProps, useParams } from "react-router-dom";
 import { getFile } from "../../../utils/repoApi";
 import routes from "../../../constants/routes";
-import SyntaxHighlighter from "../../SyntaxHighlighter/SyntaxHighlighter";
+import Highlight from "react-highlight.js";
+import "./atom-one-light.min.css"
 
 interface Props extends RouteComponentProps {
 }
@@ -32,9 +33,9 @@ const RepoFile = (props: Props) => {
   return <div>
     <Button href={dirHref}>Back To Folder</Button>
     <Typography>{filePath}</Typography>
-    <SyntaxHighlighter>
+    <Highlight language={getFileExtension(getFileName(filePath))}>
       {fileContents}
-    </SyntaxHighlighter>
+    </Highlight>
   </div>
 };
 

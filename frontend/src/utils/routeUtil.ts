@@ -20,11 +20,30 @@ export function extractPathFromRoute(props: RouteComponentProps) {
   return extractPath(props.match.url, props.location.pathname);
 }
 
+export function getFileName(path: string): string {
+  const lastSlash = getLastSlash(path);
+
+  return path.substring(lastSlash, path.length);
+}
+
 export function getNextDirUp(path: string): string {
-  if (path === "") {
+  const lastSlash = getLastSlash(path);
+
+  return path.substring(0, lastSlash);
+}
+
+function getLastSlash(path: string): number {
+  const lastSlash = path.lastIndexOf("/");
+
+  return lastSlash > 0 ? lastSlash : 0;
+}
+
+export function getFileExtension(name: string): string {
+  let split = name.split(".");
+
+  if(split.length <= 1 || ( split[0] === "" && split.length === 2 )) {
     return "";
   }
 
-  const lastSlash = path.lastIndexOf("/");
-  return path.substring(0, lastSlash);
+  return split.pop() as string;
 }
