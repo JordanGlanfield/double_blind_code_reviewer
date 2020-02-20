@@ -152,6 +152,10 @@ def post_comment(repo_id: str, file_path):
     check_json(["comment"])
 
     comment = request.json["comment"]
+
+    if comment == "":
+        abort(400)
+
     line_number = request.json.get("line_number", 0)
     parent_id = request.json.get("parent_id", -1)
 

@@ -7,5 +7,3 @@ export default interface Comment {
   author_pseudonym: string;
   parent_id: string;
 }
-
-export type LineNumbersToComments = {[lineNumber: number]: Comment}
