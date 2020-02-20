@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-import {Button, Typography} from "antd";
+import {Button, Typography, Input} from "antd";
 import Prism from "prismjs";
 import "./prism-vs.css"
 import { extractPathFromRoute, getFileExtension, getFileName, getNextDirUp } from "../../../utils/routeUtil";
@@ -22,6 +22,7 @@ import "prismjs/components/prism-rust";
 import "prismjs/components/prism-go";
 import "prismjs/components/prism-typescript";
 import "prismjs/components/prism-css";
+import { getComments, postComment } from "../../../utils/commentApi";
 
 interface Props extends RouteComponentProps {
 }
@@ -48,10 +49,21 @@ const RepoFile = (props: Props) => {
     return <div>Loading...</div>
   }
 
+  getComments(repo, filePath).then(commentsMap => {
+    console.log(commentsMap[0]);
+    console.log(commentsMap);
+  });
+
+  let number = 0;
+
+  const onClickComment = (comment: string) => {
+    postComment(repo, filePath, ++number, undefined, comment);
+  };
+
   const dirHref = routes.getRepoDir(user, repo, getNextDirUp(filePath));
   const language = getFileExtension(getFileName(filePath));
 
-  return <div>
+  return <>
     <Button href={dirHref}>Back To Folder</Button>
     <Typography>{filePath}</Typography>
     <pre className="line-numbers">
@@ -59,7 +71,21 @@ const RepoFile = (props: Props) => {
         {fileContents}
       </code>
     </pre>
-  </div>
+    <Comment onClick={onClickComment}/>
+  </>
+};
+
+interface CommentProps {
+  onClick: (text: string) => void
+}
+
+const Comment = (props: CommentProps) => {
+  let textInput: Input;
+
+  return <>
+    <Button onClick={() => props.onClick(textInput.input.value)}>Comment</Button>
+    <Input ref={(ref) => textInput = ref as Input} />
+  </>
 };
 
 export default RepoFile;

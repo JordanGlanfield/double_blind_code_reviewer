@@ -17,13 +17,15 @@ def test_can_login(test_app, test_client, test_auth):
 
     assert b"LOGAN" in response.data
 
+
 def test_can_add_and_read_comment(test_client, test_auth):
     test_auth.login("title")
     file = "log.txt"
     comment = "I don't like this"
-    line_number = 3
 
-    test_client.post(f"/api/v1.0/repos/comment/gson/{file}/{line_number}/-1/{comment}")
+    test_client.post(f"/api/v1.0/repos/comment/gson/{file}",
+                     data=json.dumps({"comment": comment}),
+                     content_type="application/json")
 
     response = test_client.get(f"/api/v1.0/repos/view/comments/gson/log.txt")
 
