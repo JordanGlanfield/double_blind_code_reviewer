@@ -1,11 +1,17 @@
 from collections import defaultdict
 from typing import Dict, List
 
-from flask import Blueprint, jsonify, abort, send_from_directory, session
+from flask import Blueprint, jsonify, abort, send_from_directory, session, make_response, request
 
 from ..dbcr.comments import Comment, CommentDto, comment_to_dto
 
 repos_bp = Blueprint("repos", __name__, url_prefix="/api/v1.0/repos", static_folder="static")
+
+
+@repos_bp.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not found'}), 404)
+
 
 repos = {
     "gson": {
@@ -70,9 +76,20 @@ def flatten_directories(dir_contents):
 
     return flattened
 
+
 def check_repo(repo_id: str):
     if not repo_id in repos:
         abort(404)
+
+
+def check_json(required_fields: List[str]):
+    if not request.json:
+        abort(400)
+
+    for field in required_fields:
+        if not field in request.json:
+            abort(400)
+
 
 @repos_bp.route("/banter/<string:name>")
 def reply(name):
@@ -118,22 +135,31 @@ def get_comments(repo_id: str, path: str):
     key = get_comment_key(repo_id, path)
 
     if not key in comments:
-        return {}
+        return jsonify({})
 
     comment_dtos: Dict[int, List[CommentDto]] = {}
 
     for line_number in comments[key].keys():
         comment_dtos[line_number] = [comment_to_dto(comment) for comment in comments[key][line_number]]
 
-    return jsonify(comment_dtos)
+    response = jsonify(comment_dtos)
+    return response
 
 
-@repos_bp.route("/comment/<string:repo_id>/<path:file_path>/<int:line_number>/<string:parent_id>/<string:comment>", methods=["POST"])
-def post_comment(repo_id: str, comment: str, line_number: int, parent_id: str, file_path: str):
+@repos_bp.route("/comment/<string:repo_id>/<path:file_path>", methods=["POST"])
+def post_comment(repo_id: str, file_path):
     check_repo(repo_id)
+    check_json(["comment"])
 
-    add_comment(repo_id, Comment(comment_id, comment, line_number, file_path, get_active_user_id(), parent_id))
-    return no_content
+    comment = request.json["comment"]
+    line_number = request.json.get("line_number", 0)
+    parent_id = request.json.get("parent_id", -1)
+
+    comment = Comment(comment_id, comment, line_number, file_path, get_active_user_id(), parent_id)
+    add_comment(repo_id, comment)
+
+    return jsonify(comment_to_dto(comment))
+
 
 # TODO - lookup in DB rather than assume USERNAME = user_id
 def get_active_user_id():
