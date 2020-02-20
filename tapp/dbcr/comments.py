@@ -1,5 +1,5 @@
 class Comment:
-    __id: int
+    __id: str
     __contents: str
     __line_number: int
     __file_path: str
@@ -34,3 +34,29 @@ class Comment:
 
     def __str__(self):
         return self.__contents
+
+
+class CommentDto:
+    id: int
+    contents: str
+    line_number: int
+    file_path: str
+    author_pseudonym: str
+    parent_id: int
+
+    def __init__(self, id, contents, line_number, file_path, author_pseudonym, parent_id):
+        self.id = id
+        self.contents = contents
+        self.line_number = line_number
+        self.file_path = file_path
+        self.author_pseudonym = author_pseudonym
+        self.parent_id = parent_id
+
+
+def comment_to_dto(comment: Comment) -> CommentDto:
+    return CommentDto(comment.get_id(),
+                      comment.get_contents(),
+                      comment.get_line_number(),
+                      comment.get_file_path(),
+                      str(comment.get_commenter_id()), # TODO - pseudonymise
+                      comment.get_parent_id())
