@@ -1,7 +1,7 @@
 from urllib.parse import urlparse, urljoin
 
 import ldap
-from flask import request, g, Blueprint, jsonify
+from flask import request, g, Blueprint, jsonify, session
 from flask_jwt_extended import (
     create_access_token,
     get_jwt_identity,
@@ -47,6 +47,7 @@ def login():
         ).save()
     access_token = create_access_token(identity=username)
     response = jsonify(access_token=access_token)
+    session["USERNAME"] = username
     return response
 
 

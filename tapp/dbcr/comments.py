@@ -1,5 +1,5 @@
 class Comment:
-    __id: str
+    __id: int
     __contents: str
     __line_number: int
     __file_path: str

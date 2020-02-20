@@ -1,9 +1,9 @@
 from collections import defaultdict
 from typing import Dict, List
 
-from flask import Blueprint, jsonify, abort, send_from_directory
+from flask import Blueprint, jsonify, abort, send_from_directory, session
 
-from ..dbcr.comments import Comment
+from ..dbcr.comments import Comment, CommentDto, comment_to_dto
 
 repos_bp = Blueprint("repos", __name__, url_prefix="/api/v1.0/repos", static_folder="static")
 
@@ -30,18 +30,19 @@ repos = {
 
 comments: Dict[str, Dict[int, List[Comment]]] = defaultdict(lambda: defaultdict(lambda: []))
 comment_id = 0
+no_content = '', 204
 
-def get_comment_key(repo_id: int, comment: Comment) -> str:
-    return str(repo_id) + ":" + comment.get_file_path()
+def get_comment_key(repo_id: str, file_path: str) -> str:
+    return str(repo_id) + ":" + file_path
 
 
-def add_comment(repo_id: int, comment: Comment):
-    key = get_comment_key(repo_id, comment)
+def add_comment(repo_id: str, comment: Comment):
+    key = get_comment_key(repo_id, comment.get_file_path())
 
     global comments
     global comment_id
 
-    comments[key][comment.get_line_number()] = comment
+    comments[key][comment.get_line_number()].append(comment)
     comment_id += 1
 
 
@@ -107,17 +108,33 @@ def get_file(repo_id: str, path: str):
 
     return send_from_directory(full_file_path, file_name)
 
+
 # Comments - TODO extract elsewhere
 
 @repos_bp.route("/view/comments/<string:repo_id>/<path:path>", methods=["GET"])
 def get_comments(repo_id: str, path: str):
     check_repo(repo_id)
-    pass
+
+    key = get_comment_key(repo_id, path)
+
+    if not key in comments:
+        return {}
+
+    comment_dtos: Dict[int, List[CommentDto]] = {}
+
+    for line_number in comments[key].keys():
+        comment_dtos[line_number] = [comment_to_dto(comment) for comment in comments[key][line_number]]
+
+    return jsonify(comment_dtos)
 
 
-@repos_bp.route("/comment/<string:repo_id>/<string:user_id>/<string:comment>/<int:line_number>/<string:parent_id>/<path:file_path>", methods=["POST"])
-def post_comment(repo_id: str, user_id: str, comment: str, line_number: int, parent_id: str, file_path: str):
+@repos_bp.route("/comment/<string:repo_id>/<path:file_path>/<int:line_number>/<string:parent_id>/<string:comment>", methods=["POST"])
+def post_comment(repo_id: str, comment: str, line_number: int, parent_id: str, file_path: str):
     check_repo(repo_id)
 
-    add_comment(repo_id, Comment())
-    pass
+    add_comment(repo_id, Comment(comment_id, comment, line_number, file_path, get_active_user_id(), parent_id))
+    return no_content
+
+# TODO - lookup in DB rather than assume USERNAME = user_id
+def get_active_user_id():
+    return session["USERNAME"]
