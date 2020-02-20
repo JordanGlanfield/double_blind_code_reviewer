@@ -9,6 +9,7 @@ from .mocks import fake_ldap_handler
 from .db.models import *
 from .db import database
 from .messages import messages
+from .utils.json import ObjectJsonEncoder
 
 configuration_switch = {
     "default": "tapp.config.DevConfig",  # Development configuration (fake LDAP)
@@ -60,5 +61,7 @@ def create_app(test_configuration=None):
     app.register_blueprint(auth.bp)
     app.register_blueprint(index.bp)
     app.register_blueprint(repos.repos_bp)
+
+    app.json_encoder = ObjectJsonEncoder
 
     return app

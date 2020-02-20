@@ -1,3 +1,4 @@
+import json
 import os
 import tempfile
 from unittest.mock import patch
@@ -48,16 +49,17 @@ class AuthenticationActions:
     def __init__(self, client):
         self._client = client
 
-    def login(self, title, username="test_usr", password="test_passwd"):
+    def login(self, title, username="logan", password="logan"):
         with patch(
             "tapp.auth.auth.login",
             return_value={"extensionAttribute6": title},
             autospec=True,
         ):
             return self._client.post(
-                "/login",
-                data=dict(username=username, password=password),
+                "/api/login",
+                data=json.dumps(dict(username=username, password=password)),
                 follow_redirects=True,
+                content_type="application/json"
             )
 
     def logout(self):
