@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import {Button, Typography, Input} from "antd";
+import {Comment as AntdComment, Button, Typography, Input} from "antd";
 import Prism from "prismjs";
 import "./prism-vs.css"
 import { extractPathFromRoute, getFileExtension, getFileName, getNextDirUp } from "../../../utils/routeUtil";
@@ -23,13 +23,14 @@ import "prismjs/components/prism-go";
 import "prismjs/components/prism-typescript";
 import "prismjs/components/prism-css";
 import { getComments, postComment } from "../../../utils/commentApi";
+import Comment, { LineNumbersToComments } from "../../../types/Comment";
 
 interface Props extends RouteComponentProps {
 }
 
-// TODO - add mapping from file extension to language
 const RepoFile = (props: Props) => {
   const [fileContents, setFileContents] = useState(undefined as string | undefined);
+  const [commentsByLine, setCommentsByLine] = useState(undefined as undefined | LineNumbersToComments);
   const {user, repo} = useParams();
   const filePath = extractPathFromRoute(props);
 
@@ -49,37 +50,33 @@ const RepoFile = (props: Props) => {
     return <div>Loading...</div>
   }
 
-  getComments(repo, filePath).then(commentsMap => {
-    console.log(commentsMap[0]);
-    console.log(commentsMap);
-  });
+  if (!commentsByLine) {
+    getComments(repo, filePath).then(setCommentsByLine);
+  }
 
   let number = 0;
 
+  // TODO - smarter component update
   const onClickComment = (comment: string) => {
-    postComment(repo, filePath, ++number, undefined, comment);
+    postComment(repo, filePath, ++number, undefined, comment)
+      .then(() => getComments(repo, filePath).then(setCommentsByLine));
   };
 
   const dirHref = routes.getRepoDir(user, repo, getNextDirUp(filePath));
-  const language = getFileExtension(getFileName(filePath));
 
   return <>
     <Button href={dirHref}>Back To Folder</Button>
     <Typography>{filePath}</Typography>
-    <pre className="line-numbers">
-      <code className={"language-" + language}>
-        {fileContents}
-      </code>
-    </pre>
-    <Comment onClick={onClickComment}/>
+    <CodeSection filePath={filePath} lines={fileContents}/>
+    <AddComment onClick={onClickComment}/>
   </>
 };
 
-interface CommentProps {
+interface AddCommentProps {
   onClick: (text: string) => void
 }
 
-const Comment = (props: CommentProps) => {
+const AddComment = (props: AddCommentProps) => {
   let textInput: Input;
 
   return <>
@@ -87,5 +84,28 @@ const Comment = (props: CommentProps) => {
     <Input ref={(ref) => textInput = ref as Input} />
   </>
 };
+
+interface CommentProps {
+  comment: Comment
+}
+
+const FileComment = (props: CommentProps) => {
+  return <AntdComment content={props.comment} author={props.comment.author_pseudonym}/>
+};
+
+interface CodeSectionProps {
+  filePath: string;
+  lines: string;
+}
+
+const CodeSection = (props: CodeSectionProps) => {
+  const language = getFileExtension(getFileName(props.filePath));
+
+  return <pre className="line-numbers">
+      <code className={"language-" + language}>
+        {props.lines}
+      </code>
+    </pre>
+}
 
 export default RepoFile;
