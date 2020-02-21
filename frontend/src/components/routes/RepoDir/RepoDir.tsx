@@ -57,6 +57,10 @@ const RepoDir = (props: Props) => {
     </div>;
 };
 
+function stringCompare(s1: string, s2: string): number {
+    return s1.toLowerCase() < s2.toLowerCase() ? -1 : 1;
+}
+
 function getDirectoryEntries(user: string, repo: string, currentDir: string,
                              callback: (dirEntries: DirEntry[]) => void) {
     const atTopLevel = currentDir === "";
@@ -76,13 +80,13 @@ function getDirectoryEntries(user: string, repo: string, currentDir: string,
             path = currentDir + "/";
         }
 
-        for (let dir of directory.directories) {
+        for (let dir of directory.directories.sort(stringCompare)) {
             dirEntries.push({name: dir,
                 isDir: true,
                 href: routes.getRepoDir(user, repo, path + dir)})
         }
 
-        for (let file of directory.files) {
+        for (let file of directory.files.sort(stringCompare)) {
             dirEntries.push({name: file,
                 isDir: false,
                 href: routes.getRepoFile(user, repo, path + file)})

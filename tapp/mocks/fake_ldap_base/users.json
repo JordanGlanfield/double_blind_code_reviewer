@@ -8,5 +8,25 @@
       ]
     },
     "extensionAttribute6": "Staff"
+  },
+  "jordan": {
+    "givenName": "Jordan",
+    "sn": "Glanfield",
+    "distinguishedName": {
+      "OU": [
+        "doc"
+      ]
+    },
+    "extensionAttribute6": "Staff"
+  },
+  "robert": {
+    "givenName": "Robert",
+    "sn": "Chatley",
+    "distinguishedName": {
+      "OU": [
+        "doc"
+      ]
+    },
+    "extensionAttribute6": "Staff"
   }
 }

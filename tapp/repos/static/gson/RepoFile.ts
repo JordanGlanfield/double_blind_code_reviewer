@@ -82,9 +82,9 @@ function getFileComponents(filePath: string, fileContents: string, commentsMap: 
 
   function createCodeSection(from: number, to: number): JSX.Element {
     return <CodeSection key={key++}
-                 filePath={filePath}
-                 lineNumber={from}
-                 lines={lines.slice(from, to).join("\n")} />
+                        filePath={filePath}
+                        lineNumber={from}
+                        lines={lines.slice(from, to).join("\n")} />
   }
 
   commentsMap.forEach((comments, lineNumber) => {
