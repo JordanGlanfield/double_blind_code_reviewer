@@ -36,10 +36,10 @@ export default props => {
       <CssBaseline />
       <div className={classes.paper}>
         <Typography component="h1" variant="h3" color="primary">
-          TApp
+          DBCR
         </Typography>
         <Typography component="h1" variant="h6" color="textSecondary">
-          The Template Application
+          A tool for double blind code review
         </Typography>
         <form className={classes.form} onSubmit={login}>
           <TextField

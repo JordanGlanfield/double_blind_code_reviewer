@@ -16,7 +16,7 @@ def not_found(error):
 repos = {
     "gson": {
         "name": "gson",
-        "files": ["log.txt", "test.txt", "oh_no.txt"],
+        "files": ["log.txt", "test.txt", "oh_no.txt", "RepoFile.ts"],
         "directories": {
             "build": {
                 "files": ["build_process.yaml", "build_banter.docx", "build_results.txt"],
@@ -36,7 +36,18 @@ repos = {
 
 comments: Dict[str, Dict[int, List[Comment]]] = defaultdict(lambda: defaultdict(lambda: []))
 comment_id = 0
+
+pseudonym_id = 0
+
+def generate_pseudonym():
+    global pseudonym_id
+    pseudonym_id += 1
+    return "anonymous" + str(pseudonym_id)
+
+pseudonyms: Dict[str, str] = defaultdict(generate_pseudonym)
+
 no_content = '', 204
+
 
 def get_comment_key(repo_id: str, file_path: str) -> str:
     return str(repo_id) + ":" + file_path
@@ -159,7 +170,7 @@ def post_comment(repo_id: str, file_path):
     line_number = request.json.get("line_number", 0)
     parent_id = request.json.get("parent_id", -1)
 
-    comment = Comment(comment_id, comment, line_number, file_path, get_active_user_id(), parent_id)
+    comment = Comment(comment_id, comment, line_number, file_path, pseudonyms[get_active_user_id()], parent_id)
     add_comment(repo_id, comment)
 
     return jsonify(comment_to_dto(comment))
