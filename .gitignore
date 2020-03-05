@@ -21,3 +21,5 @@ out/
 
 # pycache
 **/__pycache__/
+
+tapp/repos/static/gson/
