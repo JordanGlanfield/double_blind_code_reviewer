@@ -2,7 +2,9 @@ from collections import defaultdict
 from typing import Dict, List
 
 from flask import Blueprint, jsonify, abort, send_from_directory, session, make_response, request
+from git import Repo
 
+from .file_util import get_directory_contents
 from ..dbcr.comments import Comment, CommentDto, comment_to_dto
 
 repos_bp = Blueprint("repos", __name__, url_prefix="/api/v1.0/repos", static_folder="static")
@@ -102,28 +104,48 @@ def check_json(required_fields: List[str]):
             abort(400)
 
 
-@repos_bp.route("/banter/<string:name>")
-def reply(name):
-    return "The banter is with you" + name
+def init_new_repo(repo_name: str):
+    # TODO - not hardcoded path
+    repo = Repo.init("/home/tacitus/Desktop/university_work/anonymous_code_review/tapp/repos/static/" + repo_name,
+                     mkdir=True)
+
+    if not repo:
+        abort(400)
+
+
+@repos_bp.route("/create", methods=["POST"])
+def create_repo():
+    check_json(["repo_name"])
+
+    repo_name: str = request.json["repo_name"]
+
+    if repo_name == "" or "\\" in repo_name or "/" in repo_name:
+        abort(400)
+
+    init_new_repo(repo_name)
+
+    return '', 204
+
+
+@repos_bp.route("/view/all", methods=["GET"])
+def get_repos():
+    contents = get_directory_contents("")
+    print(contents)
+    return jsonify(contents["directories"])
+
 
 @repos_bp.route("/view/dir/<string:repo_id>/", defaults={"path": ""}, methods=["GET"])
 @repos_bp.route("/view/dir/<string:repo_id>/<path:path>", methods=["GET"])
 def get_repo(repo_id: str, path: str):
-    check_repo(repo_id)
+    if repo_id == "":
+        abort(400)
 
-    dir_contents = repos[repo_id]
+    contents = get_directory_contents(repo_id + "/" + path)
 
-    if not path == "":
-        dirs = split_path(path)
+    if not contents:
+        abort(400)
 
-        for dir in dirs:
-
-            if not dir in dir_contents["directories"]:
-                abort(404)
-
-            dir_contents = dir_contents["directories"][dir]
-
-    return jsonify(flatten_directories(dir_contents))
+    return jsonify(contents)
 
 
 @repos_bp.route("/view/file/<string:repo_id>/<path:path>", methods=["GET"])
@@ -141,8 +163,6 @@ def get_file(repo_id: str, path: str):
 
 @repos_bp.route("/view/comments/<string:repo_id>/<path:path>", methods=["GET"])
 def get_comments(repo_id: str, path: str):
-    check_repo(repo_id)
-
     key = get_comment_key(repo_id, path)
 
     if not key in comments:
@@ -159,7 +179,6 @@ def get_comments(repo_id: str, path: str):
 
 @repos_bp.route("/comment/<string:repo_id>/<path:file_path>", methods=["POST"])
 def post_comment(repo_id: str, file_path):
-    check_repo(repo_id)
     check_json(["comment"])
 
     comment = request.json["comment"]
