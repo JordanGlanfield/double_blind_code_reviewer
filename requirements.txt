@@ -24,6 +24,7 @@ MarkupSafe==1.1.1
 more-itertools==6.0.0
 mysql-connector-python==8.0.19
 pbr==5.4.1
+pkg-resources==0.0.0
 pluggy==0.9.0
 protobuf==3.6.1
 py==1.8.0

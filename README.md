@@ -67,6 +67,11 @@ To do so, run:
 (venv) $ flask run
 ```
 
+Using gunicorn from above backend directory:
+```
+gunicorn -b 127.0.0.1:5000 tapp.wsgi:app
+```
+
 ### Frontend
 
 To start the frontend development server:
@@ -129,6 +134,9 @@ To use pre-commit (RECOMMENDED):
 To test endpoints:
 - 'curl -i http://localhost:5000/tapp/api/v1.0/repos/view/dir/gson/' for example
 
+### Frontend Development
+
+If working with Gunicorn or flask server directly then set proxy to localhost:5000 in package.json. If using nginx web server set port to 80.
 
 #### Global References
 
