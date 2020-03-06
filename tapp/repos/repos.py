@@ -1,3 +1,5 @@
+import os
+import stat
 from collections import defaultdict
 from typing import Dict, List
 
@@ -106,11 +108,13 @@ def check_json(required_fields: List[str]):
 
 def init_new_repo(repo_name: str):
     # TODO - not hardcoded path
-    repo = Repo.init("/home/tacitus/Desktop/university_work/anonymous_code_review/tapp/repos/static/" + repo_name,
-                     mkdir=True)
+    repo_path = "/home/tacitus/Desktop/university_work/anonymous_code_review/tapp/repos/static/" + repo_name
+    repo = Repo.init(repo_path, mkdir=True)
 
     if not repo:
         abort(400)
+
+    repo.config_writer().set_value("receive", "denyCurrentBranch", "updateInstead")
 
 
 @repos_bp.route("/create", methods=["POST"])
