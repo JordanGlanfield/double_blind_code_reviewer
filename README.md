@@ -72,6 +72,17 @@ Using gunicorn from above backend directory:
 gunicorn -b 127.0.0.1:5000 tapp.wsgi:app
 ```
 
+Add repository:
+```
+git remote add origin http://dbcr.com/repo/.git
+
+cd to repo
+sudo chown -R tacitus:www-data repo_name
+sudo chmod g+w repo_name 
+
+
+```
+
 ### Frontend
 
 To start the frontend development server:
