@@ -18,7 +18,7 @@ export function getDir(repoId: string, path: string) {
 }
 
 export async function getFile(repoId: string, path: string) {
-  return extractData(await fetch("/static/" + repoId + "/" + path));
+  return get("/file/" + repoId + "/" + path);
 }
 
 export async function createRepo(repo_name: string) {

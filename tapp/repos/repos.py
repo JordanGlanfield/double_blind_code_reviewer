@@ -17,24 +17,6 @@ def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
 
-repos = {
-    "gson": {
-        "name": "gson",
-        "files": ["log.txt", "test.txt", "oh_no.txt", "RepoFile.ts"],
-        "directories": {
-            "build": {
-                "files": ["build_process.yaml", "build_banter.docx", "build_results.txt"],
-                "directories": {
-                    "issues": {
-                        "files": ["broken_pipeline.txt", "errors.txt"],
-                        "directories": []
-                    }
-                }
-            }
-        }
-    }
-}
-
 # Track repo id and file path. Store mapping from line numbers to chronologically ordered
 # comments.
 
@@ -90,11 +72,6 @@ def flatten_directories(dir_contents):
     flattened["files"] = dir_contents["files"][:]
 
     return flattened
-
-
-def check_repo(repo_id: str):
-    if not repo_id in repos:
-        abort(404)
 
 
 def check_json(required_fields: List[str]):
@@ -154,8 +131,6 @@ def get_repo(repo_id: str, path: str):
 
 @repos_bp.route("/view/file/<string:repo_id>/<path:path>", methods=["GET"])
 def get_file(repo_id: str, path: str):
-    check_repo(repo_id)
-
     file_path, file_name = splitFilePath(path)
 
     full_file_path = repos_bp.static_folder + "/" + repo_id + "/" + file_path
