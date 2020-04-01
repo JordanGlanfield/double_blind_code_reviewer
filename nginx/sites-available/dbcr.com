@@ -26,7 +26,7 @@ server {
 
     server_name dbcr.com www.dbcr.com;
 
-    root /home/tacitus/Desktop/university_work/anonymous_code_review/tapp/repos;
+    root /dbcr/backend/repos;
 
     # Settings to serve static files
     # location /static  {
@@ -37,11 +37,11 @@ server {
     location ~ (/*/\.git/) {
       client_max_body_size 0; # Git pushes can be massive, just to make sure nginx doesn't suddenly cut the connection add this.
       auth_basic "Git Login"; # Whatever text will do.
-      auth_basic_user_file "/var/www/dbcrgit.com/git/htpasswd";
+      auth_basic_user_file "/dbcr/git/htpasswd";
       include /etc/nginx/fastcgi_params; # Include the default fastcgi configs
       fastcgi_param SCRIPT_FILENAME /usr/lib/git-core/git-http-backend; # Tells fastcgi to pass the request to the git http backend executable
       fastcgi_param GIT_HTTP_EXPORT_ALL "";
-      fastcgi_param GIT_PROJECT_ROOT /home/tacitus/Desktop/university_work/anonymous_code_review/tapp/repos/static; # Location of all git repositories.
+      fastcgi_param GIT_PROJECT_ROOT /dbcr/backend/repos/static; # Location of all git repositories.
       fastcgi_param REMOTE_USER $remote_user;
       fastcgi_param PATH_INFO $uri; # Takes the capture group from our location directive and gives git that.
       fastcgi_pass  unix:/var/run/fcgiwrap.socket; # Pass the request to fastcgi
