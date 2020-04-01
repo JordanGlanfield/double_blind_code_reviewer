@@ -59,8 +59,9 @@ def create_app(test_configuration=None):
     from .repos import repos
 
     app.register_blueprint(auth.bp)
-    app.register_blueprint(index.bp)
     app.register_blueprint(repos.repos_bp)
+    # index must be registered last as it has a catch all route to direct the user to the react app
+    app.register_blueprint(index.bp)
 
     app.json_encoder = ObjectJsonEncoder
 
