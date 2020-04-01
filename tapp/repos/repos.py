@@ -126,6 +126,11 @@ def get_repo(repo_id: str, path: str):
     if not contents:
         abort(400)
 
+    git_folder = ".git"
+
+    if path == "" and git_folder in contents["directories"]:
+        contents["directories"].remove(git_folder)
+
     return jsonify(contents)
 
 
