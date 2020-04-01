@@ -23,3 +23,5 @@ out/
 **/__pycache__/
 
 tapp/repos/static/gson/
+
+nginx/htpasswd
