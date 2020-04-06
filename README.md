@@ -205,3 +205,9 @@ To serve the so-obtained `favicon.png` as thumbnail for your app, simply do
 ```
 mv /path/to/favicon.png /path/to/tapp/frontend/public/static/favicon.ico
 ```
+
+## Docker
+
+Run `docker build --tag dbcr:1.0 .` from top level directory of project to build image.
+
+`docker run --publish 80:80 --detach --name dbcr dbcr:1.0` to start
