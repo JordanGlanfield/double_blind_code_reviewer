@@ -11,7 +11,7 @@ gzip_types        text/plain text/xml text/css
 # Configuration containing list of application servers
 upstream app_servers {
 
-    server 127.0.0.1:5000;
+    server 127.0.0.1:8000;
     # server 127.0.0.1:8081;
     # ..
     # .
