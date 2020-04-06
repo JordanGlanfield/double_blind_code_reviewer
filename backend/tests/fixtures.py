@@ -5,8 +5,8 @@ from unittest.mock import patch
 
 import pytest
 
-from tapp import create_app
-from tapp.db.database import DB
+from backend import create_app
+from backend.db.database import DB
 
 
 @pytest.fixture
@@ -51,7 +51,7 @@ class AuthenticationActions:
 
     def login(self, title, username="logan", password="logan"):
         with patch(
-            "tapp.auth.auth.login",
+            "backend.auth.auth.login",
             return_value={"extensionAttribute6": title},
             autospec=True,
         ):

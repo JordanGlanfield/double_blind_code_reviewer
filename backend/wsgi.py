@@ -1,4 +1,4 @@
-from tapp import create_app
+from backend import create_app
 
 ############################################
 # GUNICORN WEBSERVER ENTRY POINT  |  |  |  #

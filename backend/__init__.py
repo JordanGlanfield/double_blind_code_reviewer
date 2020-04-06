@@ -12,9 +12,9 @@ from .messages import messages
 from .utils.json import ObjectJsonEncoder
 
 configuration_switch = {
-    "default": "tapp.config.DevConfig",  # Development configuration (fake LDAP)
-    "staging": "tapp.config.StagingConfig",  # Staging configuration (should be as close as possible to prod)
-    "production": "tapp.config.ProductionConfig",  # Production configuration
+    "default": "backend.config.DevConfig",  # Development configuration (fake LDAP)
+    "staging": "backend.config.StagingConfig",  # Staging configuration (should be as close as possible to prod)
+    "production": "backend.config.ProductionConfig",  # Production configuration
 }
 
 ENV = os.environ.get("ENV", "default")

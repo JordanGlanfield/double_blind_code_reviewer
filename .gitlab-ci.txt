@@ -14,7 +14,7 @@ linter:
   stage: build
   script:
     - echo "[INFO] Running pylint style checks..."
-    - python scripts/linter.py tapp --disable=all --enable=design,invalid-name,cyclic-import,imports
+    - python scripts/linter.py backend --disable=all --enable=design,invalid-name,cyclic-import,imports
     - echo "[INFO] done."
   tags:
     - build
@@ -23,7 +23,7 @@ unit test:
   stage: build
   script:
     - echo "[INFO] Running pytest with coverage..."
-    - pytest --cov=tapp tests
+    - pytest --cov=backend tests
     - echo "[INFO] done."
   tags:
   - build

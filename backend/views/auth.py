@@ -10,7 +10,7 @@ from flask_jwt_extended import (
 )
 from flask_login import current_user
 
-from tapp import LOGIN_MANAGER
+from backend import LOGIN_MANAGER
 from ..auth import auth
 from ..auth import ldap_constants
 from ..db.models import User
