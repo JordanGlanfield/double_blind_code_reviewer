@@ -36,11 +36,11 @@ RUN apt-get -y install libsasl2-dev python-dev libldap2-dev libssl-dev
 RUN python3 -m venv venv && source venv/bin/activate
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-RUN nginx
+RUN service nginx start
 
 # TODO - multi stage build. Look at what is actually used in final run and what is simply
 # an artifact of the build process.
 
-CMD ["gunicorn", "backend.wsgi:app", "--workers 8", "--bind 0.0.0.0:8000", "--timeout 500", "--enable-stdio-inheritance"]
-
 EXPOSE 80
+
+CMD ["gunicorn", "backend.wsgi:app", "--workers 8", "--bind 0.0.0.0:8000", "--timeout 500", "--enable-stdio-inheritance"]

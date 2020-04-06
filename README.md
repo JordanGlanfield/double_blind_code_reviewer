@@ -211,3 +211,5 @@ mv /path/to/favicon.png /path/to/tapp/frontend/public/static/favicon.ico
 Run `docker build --tag dbcr:1.0 .` from top level directory of project to build image.
 
 `docker run --publish 80:80 --detach --name dbcr dbcr:1.0` to start
+
+Get shell in docker container: `docker exec -i -t dbcr /bin/bash`
