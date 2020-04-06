@@ -1,6 +1,6 @@
 import os
 
-BASE_PATH = "/home/tacitus/Desktop/university_work/anonymous_code_review/tapp/repos/static/"
+BASE_PATH = "/backend/repos/static/"
 
 
 def get_directory_contents(path: str):
@@ -14,7 +14,7 @@ def get_directory_contents(path: str):
     try:
         content_names = os.listdir(path)
     except OSError:
-        return
+        return contents
 
     for filename in content_names:
         if os.path.isdir(os.path.join(path, filename)):

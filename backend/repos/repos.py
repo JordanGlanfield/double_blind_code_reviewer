@@ -85,7 +85,7 @@ def check_json(required_fields: List[str]):
 
 def init_new_repo(repo_name: str):
     # TODO - not hardcoded path
-    repo_path = "/home/tacitus/Desktop/university_work/anonymous_code_review/tapp/repos/static/" + repo_name
+    repo_path = "/home/tacitus/Desktop/university_work/anonymous_code_review/backend/repos/static/" + repo_name
     repo = Repo.init(repo_path, mkdir=True)
 
     if not repo:

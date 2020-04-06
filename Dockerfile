@@ -30,7 +30,7 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
     yarn --cwd frontend build
 
 # Set up backend
-COPY tapp/ backend/
+COPY backend backend/
 COPY requirements.txt .
 RUN apt-get -y install libsasl2-dev python-dev libldap2-dev libssl-dev
 RUN python3 -m venv venv && source venv/bin/activate
