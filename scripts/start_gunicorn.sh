@@ -1,7 +1,5 @@
 #! /bin/bash
 
-echo "Banteronium"
-
 gunicorn tapp.wsgi:app \
            --workers 8 \
            --bind 0.0.0.0:8000 \
