@@ -1,4 +1,6 @@
-FROM ubuntu
+FROM python:3.7.7-buster
+
+SHELL ["/bin/bash", "-c"]
 
 WORKDIR /dbcr
 
@@ -6,12 +8,11 @@ WORKDIR /dbcr
 # TODO - investigate permissions of generated files
 
 # Set up nginx
-RUN apt-get update && apt-get install nginx
+RUN apt-get update && apt-get -y install nginx
 
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 COPY nginx/sites-available/ /etc/nginx/sites-available/
-RUN ln -s /etc/nginx/sites-available/dbcr.com /etc/nginx/sites-enabled/ && \
-    ln -s /etc/nginx/sites-available/dbcrgit.com /etc/nginx/sites-enabled/
+RUN ln -s /etc/nginx/sites-available/dbcr.com /etc/nginx/sites-enabled/
 
 # Set up git server
 
@@ -21,18 +22,27 @@ RUN apt-get install git fcgiwrap apache2-utils -y && \
 
 # Build frontend
 COPY frontend/ frontend/
-RUN yarn --cwd frontend build
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
+    apt-get update && \
+    apt-get -y install yarn && \
+    yarn --cwd frontend install && \
+    yarn --cwd frontend build
 
 # Set up backend
 COPY tapp/ backend/
-COPY scripts/ scripts/
+COPY requirements.txt .
+RUN apt-get -y install libsasl2-dev python-dev libldap2-dev libssl-dev
 RUN python3 -m venv venv && source venv/bin/activate
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-RUN systemctl restart nginx
+RUN nginx
 
-# TODO - multi stage build
+# TODO - multi stage build. Look at what is actually used in final run and what is simply
+# an artifact of the build process.
 
-CMD ["source", "scripts/restart.sh"]
+COPY scripts/ scripts/
+
+CMD ["./scripts/start_gunicorn.sh"]
 
 EXPOSE 80
