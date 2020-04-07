@@ -1,5 +1,6 @@
 import os
-import stat
+import pwd
+import grp
 from collections import defaultdict
 from typing import Dict, List
 
@@ -85,13 +86,19 @@ def check_json(required_fields: List[str]):
 
 def init_new_repo(repo_name: str):
     # TODO - not hardcoded path
-    repo_path = "/home/tacitus/Desktop/university_work/anonymous_code_review/backend/repos/static/" + repo_name
+    repo_path = "./backend/repos/static/" + repo_name
     repo = Repo.init(repo_path, mkdir=True)
 
     if not repo:
         abort(400)
 
     repo.config_writer().set_value("receive", "denyCurrentBranch", "updateInstead")
+    try:
+        uid = pwd.getpwnam("www-data").pw_uid
+        gid = grp.getgrnam("www-data").gr_gid
+        os.chown(repo_path, uid, gid)
+    except:
+        print("Failed to change " + repo_path + " ownership to www-data")
 
 
 @repos_bp.route("/create", methods=["POST"])
