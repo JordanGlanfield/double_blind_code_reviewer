@@ -22,6 +22,6 @@ out/
 # pycache
 **/__pycache__/
 
-backend/repos/static/gson/
+backend/repos/static/
 
 nginx/htpasswd

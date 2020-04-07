@@ -1,6 +1,6 @@
 import os
 
-BASE_PATH = "/backend/repos/static/"
+BASE_PATH = "./backend/repos/static/"
 
 
 def get_directory_contents(path: str):
