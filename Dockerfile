@@ -12,7 +12,8 @@ RUN apt-get update && apt-get -y install nginx
 
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 COPY nginx/sites-available/ /etc/nginx/sites-available/
-RUN ln -s /etc/nginx/sites-available/dbcr.com /etc/nginx/sites-enabled/
+RUN ln -s /etc/nginx/sites-available/dbcr.com /etc/nginx/sites-enabled/ && \
+    rm /etc/nginx/sites-enabled/default
 
 # Set up git server
 
@@ -36,11 +37,9 @@ RUN apt-get -y install libsasl2-dev python-dev libldap2-dev libssl-dev
 RUN python3 -m venv venv && source venv/bin/activate
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-RUN service nginx start
-
 # TODO - multi stage build. Look at what is actually used in final run and what is simply
 # an artifact of the build process.
 
 EXPOSE 80
 
-CMD ["gunicorn", "backend.wsgi:app", "--workers 8", "--bind 0.0.0.0:8000", "--timeout 500", "--enable-stdio-inheritance"]
+CMD ["sh", "-c", "service nginx start ; gunicorn backend.wsgi:app --workers 8 --bind 0.0.0.0:8000 --timeout 500 --enable-stdio-inheritance"]
