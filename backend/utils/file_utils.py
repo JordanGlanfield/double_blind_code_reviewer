@@ -1,4 +1,7 @@
+import grp
 import json
+import os
+import pwd
 import random
 import string
 
@@ -19,3 +22,13 @@ def read_json_file(file_path):
     with open(file_path, "r") as json_data:
         data = json.load(json_data)
         return data
+
+
+def recursive_chown(path, username, groupname):
+    uid = pwd.getpwnam(username).pw_uid
+    gid = grp.getgrnam(groupname).gr_gid
+
+    for dir_path, dir_names, file_names in os.walk(path):
+        os.chown(dir_path, uid, gid)
+        for filename in file_names:
+            os.chown(os.path.join(dir_path, filename), uid, gid)
