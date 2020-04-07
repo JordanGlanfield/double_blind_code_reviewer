@@ -9,6 +9,7 @@ from git import Repo
 
 from .file_util import get_directory_contents
 from ..dbcr.comments import Comment, CommentDto, comment_to_dto
+from ..utils.file_utils import recursive_chown
 
 repos_bp = Blueprint("repos", __name__, url_prefix="/api/v1.0/repos", static_folder="static")
 
@@ -93,10 +94,9 @@ def init_new_repo(repo_name: str):
         abort(400)
 
     repo.config_writer().set_value("receive", "denyCurrentBranch", "updateInstead")
+
     try:
-        uid = pwd.getpwnam("www-data").pw_uid
-        gid = grp.getgrnam("www-data").gr_gid
-        os.chown(repo_path, uid, gid)
+        recursive_chown(repo_path, "www-data", "www-data")
     except:
         print("Failed to change " + repo_path + " ownership to www-data")
 
