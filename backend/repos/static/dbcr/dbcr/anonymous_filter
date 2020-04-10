@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+
+import argparse
+import os
+import re
+import git_filter_repo as gfr
+
+# Set up args for the path to the repo to be anonymised and the list of names that are blacklisted.
+
+parser = argparse.ArgumentParser(description="Anonymise a git repository's commits, emails and messages (based on a "
+                                             "blacklist)")
+parser.add_argument("path", metavar="path", nargs=1)
+parser.add_argument("blacklist", metavar="blacklist", nargs=argparse.REMAINDER)
+args = parser.parse_args()
+
+# Convert blacklist strings into byte strings.
+args.blacklist = [name.encode("utf-8") for name in args.blacklist]
+
+anonymous_name = b"anonymous"
+
+
+def message_callback(message):
+    for name in args.blacklist:
+        regex = re.compile(name, re.IGNORECASE)
+        message = regex.sub(anonymous_name, message)
+    return message
+
+
+def name_callback(name):
+    return anonymous_name
+
+
+def email_callback(email):
+    return anonymous_name
+
+os.chdir(args.path[0])
+
+options = gfr.FilteringOptions.default_options()
+options.force = True
+
+filter = gfr.RepoFilter(options,
+                        message_callback=message_callback,
+                        name_callback=name_callback,
+                        email_callback=email_callback)
+
+filter.run()
