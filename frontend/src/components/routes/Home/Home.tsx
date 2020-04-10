@@ -1,11 +1,8 @@
 import * as React from "react"
-import useStyles from "./style"
 import ViewRepos from "../ViewRepos/ViewRepos";
 import { Typography } from "antd";
 import NewRepo from "../ViewRepos/NewRepo";
 import { useParams } from "react-router-dom";
-// import coding from "../../../assets/coding.gif"
-// import Grid from "@material-ui/core/Grid/index"
 
 const { Title } = Typography;
 
