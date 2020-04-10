@@ -1,0 +1,23 @@
+[
+  {
+    "repoName": "gson",
+    "branch": "optimisations",
+    "approvals": 0,
+    "rejections": 0,
+    "newComments": 11
+  },
+  {
+    "repoName": "jackson",
+    "branch": "class_serialisation",
+    "approvals": 1,
+    "rejections": 0,
+    "newComments": 5
+  },
+  {
+    "repoName": "dbcr",
+    "branch": "persistence",
+    "approvals": 0,
+    "rejections": 2,
+    "newComments": 0
+  }
+]
