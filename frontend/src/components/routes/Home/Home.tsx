@@ -3,6 +3,7 @@ import ViewRepos from "../ViewRepos/ViewRepos";
 import { Typography } from "antd";
 import NewRepo from "../ViewRepos/NewRepo";
 import { useParams } from "react-router-dom";
+import Submissions from "../../review/Submissions";
 
 const { Title } = Typography;
 
@@ -21,6 +22,7 @@ const Home = () => {
       <ViewRepos/>
 
       <Title underline level={2}>Your submissions:</Title>
+      <Submissions/>
 
       <Title underline level={2}>Your reviews:</Title>
 
