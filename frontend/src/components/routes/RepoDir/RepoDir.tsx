@@ -16,7 +16,7 @@ interface DirEntry {
 }
 
 const RepoDir = (props: Props) => {
-    const [dirContents, setDirContents] = useState([] as DirEntry[]);
+    const [dirContents, setDirContents] = useState(undefined as DirEntry[] | undefined);
 
     let {user, repo} = useParams();
     let currentDir = extractPathFromRoute(props);
@@ -28,11 +28,12 @@ const RepoDir = (props: Props) => {
         }} />
     }
 
-    if (dirContents.length === 0) {
+    if (!dirContents) {
         try {
             getDirectoryEntries(user, repo, currentDir, setDirContents);
         } catch (err) {
             console.log(err);
+            setDirContents([]);
             return <div>
                 There was a problem.
             </div>
