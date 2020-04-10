@@ -18,9 +18,9 @@ const Home = () => {
       <Title underline level={1}>{user}</Title>
 
       <Title underline level={2}>Your repos:</Title>
-      <Title level={2}>Create Repository:</Title>
+      <Title level={3}>Create Repository:</Title>
       <NewRepo/>
-      <br/>
+      <Title level={3}>Existing Repositories:</Title>
       <ViewRepos/>
 
       <Title underline level={2}>Your reviews:</Title>

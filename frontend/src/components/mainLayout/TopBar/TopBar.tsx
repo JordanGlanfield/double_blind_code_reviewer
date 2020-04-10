@@ -2,7 +2,6 @@ import React from "react";
 import {useParams} from "react-router-dom";
 
 import { Affix, Button } from "antd";
-import styled from "styled-components";
 
 import routes from "../../../constants/routes";
 
