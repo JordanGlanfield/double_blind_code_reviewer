@@ -20,6 +20,8 @@ const Home = () => {
       <Title level={3}>Existing Repositories:</Title>
       <ViewRepos/>
 
+      <Title underline level={2}>Your submissions:</Title>
+
       <Title underline level={2}>Your reviews:</Title>
 
       <Title underline level={2}>Your reviewer pools</Title>
