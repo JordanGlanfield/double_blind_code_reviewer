@@ -10,26 +10,31 @@ export interface FetchableData {
 // Use to load data once from an API. Loading messages or error messages may be displayed based on the flags.
 export function useDataSource(api: () => Promise<any>): FetchableData {
   const [state, setState] = useState({data: undefined, isFetching: false, hasError: false});
-  const [refetch, setRefetch] = useState(false);
+  const [fetchId, setFetchId] = useState(0);
 
   useEffect(() => {
-    if (!state.isFetching) {
-      setState({data: undefined, isFetching: true, hasError: false});
+    const requestId = fetchId;
+    setState({data: undefined, isFetching: true, hasError: false});
 
-      api()
-        .then(data => setState({ data: data, isFetching: false, hasError: false }))
-        .catch(error => {
+    api()
+      .then(data => {
+        if (requestId === fetchId) {
+          setState({ data: data, isFetching: false, hasError: false })
+        }
+      })
+      .catch(error => {
+        if (requestId === fetchId) {
           console.log(error);
           setState({ data: undefined, isFetching: false, hasError: true })
-        });
-    }
-  }, [refetch]);
+        }
+      });
+  }, [fetchId]);
 
   return {
     data: state.data,
     isFetching: state.isFetching,
     hasError: state.hasError,
-    forceRefetch: () => setRefetch(!refetch)
+    forceRefetch: () => setFetchId(fetchId + 1)
   };
 }
 
