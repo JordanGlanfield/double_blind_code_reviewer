@@ -213,3 +213,6 @@ Run `docker build --tag dbcr:1.0 .` from top level directory of project to build
 `docker run --publish 80:80 --detach --name dbcr dbcr:1.0` to start
 
 Get shell in docker container: `docker exec -i -t dbcr /bin/bash`
+
+Note, "dangling" images may be produced by the build process. Use:
+`docker rmi $(docker images -f "dangling=true" -q)` to remove these

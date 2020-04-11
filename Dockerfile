@@ -4,15 +4,9 @@ SHELL ["/bin/bash", "-c"]
 
 WORKDIR /dbcr
 
-# TODO - disable nginx default page
-# TODO - investigate permissions of generated files
-
-# Set up nginx
-RUN apt-get update && apt-get -y install nginx
-
-# Set up git server
-
-RUN apt-get install git fcgiwrap apache2-utils -y && \
+# Set up nginx and git server
+RUN apt-get update && apt-get -y install nginx && \
+    apt-get install git fcgiwrap apache2-utils -y && \
     git config --global receive.denyCurrentBranch updateInstead
 
 # Build frontend
@@ -26,8 +20,8 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
 
 # Set up backend
 COPY requirements.txt .
-RUN apt-get -y install libsasl2-dev python-dev libldap2-dev libssl-dev
-RUN python3 -m venv venv && source venv/bin/activate
+RUN apt-get -y install libsasl2-dev python-dev libldap2-dev libssl-dev && \
+    python3 -m venv venv && source venv/bin/activate
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # TODO - multi stage build. Look at what is actually used in final run and what is simply
