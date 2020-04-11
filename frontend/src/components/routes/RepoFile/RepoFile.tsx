@@ -22,15 +22,15 @@ import "prismjs/components/prism-rust";
 import "prismjs/components/prism-go";
 import "prismjs/components/prism-typescript";
 import "prismjs/components/prism-css";
+import "prismjs/components/prism-python";
 import { getComments, postComment } from "../../../utils/commentApi";
 import Comment from "../../../types/Comment";
+import { useDataSource } from "../../../utils/hooks";
 
 interface Props extends RouteComponentProps {
 }
 
 const RepoFile = (props: Props) => {
-  const [fileContents, setFileContents] = useState(undefined as string | undefined);
-  const [commentsByLine, setCommentsByLine] = useState(undefined as undefined | Map<number, Comment[]>);
   const {user, repo} = useParams();
   const filePath = extractPathFromRoute(props);
 
@@ -38,26 +38,33 @@ const RepoFile = (props: Props) => {
     Prism.highlightAll();
   });
 
+  let repoId = repo ? repo : "";
+  let fileSource = useDataSource(() => getFile(repoId, filePath));
+  let commentsSource = useDataSource(() => getComments(repoId, filePath));
+
   if (!user || !repo) {
     return <div>Invalid parameters</div>;
   }
 
-  if (fileContents === undefined) {
-    getFile(repo, filePath).then(file => {
-      setFileContents(file);
-    });
-
-    return <div>Loading...</div>
+  if (fileSource.isFetching) {
+    return <Typography>Loading file...</Typography>
   }
 
-  if (!commentsByLine) {
-    getComments(repo, filePath).then(setCommentsByLine);
+  if (fileSource.hasError) {
+    return <Typography>Failed to load file.</Typography>
   }
 
-  // TODO - smarter component update
+  let commentInformation;
+
+  if (commentsSource.isFetching) {
+    commentInformation = <Typography>Loading comments...</Typography>
+  } else if (commentsSource.hasError) {
+    commentInformation = <Typography>Failed to load comments.</Typography>
+  }
+
   const onClickComment = (comment: string, lineNumber: undefined | number) => {
     postComment(repo, filePath, lineNumber, undefined, comment)
-      .then(() => getComments(repo, filePath).then(setCommentsByLine));
+      .then(commentsSource.forceRefetch);
   };
 
   const dirHref = routes.getRepoDir(user, repo, getNextDirUp(filePath));
@@ -65,8 +72,9 @@ const RepoFile = (props: Props) => {
   return <>
     <Button href={dirHref}>Back To Folder</Button>
     <Typography>{filePath}</Typography>
-    {getFileComponents(filePath, fileContents, commentsByLine)}
-    <AddComment onClick={onClickComment} maxLines={fileContents?.split("\n").length}/>
+    {commentInformation}
+    {getFileComponents(filePath, fileSource.data, commentsSource.data)}
+    <AddComment onClick={onClickComment} maxLines={fileSource.data?.split("\n").length}/>
   </>
 };
 
