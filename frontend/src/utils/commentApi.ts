@@ -11,7 +11,7 @@ export async function postComment(repo_id: string, file_path: string, line_numbe
 
   const response = await fetch(`/api/v1.0/repos/comment/${repo_id}/${file_path}`, requestOptions);
 
-  return <Comment>(await extractData(response))
+  return await extractData(response) as Comment;
 }
 
 export async function getComments(repo_id: string, file_path: string): Promise<Map<number, Comment[]>> {
