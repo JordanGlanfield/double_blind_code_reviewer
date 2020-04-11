@@ -32,6 +32,7 @@
     "start": "react-scripts start",
     "test": "jest",
     "build": "react-scripts build",
+    "postbuild": "rm -rf ../build && mv build ..",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

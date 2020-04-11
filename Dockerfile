@@ -1,12 +1,10 @@
-FROM ubuntu AS frontend
+FROM alpine AS frontend
+
+RUN apk add yarn
 
 COPY frontend/ frontend/
-RUN apt-get update && apt-get -y install curl gnupg2 && \
-    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
-    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
-    apt-get update && \
-    apt-get -y install yarn && \
-    cd frontend/ && \
+
+RUN cd frontend/ && \
     yarn install && \
     yarn build
 
@@ -43,7 +41,7 @@ RUN ln -s /etc/nginx/sites-available/dbcr.com /etc/nginx/sites-enabled/ && \
 
 COPY scripts/start.sh .
 
-COPY --from=frontend frontend/build build/
+COPY --from=frontend build/ build/
 
 EXPOSE 80
 
