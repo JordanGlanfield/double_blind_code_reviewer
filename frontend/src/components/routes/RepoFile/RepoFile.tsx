@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import { Comment as AntdComment, Button, Typography, Input, InputNumber } from "antd";
+import { Button, Comment as AntdComment, Input, InputNumber, Typography } from "antd";
 import Prism from "prismjs";
 import "./prism-vs.css"
 import { extractPathFromRoute, getFileExtension, getFileName, getNextDirUp } from "../../../utils/routeUtil";

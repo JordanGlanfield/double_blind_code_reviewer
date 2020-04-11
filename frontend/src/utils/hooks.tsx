@@ -1,5 +1,4 @@
-import { default as React, useEffect, useState } from "react";
-import { Typography } from "antd";
+import { useEffect, useState } from "react";
 
 export interface FetchableData {
   data: any,
