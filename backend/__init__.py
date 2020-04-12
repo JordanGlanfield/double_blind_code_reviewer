@@ -48,15 +48,16 @@ def create_app(test_configuration=None):
     # Register extensions ################################
     # |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  #
     ######################################################
+    DB.init_app(app)
     LDAP.init_app(app)
     LOGIN_MANAGER.init_app(app)
     JWT_MANAGER.init_app(app)
-    DB.init_app(app)
     global MIGRATE
     MIGRATE = Migrate(app, DB.db)
 
     with app.app_context():
         DB.create_all()
+        LDAP.write_test_users()
     ############################################################
 
     from .views import auth, index

@@ -19,10 +19,8 @@ pool_members = db.Table("pool_members",
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(128))
-    firstname = db.Column(db.String(128))
-    surname = db.Column(db.String(128))
-    reviews = db.relationship("Review", secondary=reviewers, backpopulates="reviewers")
-    reviewer_pools = db.relationship("ReviewerPool", secondary=pool_members, backpopulates="members")
+    reviews = db.relationship("Review", secondary=reviewers, back_populates="reviewers")
+    reviewer_pools = db.relationship("ReviewerPool", secondary=pool_members, back_populates="members")
 
     def get_id(self):
         return self.username
@@ -50,6 +48,9 @@ class User(db.Model):
     def find_by_username(cls, username):
         return cls.query.filter_by(username=username).first()
 
+    def __repr__(self):
+        return '<User {}>'.format(self.username)
+
 
 class Repo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -60,15 +61,15 @@ class Repo(db.Model):
 class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     repo_id = db.Column(db.Integer, db.ForeignKey("repo.id"))
-    submitter = db.Column(db.integer, db.ForeignKey("user.id"))
-    reviewers = db.relationship("User", secondary=reviewers, backpopulates="reviews")
+    submitter = db.Column(db.Integer, db.ForeignKey("user.id"))
+    reviewers = db.relationship("User", secondary=reviewers, back_populates="reviews")
 
 
 class ReviewerPool(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128))
     description = db.Column(db.String(8000))
-    members = db.relationship("User", secondary=pool_members, backpopulates="reviewer_pools")
+    members = db.relationship("User", secondary=pool_members, back_populates="reviewer_pools")
 
 
 class AnonUser(db.Model):
