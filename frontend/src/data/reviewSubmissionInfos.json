@@ -1,0 +1,23 @@
+[
+  {
+    "repoName": "gson",
+    "branch": "refactor",
+    "approvals": 0,
+    "rejections": 0,
+    "newComments": 7
+  },
+  {
+    "repoName": "dbcr",
+    "branch": "dashboard",
+    "approvals": 1,
+    "rejections": 1,
+    "newComments": 0
+  },
+  {
+    "repoName": "jackson",
+    "branch": "types",
+    "approvals": 0,
+    "rejections": 2,
+    "newComments": 28
+  }
+]
