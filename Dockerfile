@@ -22,6 +22,13 @@ COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY backend backend/
+COPY migrations migrations/
+COPY scripts/dev_exports.sh scripts/
+
+RUN export FLASK_APP=backend && \
+    export FLASK_ENV=development && \
+    flask db migrate && \
+    flask db upgrade
 
 FROM backend AS nginx
 
