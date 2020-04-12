@@ -3,6 +3,7 @@ import os
 from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_login import LoginManager
+from flask_migrate import Migrate
 
 from .auth import ldap_handler
 from .mocks import fake_ldap_handler
@@ -27,6 +28,7 @@ LOGIN_MANAGER.login_message = messages.LOGIN_MANAGER_MESSAGE
 
 LDAP = fake_ldap_handler.FAKE_LDAP if ENV == "default" else ldap_handler.LDAP
 DB = database.DB
+MIGRATE = None
 JWT_MANAGER = JWTManager()
 
 
@@ -50,6 +52,8 @@ def create_app(test_configuration=None):
     LOGIN_MANAGER.init_app(app)
     JWT_MANAGER.init_app(app)
     DB.init_app(app)
+    global MIGRATE
+    MIGRATE = Migrate(app, DB.db)
 
     with app.app_context():
         DB.create_all()
