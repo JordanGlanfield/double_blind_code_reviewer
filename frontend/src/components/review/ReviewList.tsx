@@ -1,5 +1,4 @@
 import * as React from "react";
-import { getReviewSubmissionStats } from "../../utils/reviewApi";
 import { ReviewStats } from "../../types/ReviewStats";
 import { List, Typography } from "antd";
 import ReviewInfo from "./ReviewInfo";

@@ -1,0 +1,17 @@
+[
+  {
+    "name": "DoC 4th Year",
+    "description": "Pool of all students in the department of computing 4th year. Used for coursework, final project and code review assessments.",
+    "numMembers": 120
+  },
+  {
+    "name": "27th April Double Blind Code Review Workshop",
+    "description": "For attendees of the 27th April workshop. The language for this session will be Java.",
+    "numMembers": 11
+  },
+  {
+    "name": "A Workshop With a Really Long Description",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus cursus nulla aliquam lorem sodales, ut lobortis massa malesuada. Pellentesque viverra, lacus in auctor faucibus, odio ex sollicitudin tellus, in aliquet risus urna eget urna. Maecenas nulla augue, maximus ut viverra id, sollicitudin vel purus. Morbi et dictum est. Aliquam varius, ante in blandit iaculis, mauris turpis rhoncus metus, sed aliquam nunc arcu non justo. Quisque nec mattis tellus. Donec pulvinar mi non orci commodo porta. Nunc eget euismod risus, eu tincidunt lorem. Vivamus a tellus porttitor mi condimentum ultricies. Donec et auctor lorem.\n\nMauris vestibulum aliquam posuere. Proin a eros sed lacus consequat congue at in arcu. Phasellus ultricies viverra odio at pulvinar. Praesent sodales consectetur eros eget vehicula. Ut dolor libero, porta id leo at, aliquam cursus augue. Morbi vel condimentum lectus. Nulla facilisi. Aenean finibus tortor non lacus feugiat, vitae placerat magna euismod. Pellentesque vitae aliquam risus. Curabitur blandit enim lorem, sit amet luctus nulla gravida a. Vivamus lacinia malesuada sollicitudin. Maecenas ullamcorper vulputate ante ut hendrerit. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam scelerisque odio est, quis consectetur mauris dignissim ac.",
+    "numMembers": 12000
+  }
+]
