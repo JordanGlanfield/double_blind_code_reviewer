@@ -5,6 +5,7 @@ import NewRepo from "../ViewRepos/NewRepo";
 import { useParams } from "react-router-dom";
 import ReviewList from "../../review/ReviewList";
 import { getReviewStats, getReviewSubmissionStats } from "../../../utils/reviewApi";
+import ReviewerPools from "../../review/ReviewerPools";
 
 const { Title } = Typography;
 
@@ -29,6 +30,7 @@ const Home = () => {
       <ReviewList getReviews={getReviewStats}/>
 
       <Title underline level={2}>Your reviewer pools</Title>
+      <ReviewerPools/>
     </div>
   )
 };
