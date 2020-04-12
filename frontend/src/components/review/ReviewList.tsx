@@ -1,13 +1,17 @@
 import * as React from "react";
-import { getReviewStats } from "../../utils/reviewApi";
+import { getReviewSubmissionStats } from "../../utils/reviewApi";
 import { ReviewStats } from "../../types/ReviewStats";
 import { List, Typography } from "antd";
 import ReviewInfo from "./ReviewInfo";
 import styled from "styled-components";
 import { useDataSourceWithMessages } from "../../utils/hooks";
 
-const Submissions = () => {
-  const {data, message} = useDataSourceWithMessages(getReviewStats);
+interface Props {
+  getReviews: () => Promise<ReviewStats[]>
+}
+
+const ReviewList = (props: Props) => {
+  const {data, message} = useDataSourceWithMessages(props.getReviews);
 
   if (message) {
     return <Typography>{message}</Typography>;
@@ -24,4 +28,4 @@ const StyledDiv = styled.div`
   width: 600px;
 `;
 
-export default Submissions;
+export default ReviewList;

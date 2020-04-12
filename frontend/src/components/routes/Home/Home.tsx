@@ -3,7 +3,8 @@ import ViewRepos from "../ViewRepos/ViewRepos";
 import { Typography } from "antd";
 import NewRepo from "../ViewRepos/NewRepo";
 import { useParams } from "react-router-dom";
-import Submissions from "../../review/Submissions";
+import ReviewList from "../../review/ReviewList";
+import { getReviewStats, getReviewSubmissionStats } from "../../../utils/reviewApi";
 
 const { Title } = Typography;
 
@@ -22,9 +23,10 @@ const Home = () => {
       <ViewRepos/>
 
       <Title underline level={2}>Your submissions:</Title>
-      <Submissions/>
+      <ReviewList getReviews={getReviewSubmissionStats}/>
 
       <Title underline level={2}>Your reviews:</Title>
+      <ReviewList getReviews={getReviewStats}/>
 
       <Title underline level={2}>Your reviewer pools</Title>
     </div>
