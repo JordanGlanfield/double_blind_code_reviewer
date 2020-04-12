@@ -16,7 +16,7 @@ class BaseConfig:
     LDAP_DN = "OU=Users,OU=Imperial College (London),DC=ic,DC=ac,DC=uk"
 
     # Database ===================================================
-    SQLALCHEMY_TRACK_MODIFICATIONS = True
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class DevConfig(BaseConfig):
