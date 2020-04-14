@@ -23,7 +23,7 @@ class User(db.Model):
     reviewer_pools = db.relationship("ReviewerPool", secondary=pool_members, back_populates="members")
 
     def get_id(self):
-        return self.username
+        return self.id
 
     @property
     def is_authenticated(self):
@@ -70,6 +70,17 @@ class ReviewerPool(db.Model):
     name = db.Column(db.String(128))
     description = db.Column(db.String(8000))
     members = db.relationship("User", secondary=pool_members, back_populates="reviewer_pools")
+
+    def add_user(self, user: User):
+        if not self.has_user(user):
+            self.members.append(user)
+
+    def remove_user(self, user: User):
+        if self.has_user(user):
+            self.members.remove(user)
+
+    def has_user(self, user: User):
+        return self.members.filter(pool_members.c.user_id == user.id).count() > 0
 
 
 class AnonUser(db.Model):
