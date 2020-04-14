@@ -39,7 +39,7 @@ const ReviewerPools = () => {
         <Table.Column dataIndex="num_members"
                       key="numMembers"
                       colSpan={1}
-                      render={numMembers => <Typography>{numMembers} members</Typography>}
+                      render={numMembers => <MembersParagraph>{numMembers} members</MembersParagraph>}
         />
         </Table>
     </TableDiv>
@@ -80,6 +80,10 @@ const DescriptionParagraph = styled(Typography.Paragraph)`
 
 const FormDiv = styled.div`
   max-width: 1000px;
+`;
+
+const MembersParagraph = styled(Typography.Paragraph)`
+  width: 100px
 `;
 
 export default ReviewerPools;
