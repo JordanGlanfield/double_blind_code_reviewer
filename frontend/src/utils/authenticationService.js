@@ -1,11 +1,13 @@
 import authConstants from "../constants/auth"
 
-function storeTokens({ access_token }) {
+function storeTokens({ username, access_token }) {
+  sessionStorage.setItem(authConstants.USERNAME, username)
   sessionStorage.setItem(authConstants.ACCESS_TOKEN, access_token)
   // sessionStorage.setItem(authConstants.REFRESH_TOKEN, refresh_token)
 }
 
 function removeTokens() {
+  sessionStorage.removeItem(authConstants.USERNAME)
   sessionStorage.removeItem(authConstants.ACCESS_TOKEN)
   // sessionStorage.removeItem(authConstants.REFRESH_TOKEN)
 }
@@ -20,7 +22,7 @@ async function login(username, password) {
   const response = await fetch("/api/login", requestOptions)
   if (response.ok) {
     const data = await response.json()
-    storeTokens(data)
+    storeTokens(username, data)
     return true
   }
   return false
@@ -29,6 +31,10 @@ async function login(username, password) {
 const logout = () => removeTokens()
 const userIsLoggedIn = () => {
   return sessionStorage.getItem(authConstants.ACCESS_TOKEN) !== null
+}
+
+export const getUsername = () => {
+  return sessionStorage.getItem(authConstants.USERNAME);
 }
 
 export default {

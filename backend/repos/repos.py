@@ -8,7 +8,7 @@ from .file_util import get_directory_contents
 from ..dbcr.comments import Comment, CommentDto, comment_to_dto
 from ..utils.file_utils import recursive_chown
 from ..utils.json import check_json
-from ..utils.session import get_active_username
+from ..utils.session import get_active_username, noContentResponse
 
 repos_bp = Blueprint("repos", __name__, url_prefix="/api/v1.0/repos", static_folder="static")
 
@@ -32,8 +32,6 @@ def generate_pseudonym():
     return "anonymous" + str(pseudonym_id)
 
 pseudonyms: Dict[str, str] = defaultdict(generate_pseudonym)
-
-no_content = '', 204
 
 
 def get_comment_key(repo_id: str, file_path: str) -> str:
@@ -102,7 +100,7 @@ def create_repo():
 
     init_new_repo(repo_name)
 
-    return '', 204
+    return noContentResponse()
 
 
 @repos_bp.route("/view/all", methods=["GET"])
