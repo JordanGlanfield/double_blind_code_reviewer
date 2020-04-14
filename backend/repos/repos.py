@@ -1,13 +1,14 @@
 from collections import defaultdict
 from typing import Dict, List
 
-from flask import Blueprint, jsonify, abort, send_from_directory, session, make_response, request
+from flask import Blueprint, jsonify, abort, send_from_directory, make_response, request
 from git import Repo
 
 from .file_util import get_directory_contents
 from ..dbcr.comments import Comment, CommentDto, comment_to_dto
 from ..utils.file_utils import recursive_chown
 from ..utils.json import check_json
+from ..utils.session import get_active_username
 
 repos_bp = Blueprint("repos", __name__, url_prefix="/api/v1.0/repos", static_folder="static")
 
@@ -169,12 +170,7 @@ def post_comment(repo_id: str, file_path):
     line_number = request.json.get("line_number", 0)
     parent_id = request.json.get("parent_id", -1)
 
-    comment = Comment(comment_id, comment, line_number, file_path, pseudonyms[get_active_user_id()], parent_id)
+    comment = Comment(comment_id, comment, line_number, file_path, pseudonyms[get_active_username()], parent_id)
     add_comment(repo_id, comment)
 
     return jsonify(comment_to_dto(comment))
-
-
-# TODO - lookup in DB rather than assume USERNAME = user_id
-def get_active_user_id():
-    return session["USERNAME"]
