@@ -1,5 +1,6 @@
 import React from "react";
-import { Button, Icon } from "antd";
+import { Button } from "antd";
+import { FileOutlined, FolderFilled } from "@ant-design/icons/lib";
 
 // Need to show GitLab style view with folders and files. Most important is the name, alphabetic
 // display and separation of files and folders.
@@ -11,9 +12,7 @@ interface Props {
 
 const RepoEntry = (props: Props) => {
   return <Button href={props.href}>
-    <Icon type={props.isDir ? "folder" : "file"}
-          theme={props.isDir ? "filled" : "outlined"}
-    />
+    {props.isDir ? <FolderFilled /> : <FileOutlined />}
     {props.name}
   </Button>
 };
