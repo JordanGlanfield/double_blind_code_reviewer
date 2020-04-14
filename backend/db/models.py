@@ -72,9 +72,9 @@ class ReviewerPool(db.Model):
     name = db.Column(db.String(128))
     description = db.Column(db.String(8000))
     members = db.relationship("User",
-                                                secondary=pool_members,
-                                                back_populates="reviewer_pools",
-                                                lazy="dynamic")
+                                secondary=pool_members,
+                                back_populates="reviewer_pools",
+                                lazy="dynamic")
 
     def add_user(self, user: User):
         if not self.has_user(user):
@@ -86,6 +86,11 @@ class ReviewerPool(db.Model):
 
     def has_user(self, user: User):
         return self.members.filter(pool_members.c.user_id == user.id).count() > 0
+
+    def get_members(self):
+        return (User.query
+                .join(pool_members, (pool_members.c.user_id == User.id))
+                .filter(pool_members.c.reviewer_pool_id == ReviewerPool.id))
 
 
 class AnonUser(db.Model):

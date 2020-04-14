@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, make_response, request
 
-from .. import ReviewerPool, DB, User
+from .. import ReviewerPool, DB, User, InstrumentedList
+from ..db.api_models import ReviewerPoolSummariesDto
 from ..utils.json import check_json
 from ..utils.session import get_active_username
 
@@ -30,11 +31,6 @@ def create_pool():
 
 @reviews_bp.route("/view/pools", methods=["GET"])
 def get_pools():
-    print("Banter")
     active_user: User = User.find_by_username(get_active_username())
-    pools = []
-    for pool in active_user.reviewer_pools:
-        pools.append(dict(pool))
-    print("Reviewer pools:", active_user.reviewer_pools)
-    print("Jsonified reviewer pools:", jsonify(active_user.reviewer_pools))
-    return jsonify(active_user.reviewer_pools)
+    reviewer_pools_summary = ReviewerPoolSummariesDto.from_db(active_user.reviewer_pools)
+    return jsonify(reviewer_pools_summary)
