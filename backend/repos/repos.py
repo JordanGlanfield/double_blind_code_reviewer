@@ -1,6 +1,3 @@
-import os
-import pwd
-import grp
 from collections import defaultdict
 from typing import Dict, List
 
@@ -10,6 +7,7 @@ from git import Repo
 from .file_util import get_directory_contents
 from ..dbcr.comments import Comment, CommentDto, comment_to_dto
 from ..utils.file_utils import recursive_chown
+from ..utils.json import check_json
 
 repos_bp = Blueprint("repos", __name__, url_prefix="/api/v1.0/repos", static_folder="static")
 
@@ -74,15 +72,6 @@ def flatten_directories(dir_contents):
     flattened["files"] = dir_contents["files"][:]
 
     return flattened
-
-
-def check_json(required_fields: List[str]):
-    if not request.json:
-        abort(400)
-
-    for field in required_fields:
-        if not field in request.json:
-            abort(400)
 
 
 def init_new_repo(repo_name: str):
