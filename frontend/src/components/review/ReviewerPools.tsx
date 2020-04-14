@@ -34,21 +34,21 @@ const ReviewerPools = () => {
         <Table.Column dataIndex="description"
                       key="description"
                       colSpan={8}
-                      render={description => <DescriptionParagraph ellipsis>{description}</DescriptionParagraph>}
+                      render={description => <DescriptionParagraph ellipsis={{rows: 3, expandable: true}}>{description}</DescriptionParagraph>}
         />
-        <Table.Column dataIndex="numMembers"
+        <Table.Column dataIndex="num_members"
                       key="numMembers"
                       colSpan={1}
                       render={numMembers => <Typography>{numMembers} members</Typography>}
         />
         </Table>
     </TableDiv>
-    <div>
+    <FormDiv>
       <Typography.Title level={3}>Create new reviewer pool</Typography.Title>
       <Form
-        labelCol={{span: 8}}
+        labelCol={{span: 4}}
         wrapperCol={{span: 16}}
-        name="new_pool"
+        name="basic"
         onFinish={newPool}
         onFinishFailed={newPoolFailed}
       >
@@ -62,11 +62,11 @@ const ReviewerPools = () => {
                    rules={[{required: true, message: "Enter a description for the pool"}]}>
           <Input.TextArea />
         </Form.Item>
-        <Form.Item wrapperCol={{offset: 8, span: 16}}>
+        <Form.Item wrapperCol={{offset: 4, span: 16}}>
           <Button type="primary" htmlType="submit">Create</Button>
         </Form.Item>
       </Form>
-    </div>
+    </FormDiv>
   </>
 };
 
@@ -76,6 +76,10 @@ const TableDiv = styled.div`
 
 const DescriptionParagraph = styled(Typography.Paragraph)`
   max-width: 1000px
+`;
+
+const FormDiv = styled.div`
+  max-width: 1000px;
 `;
 
 export default ReviewerPools;
