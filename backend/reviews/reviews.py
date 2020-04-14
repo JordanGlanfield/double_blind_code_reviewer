@@ -12,7 +12,7 @@ def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
 
-@reviews_bp.route("/create_pool", methods=["POST"])
+@reviews_bp.route("/create/pool", methods=["POST"])
 def create_pool():
     check_json(["name", "description"])
 
@@ -25,3 +25,9 @@ def create_pool():
     DB.add(pool)
 
     return jsonify({id: pool.id})
+
+
+@reviews_bp.route("/view/pools", methods=["GET"])
+def get_pools():
+    active_user: User = User.find_by_username(get_active_username())
+    return jsonify(active_user.reviewer_pools)
