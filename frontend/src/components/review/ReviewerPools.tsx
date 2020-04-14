@@ -2,7 +2,7 @@ import { Button, Form, Input, Table, Typography } from "antd";
 import React from "react";
 import { useDataSourceWithMessages } from "../../utils/hooks";
 import { createReviewerPool, getReviewerPools } from "../../utils/reviewApi";
-import ReviewerPool from "../../types/ReviewerPool";
+import ReviewerPoolSummary from "../../types/ReviewerPoolSummary";
 import styled from "styled-components";
 
 const ReviewerPools = () => {
@@ -12,7 +12,7 @@ const ReviewerPools = () => {
     return <Typography>{poolsSource.message}</Typography>
   }
 
-  const tableData = (poolsSource.data as ReviewerPool[])
+  const tableData = (poolsSource.data as ReviewerPoolSummary[])
     .map((reviewerPool, index) => ({...reviewerPool, key: index}));
 
   const newPool = (values: any) => {

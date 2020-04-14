@@ -1,9 +1,9 @@
 import reviewSubmissionInfos from "../data/reviewSubmissionInfos.json";
 import reviewInfos from "../data/reviewInfos.json";
-import reviewerPools from "../data/reviewerPools.json";
 import { ReviewStats } from "../types/ReviewStats";
-import ReviewerPool from "../types/ReviewerPool";
+import ReviewerPoolSummary from "../types/ReviewerPoolSummary";
 import { buildPost, extractData } from "./apiUtil";
+import ReviewerPool from "../types/ReviewerPool";
 
 const apiPrefix = "/api/v1.0/reviews/";
 
@@ -15,18 +15,28 @@ export async function getReviewStats(): Promise<ReviewStats[]> {
   return reviewInfos;
 }
 
-export async function getReviewerPools(): Promise<ReviewerPool[]> {
+export async function getReviewerPools(): Promise<ReviewerPoolSummary[]> {
   const response = await fetch(apiPrefix + "view/pools");
 
+  return await extractData(response);
+}
 
-  const data = await extractData(response);
-  console.log("Data: ", data)
-  return data;
+export async function getReviewerPool(id: number): Promise<ReviewerPool> {
+  const response = await fetch(apiPrefix + "view/pool/" + id);
+
+  return await extractData(response);
 }
 
 export async function createReviewerPool(name: string, description: string): Promise<number> {
   const requestOptions = buildPost({name, description});
   const response = await fetch(apiPrefix + "create/pool", requestOptions);
+
+  return await extractData(response);
+}
+
+export async function addUserToPool(id: number, username: string) {
+  const requestOptions = buildPost({id, username});
+  const response = await fetch(apiPrefix + "add/pool/user", requestOptions);
 
   return await extractData(response);
 }

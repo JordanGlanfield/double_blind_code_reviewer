@@ -14,25 +14,29 @@ class UserDto(NamedTuple):
         return UserDto(user.id, user.username)
 
 
-class ReviewerPoolDto(NamedTuple):
-    id: int
-    name: str
-    description: str
-    members: List[UserDto]
+class ReviewerPoolDto():
+    def __init__(self, id: int, name: str, description: str, owner: UserDto, members: List[UserDto]):
+        self.id = id
+        self.name = name
+        self.description = description
+        self.owner = owner
+        self.members = members
 
     @staticmethod
     def from_db(reviewer_pool: ReviewerPool):
         return ReviewerPoolDto(reviewer_pool.id,
                                reviewer_pool.name,
                                reviewer_pool.description,
+                               UserDto.from_db(reviewer_pool.owner),
                                [UserDto.from_db(member) for member in reviewer_pool.members])
 
 
 class ReviewerPoolSummaryDto():
-    def __init__(self, id: int, name: str, description: str, num_members: int):
+    def __init__(self, id: int, name: str, description: str, owner: UserDto, num_members: int):
         self.id = id
         self.name = name
         self.description = description
+        self.owner = owner
         self.num_members = num_members
 
     @staticmethod
@@ -40,6 +44,7 @@ class ReviewerPoolSummaryDto():
         return ReviewerPoolSummaryDto(reviewer_pool.id,
                                       reviewer_pool.name,
                                       reviewer_pool.description,
+                                      UserDto.from_db(reviewer_pool.owner),
                                       len(reviewer_pool.get_members().all()))
 
 

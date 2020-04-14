@@ -75,6 +75,9 @@ class ReviewerPool(db.Model):
                                 secondary=pool_members,
                                 back_populates="reviewer_pools",
                                 lazy="dynamic")
+    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    owner = db.relationship("User", uselist=False)
+
 
     def add_user(self, user: User):
         if not self.has_user(user):
