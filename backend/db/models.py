@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from sqlalchemy.orm.collections import InstrumentedList
+
 from .database import DB
 
 db = DB.db
@@ -69,7 +71,10 @@ class ReviewerPool(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128))
     description = db.Column(db.String(8000))
-    members = db.relationship("User", secondary=pool_members, back_populates="reviewer_pools")
+    members = db.relationship("User",
+                                                secondary=pool_members,
+                                                back_populates="reviewer_pools",
+                                                lazy="dynamic")
 
     def add_user(self, user: User):
         if not self.has_user(user):
