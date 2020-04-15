@@ -1,12 +1,13 @@
 import React from "react";
 import { useDataSourceWithMessages } from "../../utils/hooks";
-import { addUserToPool, getReviewerPool } from "../../utils/reviewApi";
-import { Button, Descriptions, Form, Input, List, Typography } from "antd";
+import { addUserToPool, getReviewerPool, removeUserFromPool } from "../../utils/reviewApi";
+import { Button, Descriptions, Form, Input, List, Space, Typography } from "antd";
 import { getUsername } from "../../utils/authenticationService";
 import User from "../../types/User";
 import ReviewerPool from "../../types/ReviewerPool";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
+import { DeleteOutlined } from "@ant-design/icons/lib";
 
 
 const ReviewerPoolDashboard = () => {
@@ -19,12 +20,17 @@ const ReviewerPoolDashboard = () => {
   }
 
   const reviewerPool: ReviewerPool = poolSource.data;
+
   const addUser = (values: any) => {
-    addUserToPool(reviewerPool.name, values.username);
-    poolSource.forceRefetch();
+    addUserToPool(reviewerPool.name, values.username).then(poolSource.forceRefetch);
   };
 
-  console.log(reviewerPool.owner);
+  const removeUser = (member: User) => {
+    removeUserFromPool(reviewerPool.name, member.username).then(poolSource.forceRefetch);
+  };
+
+  const sortedMembers = reviewerPool.members.sort((a, b) =>
+    a.username.toLowerCase().localeCompare(b.username.toLowerCase()));
 
   return <>
     <DescriptionsDiv>
@@ -49,10 +55,15 @@ const ReviewerPoolDashboard = () => {
       </>
     }
     <Typography.Title level={4}>Users</Typography.Title>
-    <List dataSource={reviewerPool.members}
-          renderItem={(member: User) => <>
-            <Typography.Text strong>{member.username}</Typography.Text>
-          </>}
+    <List dataSource={sortedMembers}
+          renderItem={(member: User) => <UserDiv><List.Item
+            actions={[member.username !== getUsername() &&
+              <Button type="danger" onClick={() => removeUser(member)}>
+                {<DeleteOutlined />} Remove User
+              </Button>
+            ]}>
+            <UsernameSpan><Typography.Text strong>{member.username}</Typography.Text></UsernameSpan>
+          </List.Item></UserDiv>}
     />
   </>
 };
@@ -63,5 +74,14 @@ const DescriptionsDiv = styled.div`
   border-bottom-width: 1px;
   border-bottom-style: solid;
 `;
+
+const UserDiv = styled.div`
+  max-width: 400px;
+`;
+
+const UsernameSpan = styled.span`
+  margin-left: 20px;
+`;
+
 
 export default ReviewerPoolDashboard;

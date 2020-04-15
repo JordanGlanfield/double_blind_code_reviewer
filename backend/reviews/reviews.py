@@ -39,19 +39,30 @@ def add_user_to_pool():
     username = request.json["username"]
 
     reviewer_pool = check_and_get_pool(pool_name)
-
-    if get_active_username() != reviewer_pool.owner.username:
-        abort(403)
-
-    user = User.find_by_username(username)
-
-    if not user:
-        abort(404)
+    check_owner(reviewer_pool)
+    user = check_and_get_user(username)
 
     reviewer_pool.add_user(user)
     DB.db.session.commit()
 
     return noContentResponse()
+
+
+@reviews_bp.route("/delete/pool/<string:pool_name>/user/<string:username>", methods=["DELETE"])
+def delete_user_from_pool(pool_name: str, username: str):
+    reviewer_pool = check_and_get_pool(pool_name)
+    check_owner(reviewer_pool)
+    user = check_and_get_user(username)
+
+    # Can't remove owner
+    if reviewer_pool.owner_id == user.id:
+        abort(409) # Conflict
+
+    reviewer_pool.remove_user(user)
+    DB.db.session.commit()
+
+    return noContentResponse()
+
 
 @reviews_bp.route("/view/pools", methods=["GET"])
 def get_pools():
@@ -77,3 +88,17 @@ def check_and_get_pool(pool_name: str) -> ReviewerPool:
         abort(404)
 
     return reviewer_pool
+
+
+def check_owner(reviewer_pool: ReviewerPool):
+    if get_active_username() != reviewer_pool.owner.username:
+        abort(403)
+
+
+def check_and_get_user(username: str):
+    user = User.find_by_username(username)
+
+    if not user:
+        abort(404)
+
+    return user
