@@ -17,14 +17,15 @@ const ReviewList = (props: Props) => {
   }
 
   return <StyledDiv>
-    <List dataSource={data}
-               renderItem={stats => <List.Item><ReviewInfo reviewUrl={""} reviewStats={stats as ReviewStats}/></List.Item>}
+    <List size="large"
+          dataSource={data}
+          renderItem={stats => <List.Item><ReviewInfo reviewUrl={""} reviewStats={stats as ReviewStats}/></List.Item>}
     />
   </StyledDiv>
 };
 
 const StyledDiv = styled.div`
-  width: 600px;
+  width: 1000px;
 `;
 
 export default ReviewList;

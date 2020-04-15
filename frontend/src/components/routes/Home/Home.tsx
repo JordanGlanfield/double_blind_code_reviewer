@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import ReviewList from "../../review/ReviewList";
 import { getReviewStats, getReviewSubmissionStats } from "../../../utils/reviewApi";
 import ReviewerPools from "../../review/ReviewerPools";
+import styled from "styled-components";
 
 const { Title } = Typography;
 
@@ -14,25 +15,48 @@ const Home = () => {
   const {user} = useParams();
 
   return (
-    <div>
-      <Title underline level={1}>{user}</Title>
+    <BodyDiv>
 
-      <Title underline level={2}>Your repos:</Title>
-      <Title level={3}>Create Repository:</Title>
-      <NewRepo/>
-      <Title level={3}>Existing Repositories:</Title>
-      <ViewRepos/>
+      <Bordered>
+        <Title level={2}>Your repos:</Title>
+        <ViewRepos/>
+      </Bordered>
 
-      <Title underline level={2}>Your submissions:</Title>
-      <ReviewList getReviews={getReviewSubmissionStats}/>
+      <Bordered>
+        <Title level={2}>Create Repository:</Title>
+        <NewRepo/>
+      </Bordered>
 
-      <Title underline level={2}>Your reviews:</Title>
-      <ReviewList getReviews={getReviewStats}/>
+      <Bordered>
+        <Title level={2}>Your submissions:</Title>
+        <ReviewList getReviews={getReviewSubmissionStats}/>
+      </Bordered>
 
-      <Title underline level={2}>Your reviewer pools</Title>
-      <ReviewerPools/>
-    </div>
+      <Bordered>
+        <Title level={2}>Your reviews:</Title>
+        <ReviewList getReviews={getReviewStats}/>
+      </Bordered>
+
+      <Bordered>
+        <Title level={2}>Your reviewer pools</Title>
+        <ReviewerPools/>
+      </Bordered>
+    </BodyDiv>
   )
 };
+
+const BodyDiv = styled.div`
+  margin-left: auto;
+  margin-right: auto;
+  width: 70%;
+`;
+
+const Bordered = styled.div`
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom-style: solid;
+  border-bottom-color: #e6e6e6;
+  border-bottom-width: 1px;
+`;
 
 export default Home

@@ -2,10 +2,13 @@ FROM alpine AS frontend
 
 RUN apk add yarn
 
-COPY frontend/ frontend/
+COPY frontend/package.json frontend/
 
 RUN cd frontend/ && \
-    yarn install && \
+    yarn install
+
+COPY frontend/ frontend/
+RUN cd frontend/ && \
     yarn build
 
 FROM python:3.7.7-buster AS backend
