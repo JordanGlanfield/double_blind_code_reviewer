@@ -21,5 +21,11 @@ export function buildPost(body: any) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body)
-  }
+  };
+}
+
+export function buildDelete() {
+  return {
+    method: "DELETE"
+  };
 }
