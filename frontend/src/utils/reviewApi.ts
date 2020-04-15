@@ -21,8 +21,8 @@ export async function getReviewerPools(): Promise<ReviewerPoolSummary[]> {
   return await extractData(response);
 }
 
-export async function getReviewerPool(id: number): Promise<ReviewerPool> {
-  const response = await fetch(apiPrefix + "view/pool/" + id);
+export async function getReviewerPool(name: string): Promise<ReviewerPool> {
+  const response = await fetch(apiPrefix + "view/pool/" + name);
 
   return await extractData(response);
 }
@@ -34,8 +34,8 @@ export async function createReviewerPool(name: string, description: string): Pro
   return await extractData(response);
 }
 
-export async function addUserToPool(id: number, username: string) {
-  const requestOptions = buildPost({id, username});
+export async function addUserToPool(pool_name: string, username: string) {
+  const requestOptions = buildPost({pool_name, username});
   const response = await fetch(apiPrefix + "add/pool/user", requestOptions);
 
   return await extractData(response);

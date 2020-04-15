@@ -1,6 +1,6 @@
 import authConstants from "../constants/auth"
 
-function storeTokens({ username, access_token }) {
+function storeTokens(username, access_token) {
   sessionStorage.setItem(authConstants.USERNAME, username)
   sessionStorage.setItem(authConstants.ACCESS_TOKEN, access_token)
   // sessionStorage.setItem(authConstants.REFRESH_TOKEN, refresh_token)

@@ -5,9 +5,10 @@ from sqlalchemy import func
 from backend import User, ReviewerPool, DB
 
 
-class UserDto(NamedTuple):
-    id: int
-    username: str
+class UserDto():
+    def __init__(self, id: int, username: str):
+        self.id = id
+        self.username = username
 
     @staticmethod
     def from_db(user: User):

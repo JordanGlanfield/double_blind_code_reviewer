@@ -95,6 +95,10 @@ class ReviewerPool(db.Model):
                 .join(pool_members, (pool_members.c.user_id == User.id))
                 .filter(pool_members.c.reviewer_pool_id == ReviewerPool.id))
 
+    @classmethod
+    def find_by_name(cls, name):
+        return cls.query.filter_by(name=name).first()
+
 
 class AnonUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)

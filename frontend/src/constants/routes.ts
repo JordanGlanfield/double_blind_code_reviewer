@@ -8,10 +8,11 @@ export default {
   HOME: "/:user/home",
   REPO_DIRS: "/:user/repo/:repo/",
   REPO_FILES: "/:user/repofiles/:repo",
-  TEST: "/test/:item",
+  REVIEWER_POOL: "/:user/pool/:pool",
   getHome: getHome,
   getRepoDir: getRepoDir,
-  getRepoFile: getRepoFile
+  getRepoFile: getRepoFile,
+  getReviewerPool: getReviewerPool
 }
 
 function getHome(user: string) {
@@ -30,4 +31,8 @@ function getRepoDir(user: string, repo: string, path: string) {
 
 function getRepoFile(user: string, repo: string, path: string) {
   return "/" + user + "/repofiles/" + repo + "/" + path;
+}
+
+function getReviewerPool(user: string, pool_name: string) {
+  return `/${user}/pool/${pool_name}`;
 }
