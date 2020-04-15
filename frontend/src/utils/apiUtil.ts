@@ -6,12 +6,9 @@ export function extractData(response: Response) {
 
     if (contentType && contentType.indexOf("application/json") > -1) {
       data = response.json();
-      console.log("Bants")
     } else {
       data = response.text();
     }
-
-    console.log(data);
 
     return data;
   }

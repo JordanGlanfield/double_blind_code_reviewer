@@ -7,6 +7,8 @@ from ..utils.session import get_active_username, noContentResponse
 
 reviews_bp = Blueprint("reviews", __name__, url_prefix="/api/v1.0/reviews", static_folder="static")
 
+# TODO: more informative error handling
+
 @reviews_bp.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
@@ -31,17 +33,22 @@ def create_pool():
 
 @reviews_bp.route("/add/pool/user", methods=["POST"])
 def add_user_to_pool():
-    check_json(["id", "username"])
+    check_json(["pool_name", "username"])
 
-    id = request.json["id"]
+    pool_name = request.json["pool_name"]
     username = request.json["username"]
 
-    reviewer_pool = check_and_get_pool(id)
+    reviewer_pool = check_and_get_pool(pool_name)
 
     if get_active_username() != reviewer_pool.owner.username:
         abort(403)
 
-    reviewer_pool.add_user(username)
+    user = User.find_by_username(username)
+
+    if not user:
+        abort(404)
+
+    reviewer_pool.add_user(user)
     DB.db.session.commit()
 
     return noContentResponse()
@@ -53,9 +60,9 @@ def get_pools():
     return jsonify(reviewer_pools_summary)
 
 
-@reviews_bp.route("/view/pool/<string:pool_id>")
-def get_pool(pool_id: str):
-    reviewer_pool = check_and_get_pool(pool_id)
+@reviews_bp.route("/view/pool/<string:pool_name>")
+def get_pool(pool_name: str):
+    reviewer_pool = check_and_get_pool(pool_name)
 
     if not reviewer_pool.has_user(User.find_by_username(get_active_username())):
         return make_response(jsonify({"error": "Access Denied"}), 403)
@@ -63,8 +70,8 @@ def get_pool(pool_id: str):
     return jsonify(ReviewerPoolDto.from_db(reviewer_pool))
 
 
-def check_and_get_pool(pool_id: str) -> ReviewerPool:
-    reviewer_pool: ReviewerPool = ReviewerPool.query.get(pool_id)
+def check_and_get_pool(pool_name: str) -> ReviewerPool:
+    reviewer_pool: ReviewerPool = ReviewerPool.find_by_name(pool_name)
 
     if not reviewer_pool:
         abort(404)

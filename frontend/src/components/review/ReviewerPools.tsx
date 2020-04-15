@@ -4,6 +4,8 @@ import { useDataSourceWithMessages } from "../../utils/hooks";
 import { createReviewerPool, getReviewerPools } from "../../utils/reviewApi";
 import ReviewerPoolSummary from "../../types/ReviewerPoolSummary";
 import styled from "styled-components";
+import { getUsername } from "../../utils/authenticationService";
+import routes from "../../constants/routes";
 
 const ReviewerPools = () => {
   let poolsSource = useDataSourceWithMessages(getReviewerPools);
@@ -29,7 +31,8 @@ const ReviewerPools = () => {
         <Table.Column dataIndex="name"
                       key="name"
                       colSpan={1}
-                      render={name => <Button href={"TODO"}>{name}</Button>}
+                      render={name =>
+                        <Button href={routes.getReviewerPool(getUsername() as string, name)}>{name}</Button>}
         />
         <Table.Column dataIndex="description"
                       key="description"
