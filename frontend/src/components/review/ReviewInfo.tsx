@@ -13,8 +13,7 @@ const ReviewInfo = (props: Props) => {
   const rejectionsMessage = "" + reviewStats.rejections + " rejections";
 
   return <>
-    <Button type={"primary"}
-            href={reviewUrl}>
+    <Button href={reviewUrl}>
       {reviewStats.repoName} | {reviewStats.branch}
     </Button>
     <Badge count={reviewStats.newComments}/>
