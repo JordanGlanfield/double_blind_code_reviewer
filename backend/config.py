@@ -30,4 +30,5 @@ class StagingConfig(BaseConfig):
 
 class ProductionConfig(BaseConfig):
     # This one should be changed to a postgres db
-    SQLALCHEMY_DATABASE_URI = "sqlite:///production.db"
+    SQLALCHEMY_DATABASE_URI = "sqlite:////dbcr/storage/production.db"
+
