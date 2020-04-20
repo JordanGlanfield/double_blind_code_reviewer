@@ -26,7 +26,7 @@ LOGIN_MANAGER = LoginManager()
 LOGIN_MANAGER.login_view = "auth.login"
 LOGIN_MANAGER.login_message = messages.LOGIN_MANAGER_MESSAGE
 
-LDAP = fake_ldap_handler.FAKE_LDAP if ENV == "default" else ldap_handler.LDAP
+LDAP = fake_ldap_handler.FAKE_LDAP # if ENV == "default" else ldap_handler.LDAP
 DB = database.DB
 MIGRATE = None
 JWT_MANAGER = JWTManager()

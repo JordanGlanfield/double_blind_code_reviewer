@@ -51,6 +51,9 @@ RUN ln -s /etc/nginx/sites-available/dbcr.com /etc/nginx/sites-enabled/ && \
 
 COPY scripts/start.sh .
 
+RUN mkdir storage
+VOLUME storage
+
 COPY --from=frontend build/ build/
 
 EXPOSE 80
