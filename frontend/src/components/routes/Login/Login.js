@@ -8,7 +8,7 @@ import {
   Container
 } from "@material-ui/core/index"
 import useStyles from "./style"
-import authentication from "../../../utils/authenticationService"
+import authentication, { getUsername } from "../../../utils/authenticationService"
 import routes from "../../../constants/routes"
 
 export default props => {
@@ -18,6 +18,10 @@ export default props => {
   const [error, setError] = useState(false)
   const [allowRedirection, setAllowRedirection] = useState(false)
   let { from } = props.location.state || { from: { pathname: routes.getHome(username) } }
+
+  if (authentication.userIsLoggedIn()) {
+    return <Redirect to={{pathname: routes.getHome(getUsername())}} />
+  }
 
   const login = async event => {
     event.preventDefault()

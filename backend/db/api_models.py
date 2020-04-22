@@ -6,13 +6,15 @@ from backend import User, ReviewerPool, DB
 
 
 class UserDto():
-    def __init__(self, id: int, username: str):
+    def __init__(self, id: int, username: str, first_name: str, surname: str):
         self.id = id
         self.username = username
+        self.first_name = first_name
+        self.surname = surname
 
     @staticmethod
     def from_db(user: User):
-        return UserDto(user.id, user.username)
+        return UserDto(user.id, user.username, user.first_name, user.surname)
 
 
 class ReviewerPoolDto():

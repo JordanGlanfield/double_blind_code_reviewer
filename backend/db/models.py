@@ -21,6 +21,8 @@ pool_members = db.Table("pool_members",
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(128))
+    first_name = db.Column(db.String(128))
+    surname = db.Column(db.String(128))
     password_hash = db.Column(db.String(128))
     reviews = db.relationship("Review", secondary=reviewers, back_populates="reviewers")
     reviewer_pools = db.relationship("ReviewerPool", secondary=pool_members, back_populates="members")
@@ -34,10 +36,6 @@ class User(UserMixin, db.Model):
     def save(self):
         """Save instance to DB"""
         DB.add(self)
-
-    @property
-    def get_id(self):
-        return self.id
 
     @property
     def is_anonymous(self):
