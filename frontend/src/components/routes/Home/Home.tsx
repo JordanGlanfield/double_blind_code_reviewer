@@ -7,6 +7,7 @@ import ReviewList from "../../review/ReviewList";
 import { getReviewStats, getReviewSubmissionStats } from "../../../utils/reviewApi";
 import ReviewerPools from "../../review/ReviewerPools";
 import styled from "styled-components";
+import BodyDiv from "../../styles/BodyDiv";
 
 const { Title } = Typography;
 
@@ -44,12 +45,6 @@ const Home = () => {
     </BodyDiv>
   )
 };
-
-const BodyDiv = styled.div`
-  margin-left: auto;
-  margin-right: auto;
-  width: 70%;
-`;
 
 const Bordered = styled.div`
   padding-bottom: 20px;

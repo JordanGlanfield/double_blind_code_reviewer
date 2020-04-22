@@ -3,6 +3,7 @@
 
 export default {
   LOGIN: "/",
+  SIGNUP: "/signup",
   REFRESH: "/token/refresh",
   NAV: "/:user",
   HOME: "/:user/home",

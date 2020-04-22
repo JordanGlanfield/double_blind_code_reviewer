@@ -12,12 +12,14 @@ import Home from "./routes/Home/Home";
 import RepoFile from "./routes/RepoFile/RepoFile";
 import TopBar from "./mainLayout/TopBar/TopBar";
 import ReviewerPoolDashboard from "./review/ReviewerPoolDashboard";
+import Signup from "./routes/Signup/Signup";
 
 export default () => {
   return (
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <Switch>
+          <Route exact path={routes.SIGNUP} component={Signup} />
           <Route exact path={routes.LOGIN} component={Login} />
           <Route>
             <ProtectedRoute path={routes.NAV} component={TopBar} />
