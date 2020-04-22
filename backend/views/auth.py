@@ -1,19 +1,18 @@
 from urllib.parse import urlparse, urljoin
 
-import ldap
-from flask import request, g, Blueprint, jsonify, session
+from flask import request, g, Blueprint, jsonify, current_app
 from flask_jwt_extended import (
     create_access_token,
     get_jwt_identity,
     jwt_refresh_token_required,
-    jwt_required,
+    jwt_required
 )
-from flask_login import current_user
+from flask_login import current_user, login_user, logout_user
 
 from backend import LOGIN_MANAGER
-from ..auth import auth
-from ..auth import ldap_constants
 from ..db.models import User
+from ..utils.json import check_json
+from ..utils.session import no_content_response
 
 bp = Blueprint("auth", __name__, url_prefix="/api")
 
@@ -30,25 +29,37 @@ def get_current_user():
 
 @bp.route("/login", methods=["POST"])
 def login():
+    if current_user.is_authenticated:
+        return no_content_response()
+
+    check_json(["username", "password"])
+
     username, password = (
         request.json["username"].strip().lower(),
         request.json["password"].strip(),
     )
-    try:
-        attributes = auth.login(username, password)
-    except ldap.INVALID_CREDENTIALS:
-        return jsonify(error=True), 401
+
+    if "remember" in request.json:
+        remember = request.json["remember"]
+    else:
+        remember = False
+
     user = User.query.filter_by(username=username).first()
-    if not user:
-        User(
-            username=username,
-            firstname=attributes.get(ldap_constants.NAME, username.upper()),
-            surname=attributes.get(ldap_constants.SURNAME, ""),
-        ).save()
+
+    if not user or not user.check_password(password):
+        return jsonify(error=True), 401
+
+    login_user(user, remember=remember)
+
     access_token = create_access_token(identity=username)
     response = jsonify(access_token=access_token)
-    session["USERNAME"] = username
     return response
+
+
+@bp.route("/logout")
+def logout():
+    logout_user()
+    return no_content_response()
 
 
 @bp.route("/userinfo")

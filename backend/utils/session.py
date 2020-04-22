@@ -1,9 +1,11 @@
 from flask import session
 
+from flask_login import current_user
 
-# TODO - lookup in DB rather than assume USERNAME = user_id
-def get_active_username():
-    return session["USERNAME"]
 
-def noContentResponse():
+def get_active_user():
+    return current_user
+
+
+def no_content_response():
     return '', 204

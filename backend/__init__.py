@@ -57,7 +57,7 @@ def create_app(test_configuration=None):
 
     with app.app_context():
         DB.create_all()
-        LDAP.write_test_users()
+
     ############################################################
 
     from .views import auth, index
