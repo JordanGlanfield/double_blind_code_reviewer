@@ -29,7 +29,7 @@ COPY migrations migrations/
 COPY scripts/dev_exports.sh scripts/
 
 RUN export FLASK_APP=backend && \
-    export FLASK_ENV=development && \
+    export FLASK_ENV=production && \
     flask db migrate && \
     flask db upgrade
 

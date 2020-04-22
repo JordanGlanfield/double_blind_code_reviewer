@@ -8,7 +8,7 @@ from .file_util import get_directory_contents
 from ..dbcr.comments import Comment, CommentDto, comment_to_dto
 from ..utils.file_utils import recursive_chown
 from ..utils.json import check_json
-from ..utils.session import get_active_username, noContentResponse
+from ..utils.session import get_active_user, no_content_response
 
 repos_bp = Blueprint("repos", __name__, url_prefix="/api/v1.0/repos", static_folder="static")
 
@@ -100,7 +100,7 @@ def create_repo():
 
     init_new_repo(repo_name)
 
-    return noContentResponse()
+    return no_content_response()
 
 
 @repos_bp.route("/view/all", methods=["GET"])
@@ -168,7 +168,7 @@ def post_comment(repo_id: str, file_path):
     line_number = request.json.get("line_number", 0)
     parent_id = request.json.get("parent_id", -1)
 
-    comment = Comment(comment_id, comment, line_number, file_path, pseudonyms[get_active_username()], parent_id)
+    comment = Comment(comment_id, comment, line_number, file_path, pseudonyms[get_active_user()], parent_id)
     add_comment(repo_id, comment)
 
     return jsonify(comment_to_dto(comment))

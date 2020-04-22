@@ -1,11 +1,11 @@
 from datetime import datetime
 
-from sqlalchemy.orm.collections import InstrumentedList
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from .database import DB
 
 db = DB.db
-
 
 reviewers = db.Table("reviewers",
     db.Column("review_id", db.Integer, db.ForeignKey("review.id")),
@@ -18,33 +18,30 @@ pool_members = db.Table("pool_members",
 )
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(128))
+    password_hash = db.Column(db.String(128))
     reviews = db.relationship("Review", secondary=reviewers, back_populates="reviewers")
     reviewer_pools = db.relationship("ReviewerPool", secondary=pool_members, back_populates="members")
 
-    def get_id(self):
-        return self.id
+    def set_password(self, password: str):
+        self.password_hash = generate_password_hash(password)
 
-    @property
-    def is_authenticated(self):
-        """Authentication handled by LDAP"""
-        return True
-
-    @property
-    def is_anonymous(self):
-        """Anonymous users not supported"""
-        return False
-
-    @property
-    def is_active(self):
-        """All users are active"""
-        return True
+    def check_password(self, password: str):
+        return check_password_hash(self.password_hash, password)
 
     def save(self):
         """Save instance to DB"""
         DB.add(self)
+
+    @property
+    def get_id(self):
+        return self.id
+
+    @property
+    def is_anonymous(self):
+        return False
 
     @classmethod
     def find_by_username(cls, username):
