@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, make_response, request, abort
+from flask_jwt_extended import jwt_required
 
 from .. import ReviewerPool, DB, User
 from ..db.api_models import ReviewerPoolSummariesDto, ReviewerPoolDto
@@ -15,6 +16,7 @@ def not_found(error):
 
 
 @reviews_bp.route("/create/pool", methods=["POST"])
+@jwt_required
 def create_pool():
     check_json(["name", "description"])
 
@@ -32,6 +34,7 @@ def create_pool():
 
 
 @reviews_bp.route("/add/pool/user", methods=["POST"])
+@jwt_required
 def add_user_to_pool():
     check_json(["pool_name", "username"])
 
@@ -49,6 +52,7 @@ def add_user_to_pool():
 
 
 @reviews_bp.route("/delete/pool/<string:pool_name>/user/<string:username>", methods=["DELETE"])
+@jwt_required
 def delete_user_from_pool(pool_name: str, username: str):
     reviewer_pool = check_and_get_pool(pool_name)
     check_owner(reviewer_pool)
@@ -65,6 +69,7 @@ def delete_user_from_pool(pool_name: str, username: str):
 
 
 @reviews_bp.route("/view/pools", methods=["GET"])
+@jwt_required
 def get_pools():
     active_user: User = get_active_user()
     reviewer_pools_summary = ReviewerPoolSummariesDto.from_db(active_user.reviewer_pools)
@@ -72,6 +77,7 @@ def get_pools():
 
 
 @reviews_bp.route("/view/pool/<string:pool_name>")
+@jwt_required
 def get_pool(pool_name: str):
     reviewer_pool = check_and_get_pool(pool_name)
 
