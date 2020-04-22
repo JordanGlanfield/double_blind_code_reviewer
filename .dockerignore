@@ -1,2 +1,7 @@
 frontend/node_modules
 *.db
+.git/
+.idea/
+.pytest_cache/
+build/
+venv/
