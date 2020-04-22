@@ -7,10 +7,6 @@ import BodyDiv from "../../styles/BodyDiv";
 import styled from "styled-components";
 import { CenteredText } from "../../styles/Centered";
 
-interface Props {
-  history: History
-}
-
 const Signup = withRouter(({history}) => {
 
   const sendSignUp = (values: any) => {

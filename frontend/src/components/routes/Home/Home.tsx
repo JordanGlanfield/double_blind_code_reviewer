@@ -29,12 +29,12 @@ const Home = () => {
       </Bordered>
 
       <Bordered>
-        <Title level={2}>Your submissions:</Title>
+        <Title level={2}>Your work:</Title>
         <ReviewList getReviews={getReviewSubmissionStats}/>
       </Bordered>
 
       <Bordered>
-        <Title level={2}>Your reviews:</Title>
+        <Title level={2}>Code to review:</Title>
         <ReviewList getReviews={getReviewStats}/>
       </Bordered>
 
