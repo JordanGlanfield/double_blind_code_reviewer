@@ -29,3 +29,4 @@ def check_json(required_fields: List[str]):
     for field in required_fields:
         if not field in request.json:
             abort(400)
+

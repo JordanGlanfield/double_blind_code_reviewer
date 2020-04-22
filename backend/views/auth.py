@@ -1,3 +1,4 @@
+from http import HTTPStatus
 from urllib.parse import urlparse, urljoin
 
 from flask import request, g, Blueprint, jsonify, current_app
@@ -9,12 +10,15 @@ from flask_jwt_extended import (
 )
 from flask_login import current_user, login_user, logout_user
 
-from backend import LOGIN_MANAGER
+from backend import LOGIN_MANAGER, DB
 from ..db.models import User
 from ..utils.json import check_json
 from ..utils.session import no_content_response
 
 bp = Blueprint("auth", __name__, url_prefix="/api")
+
+
+PASSWORD_MIN_LENGTH = 8
 
 
 @LOGIN_MANAGER.user_loader
@@ -25,6 +29,36 @@ def load_user(user_id):
 @bp.before_request
 def get_current_user():
     g.user = current_user
+
+
+@bp.route("/signup", methods=["POST"])
+def sign_up():
+    check_json(["username", "first_name", "surname", "password"])
+
+    username: str = request.json["username"]
+    first_name: str = request.json["first_name"]
+    surname: str = request.json["surname"]
+    password: str = request.json["password"]
+
+
+    if User.find_by_username(username):
+        return "Username is taken", HTTPStatus.CONFLICT
+
+
+    if len(password) < PASSWORD_MIN_LENGTH:
+        return "Password too short", HTTPStatus.NOT_ACCEPTABLE
+
+    if username == "" or first_name == "" or password == "":
+        return "Names cannot be empty", HTTPStatus.NOT_ACCEPTABLE
+
+    user = User(username=username, first_name=first_name, surname=surname)
+    user.set_password(password)
+    DB.add(user)
+
+    login_user(user, remember=False)
+
+    return no_content_response()
+
 
 
 @bp.route("/login", methods=["POST"])

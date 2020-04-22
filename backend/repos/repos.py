@@ -168,7 +168,7 @@ def post_comment(repo_id: str, file_path):
     line_number = request.json.get("line_number", 0)
     parent_id = request.json.get("parent_id", -1)
 
-    comment = Comment(comment_id, comment, line_number, file_path, pseudonyms[get_active_user()], parent_id)
+    comment = Comment(comment_id, comment, line_number, file_path, pseudonyms[get_active_user().username], parent_id)
     add_comment(repo_id, comment)
 
     return jsonify(comment_to_dto(comment))

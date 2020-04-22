@@ -21,7 +21,7 @@ def create_pool():
     name: str = request.json["name"]
     description: str = request.json["description"]
 
-    active_user = User.find_by_username(get_active_user())
+    active_user = get_active_user()
     pool = ReviewerPool(name=name, description=description, owner_id=active_user.id)
 
     DB.db.session.add(pool)
@@ -66,7 +66,7 @@ def delete_user_from_pool(pool_name: str, username: str):
 
 @reviews_bp.route("/view/pools", methods=["GET"])
 def get_pools():
-    active_user: User = User.find_by_username(get_active_user())
+    active_user: User = get_active_user()
     reviewer_pools_summary = ReviewerPoolSummariesDto.from_db(active_user.reviewer_pools)
     return jsonify(reviewer_pools_summary)
 
@@ -75,7 +75,7 @@ def get_pools():
 def get_pool(pool_name: str):
     reviewer_pool = check_and_get_pool(pool_name)
 
-    if not reviewer_pool.has_user(User.find_by_username(get_active_user())):
+    if not reviewer_pool.has_user(get_active_user()):
         return make_response(jsonify({"error": "Access Denied"}), 403)
 
     return jsonify(ReviewerPoolDto.from_db(reviewer_pool))
@@ -91,7 +91,7 @@ def check_and_get_pool(pool_name: str) -> ReviewerPool:
 
 
 def check_owner(reviewer_pool: ReviewerPool):
-    if get_active_user() != reviewer_pool.owner.username:
+    if get_active_user().username != reviewer_pool.owner.username:
         abort(403)
 
 
