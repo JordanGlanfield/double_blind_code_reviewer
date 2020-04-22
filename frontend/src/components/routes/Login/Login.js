@@ -8,8 +8,9 @@ import {
   Container
 } from "@material-ui/core/index"
 import useStyles from "./style"
-import authentication, { getUsername } from "../../../utils/authenticationService"
+import authentication, { getUsername, isAuthenticated } from "../../../utils/authenticationService"
 import routes from "../../../constants/routes"
+import { useDataSource } from "../../../utils/hooks";
 
 export default props => {
   const classes = useStyles()
@@ -19,7 +20,9 @@ export default props => {
   const [allowRedirection, setAllowRedirection] = useState(false)
   let { from } = props.location.state || { from: { pathname: routes.getHome(username) } }
 
-  if (authentication.userIsLoggedIn()) {
+  let isAuthenticatedSource = useDataSource(isAuthenticated);
+
+  if (!isAuthenticatedSource.isFetching && isAuthenticatedSource.data) {
     return <Redirect to={{pathname: routes.getHome(getUsername())}} />
   }
 

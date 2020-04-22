@@ -13,6 +13,7 @@ import RepoFile from "./routes/RepoFile/RepoFile";
 import TopBar from "./mainLayout/TopBar/TopBar";
 import ReviewerPoolDashboard from "./review/ReviewerPoolDashboard";
 import Signup from "./routes/Signup/Signup";
+import AuthCheck from "./routes/AuthCheck";
 
 export default () => {
   return (
@@ -22,6 +23,7 @@ export default () => {
           <Route exact path={routes.SIGNUP} component={Signup} />
           <Route exact path={routes.LOGIN} component={Login} />
           <Route>
+            <Route component={AuthCheck}/>
             <ProtectedRoute path={routes.NAV} component={TopBar} />
             <Switch>
               <ProtectedRoute path={routes.HOME} component={Home} />

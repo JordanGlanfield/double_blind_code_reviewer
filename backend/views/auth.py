@@ -1,13 +1,13 @@
 from http import HTTPStatus
 from urllib.parse import urlparse, urljoin
 
-from flask import request, g, Blueprint, jsonify, current_app
+from flask import request, g, Blueprint, jsonify, current_app, abort
 from flask_jwt_extended import (
     create_access_token,
     get_jwt_identity,
     jwt_refresh_token_required,
-    jwt_required
-)
+    jwt_required,
+    jwt_optional, verify_jwt_in_request_optional)
 from flask_login import current_user, login_user, logout_user
 
 from backend import LOGIN_MANAGER, DB
@@ -60,11 +60,13 @@ def sign_up():
     return no_content_response()
 
 
-
 @bp.route("/login", methods=["POST"])
 def login():
-    if current_user.is_authenticated:
-        return no_content_response()
+    try:
+        if verify_jwt_in_request_optional():
+            abort(HTTPStatus.CONFLICT)
+    except Exception:
+        pass
 
     check_json(["username", "password"])
 
@@ -81,7 +83,7 @@ def login():
     user = User.query.filter_by(username=username).first()
 
     if not user or not user.check_password(password):
-        return jsonify(error=True), 401
+        abort(HTTPStatus.UNAUTHORIZED)
 
     login_user(user, remember=remember)
 
@@ -91,9 +93,20 @@ def login():
 
 
 @bp.route("/logout")
+@jwt_required
 def logout():
     logout_user()
     return no_content_response()
+
+
+@bp.route("/is_authenticated")
+def is_authenticated():
+    try:
+        if verify_jwt_in_request_optional():
+            return jsonify(is_authenticated=True)
+    except Exception:
+        pass
+    return jsonify(is_authenticated=False)
 
 
 @bp.route("/userinfo")

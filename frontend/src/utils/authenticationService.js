@@ -1,4 +1,5 @@
 import authConstants from "../constants/auth"
+import { extractData } from "./apiUtil";
 
 function storeTokens(username, access_token) {
   sessionStorage.setItem(authConstants.USERNAME, username)
@@ -21,6 +22,7 @@ async function login(username, password) {
 
   const response = await fetch("/api/login", requestOptions)
   if (response.ok) {
+    console.log(response)
     const data = await response.json()
     storeTokens(username, data)
     return true
@@ -31,6 +33,13 @@ async function login(username, password) {
 const logout = () => removeTokens()
 const userIsLoggedIn = () => {
   return sessionStorage.getItem(authConstants.ACCESS_TOKEN) !== null
+}
+
+export async function isAuthenticated() {
+    let response = await fetch("/api/is_authenticated");
+
+    let data = await extractData(response);
+    return data.is_authenticated;
 }
 
 export const getUsername = () => {
