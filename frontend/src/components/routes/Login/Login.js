@@ -76,6 +76,7 @@ export default props => {
             Log In
           </Button>
         </form>
+        <a href={routes.SIGNUP}>Not a user? Create an account!</a>
       </div>
       <Container hidden={!error}>
         <Typography variant="body2" align="center" color="error">
