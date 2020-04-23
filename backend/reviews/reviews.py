@@ -1,5 +1,4 @@
 from flask import Blueprint, jsonify, make_response, request, abort
-from flask_jwt_extended import jwt_required
 from flask_login import login_required
 
 from .. import ReviewerPool, DB, User
