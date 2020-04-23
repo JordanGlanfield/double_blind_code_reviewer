@@ -4,8 +4,10 @@ import tempfile
 from unittest.mock import patch
 
 import pytest
+from flask_jwt_extended import create_access_token
+from flask_login import login_user
 
-from backend import create_app
+from backend import create_app, User
 from backend.db.database import DB
 
 
@@ -72,3 +74,19 @@ class AuthenticationActions:
 @pytest.fixture
 def test_auth(client):
     return AuthenticationActions(client)
+
+
+@pytest.fixture
+def auth_headers(app, db, client):
+    user = User(username="test_user")
+    user.set_password("password")
+    user.save()
+
+    login_user(user, remember=False)
+
+    with app.app_context():
+        access_token = create_access_token(user.username)
+
+    return {
+        'Authorization': 'Bearer {}'.format(access_token)
+    }
