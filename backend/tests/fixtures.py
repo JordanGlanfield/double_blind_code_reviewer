@@ -10,7 +10,7 @@ from backend.db.database import DB
 
 
 @pytest.fixture
-def test_app():
+def app():
     db_fd, db_path = tempfile.mkstemp()
     app = create_app(
         dict(
@@ -28,16 +28,19 @@ def test_app():
 
 
 @pytest.fixture
-def test_client(test_app):
-    return test_app.test_client()
+def client(app):
+    return app.test_client()
 
 
 @pytest.fixture
-def test_db(test_app):
-    with test_app.app_context():
+def db(app):
+    with app.app_context():
         DB.create_all()
-        yield DB
-        DB.drop_all()
+        try:
+            yield DB
+        finally:
+            DB.db.session.remove()
+            DB.drop_all()
 
 
 class AuthenticationActions:
@@ -67,5 +70,5 @@ class AuthenticationActions:
 
 
 @pytest.fixture
-def test_auth(test_client):
-    return AuthenticationActions(test_client)
+def test_auth(client):
+    return AuthenticationActions(client)

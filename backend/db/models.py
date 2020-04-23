@@ -18,7 +18,18 @@ pool_members = db.Table("pool_members",
 )
 
 
-class User(UserMixin, db.Model):
+class Crud:
+
+    def save(self):
+        if self.id is None:
+            DB.add(self)
+
+
+    def delete(self):
+        DB.delete(self)
+
+
+class User(UserMixin, Crud, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(128))
     first_name = db.Column(db.String(128))
@@ -33,10 +44,6 @@ class User(UserMixin, db.Model):
     def check_password(self, password: str):
         return check_password_hash(self.password_hash, password)
 
-    def save(self):
-        """Save instance to DB"""
-        DB.add(self)
-
     @property
     def is_anonymous(self):
         return False
@@ -49,20 +56,20 @@ class User(UserMixin, db.Model):
         return '<User {}>'.format(self.username)
 
 
-class Repo(db.Model):
+class Repo(db.Model, Crud):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128))
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
 
-class Review(db.Model):
+class Review(db.Model, Crud):
     id = db.Column(db.Integer, primary_key=True)
     repo_id = db.Column(db.Integer, db.ForeignKey("repo.id"))
     submitter = db.Column(db.Integer, db.ForeignKey("user.id"))
     reviewers = db.relationship("User", secondary=reviewers, back_populates="reviews")
 
 
-class ReviewerPool(db.Model):
+class ReviewerPool(db.Model, Crud):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128))
     description = db.Column(db.String(8000))
@@ -73,13 +80,17 @@ class ReviewerPool(db.Model):
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     owner = db.relationship("User", uselist=False)
 
+    def save(self):
+        if User.query.get(self.owner_id) is not None:
+            Crud.save(self)
+        self.members.append(self.owner)
 
     def add_user(self, user: User):
         if not self.has_user(user):
             self.members.append(user)
 
     def remove_user(self, user: User):
-        if self.has_user(user):
+        if self.owner_id != user.id and self.has_user(user):
             self.members.remove(user)
 
     def has_user(self, user: User):
@@ -95,7 +106,7 @@ class ReviewerPool(db.Model):
         return cls.query.filter_by(name=name).first()
 
 
-class AnonUser(db.Model):
+class AnonUser(db.Model, Crud):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     review_id = db.Column(db.Integer, db.ForeignKey("review.id"))
@@ -103,13 +114,13 @@ class AnonUser(db.Model):
     comments = db.relationship("Comment", backref="author", lazy="dynamic")
 
 
-class File(db.Model):
+class File(db.Model, Crud):
     id = db.Column(db.Integer, primary_key=True)
     repo_id = db.Column(db.Integer, db.ForeignKey("repo.id"))
     file_path = db.Column(db.String(4096))
 
 
-class Comment(db.Model):
+class Comment(db.Model, Crud):
     id = db.Column(db.Integer, primary_key=True)
     review_id = db.Column(db.Integer, db.ForeignKey("review.id"))
     file_id = db.Column(db.Integer, db.ForeignKey("file.id"))

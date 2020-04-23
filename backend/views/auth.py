@@ -53,7 +53,7 @@ def sign_up():
 
     user = User(username=username, first_name=first_name, surname=surname)
     user.set_password(password)
-    DB.add(user)
+    user.save()
 
     login_user(user, remember=False)
 
