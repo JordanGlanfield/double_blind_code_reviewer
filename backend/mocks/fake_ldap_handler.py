@@ -16,7 +16,7 @@ class FakeLdapConnectionHandler:
         test_users: {} = file_utils.read_json_file("backend/mocks/fake_ldap_base/users.json")
         for username in test_users:
             if not User.query.filter_by(username=username).first():
-                DB.add(User(username=username))
+                User(username=username).save()
 
     @staticmethod
     def ldap_login(username, *args, **kwargs):
