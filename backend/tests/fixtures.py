@@ -75,14 +75,25 @@ def test_auth(client):
 
 
 @pytest.fixture
-def authed_user(app, db, client):
+def authed_user(app, db, api):
     password = "password"
     user = User(username="test_user")
     user.set_password(password)
     user.save()
 
-    client.post("/api/login",
-                data=json.dumps(dict(username=user.username, password=password)),
-                content_type="application/json")
+    api.post("/api/login", dict(username=user.username, password=password))
 
     return user
+
+
+class ApiActions:
+    def __init__(self, client):
+        self._client = client
+
+    def post(self, url: str, dictionary: dict):
+        return self._client.post(url, data=json.dumps(dictionary), content_type="application/json")
+
+
+@pytest.fixture
+def api(client):
+    return ApiActions(client)
