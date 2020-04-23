@@ -1,14 +1,8 @@
 import React, { useState } from "react"
 import { Redirect } from "react-router-dom"
-import {
-  Button,
-  CssBaseline,
-  TextField,
-  Typography,
-  Container
-} from "@material-ui/core/index"
+import { Button, Container, CssBaseline, TextField, Typography } from "@material-ui/core/index"
 import useStyles from "./style"
-import authentication, { getUsername, isAuthenticated } from "../../../utils/authenticationService"
+import { getUsername, isAuthenticated, login } from "../../../utils/authenticationService"
 import routes from "../../../constants/routes"
 import { useDataSource } from "../../../utils/hooks";
 
@@ -26,9 +20,9 @@ export default props => {
     return <Redirect to={{pathname: routes.getHome(getUsername())}} />
   }
 
-  const login = async event => {
+  const loginPressed = async event => {
     event.preventDefault()
-    const success = await authentication.login(username, password)
+    const success = await login(username, password)
     if (success) setAllowRedirection(success)
     else {
       setUser("")
@@ -48,7 +42,7 @@ export default props => {
         <Typography component="h1" variant="h6" color="textSecondary">
           A tool for double blind code review
         </Typography>
-        <form className={classes.form} onSubmit={login}>
+        <form className={classes.form} onSubmit={loginPressed}>
           <TextField
             error={error}
             variant="outlined"

@@ -8,7 +8,7 @@ from flask_jwt_extended import (
     jwt_refresh_token_required,
     jwt_required,
     jwt_optional, verify_jwt_in_request_optional)
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_user, logout_user, login_required
 
 from backend import LOGIN_MANAGER, DB
 from ..db.models import User
@@ -40,7 +40,6 @@ def sign_up():
     surname: str = request.json["surname"]
     password: str = request.json["password"]
 
-
     if User.find_by_username(username):
         return "Username is taken", HTTPStatus.CONFLICT
 
@@ -55,6 +54,9 @@ def sign_up():
     user.set_password(password)
     user.save()
 
+    if current_user.is_authenticated:
+        logout_user()
+
     login_user(user, remember=False)
 
     return no_content_response()
@@ -62,11 +64,8 @@ def sign_up():
 
 @bp.route("/login", methods=["POST"])
 def login():
-    try:
-        if verify_jwt_in_request_optional():
-            abort(HTTPStatus.CONFLICT)
-    except Exception:
-        pass
+    if current_user.is_authenticated:
+        abort(HTTPStatus.CONFLICT)
 
     check_json(["username", "password"])
 
@@ -87,13 +86,11 @@ def login():
 
     login_user(user, remember=remember)
 
-    access_token = create_access_token(identity=username)
-    response = jsonify(access_token=access_token)
-    return response
+    return no_content_response()
 
 
-@bp.route("/logout")
-@jwt_required
+@bp.route("/logout", methods=["POST"])
+@login_required
 def logout():
     logout_user()
     return no_content_response()
@@ -101,28 +98,15 @@ def logout():
 
 @bp.route("/is_authenticated")
 def is_authenticated():
-    try:
-        if verify_jwt_in_request_optional():
-            return jsonify(is_authenticated=True)
-    except Exception:
-        pass
-    return jsonify(is_authenticated=False)
+    return jsonify(is_authenticated=current_user.is_authenticated)
 
 
 @bp.route("/userinfo")
-@jwt_required
+@login_required
 def user_info():
     username = get_jwt_identity()
     user = User.find_by_username(username)
     return jsonify(firstname=user.firstname, lastname=user.surname)
-
-
-@bp.route("/token/refresh", methods=["POST"])
-@jwt_refresh_token_required
-def refresh():
-    curr_user = get_jwt_identity()
-    access_token = create_access_token(identity=curr_user)
-    return jsonify(access_token=access_token)
 
 
 ##################################################################
