@@ -1,11 +1,15 @@
-from backend import User
+from backend import User, ReviewerPool
 
 from ..fixtures import *
+from ...utils.json import from_response_json
 
 
-def login() -> User:
-    pass
+def test_can_create_reviewer_pool(db, authed_user, api):
+    response = api.post("/api/v1.0/reviews/create/pool",
+         dict(name="The Best Pool", description="It's really good!"))
 
+    data = from_response_json(response)
 
-def test_can_create_reviewer_pool(client, authed_user):
-    client.post("/api/v1.0/reviews/create/pool", data=dict())
+    assert "id" in data
+    assert ReviewerPool.query.get(data["id"]) is not None
+

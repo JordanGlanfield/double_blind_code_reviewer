@@ -1,7 +1,8 @@
+import json
 from datetime import date, time
 from typing import List
 
-from flask import request, abort
+from flask import request, abort, Response, Request
 from flask.json import JSONEncoder
 
 
@@ -30,3 +31,6 @@ def check_json(required_fields: List[str]):
         if not field in request.json:
             abort(400)
 
+
+def from_response_json(response: Response) -> dict:
+    return json.loads(response.get_data(as_text=True))
