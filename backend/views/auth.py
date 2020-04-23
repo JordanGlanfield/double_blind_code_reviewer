@@ -2,15 +2,10 @@ from http import HTTPStatus
 from urllib.parse import urlparse, urljoin
 
 from flask import request, g, Blueprint, jsonify, current_app, abort
-from flask_jwt_extended import (
-    create_access_token,
-    get_jwt_identity,
-    jwt_refresh_token_required,
-    jwt_required,
-    jwt_optional, verify_jwt_in_request_optional)
 from flask_login import current_user, login_user, logout_user, login_required
 
 from backend import LOGIN_MANAGER, DB
+from ..db.api_models import UserDto
 from ..db.models import User
 from ..utils.json import check_json
 from ..utils.session import no_content_response
@@ -104,9 +99,7 @@ def is_authenticated():
 @bp.route("/userinfo")
 @login_required
 def user_info():
-    username = get_jwt_identity()
-    user = User.find_by_username(username)
-    return jsonify(firstname=user.firstname, lastname=user.surname)
+    return jsonify(UserDto.from_db(current_user))
 
 
 ##################################################################

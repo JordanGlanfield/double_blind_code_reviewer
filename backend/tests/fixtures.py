@@ -4,8 +4,6 @@ import tempfile
 from unittest.mock import patch
 
 import pytest
-from flask_jwt_extended import create_access_token
-from flask_login import login_user
 
 from backend import create_app, User
 from backend.db.database import DB
@@ -54,10 +52,10 @@ class AuthenticationActions:
     def __init__(self, client):
         self._client = client
 
-    def login(self, title, username="logan", password="logan"):
+    def login(self, username="logan", password="logan"):
         with patch(
             "backend.auth.auth.login",
-            return_value={"extensionAttribute6": title},
+            return_value={},
             autospec=True,
         ):
             return self._client.post(
@@ -77,16 +75,14 @@ def test_auth(client):
 
 
 @pytest.fixture
-def auth_headers(app, db, client):
+def authed_user(app, db, client):
+    password = "password"
     user = User(username="test_user")
-    user.set_password("password")
+    user.set_password(password)
     user.save()
 
-    login_user(user, remember=False)
+    client.post("/api/login",
+                data=json.dumps(dict(username=user.username, password=password)),
+                content_type="application/json")
 
-    with app.app_context():
-        access_token = create_access_token(user.username)
-
-    return {
-        'Authorization': 'Bearer {}'.format(access_token)
-    }
+    return user

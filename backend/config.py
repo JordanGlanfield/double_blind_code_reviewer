@@ -6,7 +6,6 @@ class BaseConfig:
 
     # Secret Keys ===============================================
     SECRET_KEY = os.environb.get(b"SECRET_KEY", "dev_secret_key")
-    JWT_SECRET_KEY = os.environb.get(b"JWT_SECRET_KEY", "dev_jwt_secret_key")
     WTF_CSRF_SECRET_KEY = os.environb.get(b"WTF_CSRF_SECRET_KEY", "dev_wtf_secret_key")
 
     # JWT =======================================================
