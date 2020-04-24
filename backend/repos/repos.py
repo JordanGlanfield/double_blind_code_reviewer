@@ -1,4 +1,5 @@
 from collections import defaultdict
+from http import HTTPStatus
 from typing import Dict, List
 
 from flask import Blueprint, jsonify, abort, send_from_directory, make_response, request
@@ -15,7 +16,7 @@ repos_bp = Blueprint("repos", __name__, url_prefix="/api/v1.0/repos", static_fol
 
 @repos_bp.errorhandler(404)
 def not_found(error):
-    return make_response(jsonify({'error': 'Not found'}), 404)
+    return make_response(jsonify({'error': 'Not found'}), HTTPStatus.NOT_FOUND)
 
 
 # Track repo id and file path. Store mapping from line numbers to chronologically ordered
@@ -79,7 +80,7 @@ def init_new_repo(repo_name: str):
     repo = Repo.init(repo_path, mkdir=True)
 
     if not repo:
-        abort(400)
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR)
 
     repo.config_writer().set_value("receive", "denyCurrentBranch", "updateInstead")
 
@@ -87,6 +88,7 @@ def init_new_repo(repo_name: str):
         recursive_chown(repo_path, "www-data", "www-data")
     except:
         print("Failed to change " + repo_path + " ownership to www-data")
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR)
 
 
 @repos_bp.route("/create", methods=["POST"])
@@ -96,7 +98,7 @@ def create_repo():
     repo_name: str = request.json["repo_name"]
 
     if repo_name == "" or "\\" in repo_name or "/" in repo_name:
-        abort(400)
+        abort(HTTPStatus.BAD_REQUEST)
 
     init_new_repo(repo_name)
 
@@ -114,12 +116,12 @@ def get_repos():
 @repos_bp.route("/view/dir/<string:repo_id>/<path:path>", methods=["GET"])
 def get_repo(repo_id: str, path: str):
     if repo_id == "":
-        abort(400)
+        abort(HTTPStatus.NOT_FOUND)
 
     contents = get_directory_contents(repo_id + "/" + path)
 
     if not contents:
-        abort(400)
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR)
 
     git_folder = ".git"
 
@@ -163,7 +165,7 @@ def post_comment(repo_id: str, file_path):
     comment = request.json["comment"]
 
     if comment == "":
-        abort(400)
+        abort(HTTPStatus.BAD_REQUEST)
 
     line_number = request.json.get("line_number", 0)
     parent_id = request.json.get("parent_id", -1)
