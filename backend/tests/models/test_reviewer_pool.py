@@ -26,6 +26,14 @@ def test_owner_is_in_pool_initially(db):
     assert reviewer_pool.has_user(owner)
 
 
+def test_cannot_save_pool_without_owner(db):
+    name = "Testing Pool"
+    reviewer_pool = ReviewerPool(name=name, description="Well good")
+    reviewer_pool.save()
+
+    assert not ReviewerPool.find_by_name(name)
+
+
 def test_can_find_reviewer_pool_by_name(db):
     (reviewer_pool, _) = get_test_pool(db)
 

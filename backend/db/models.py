@@ -83,7 +83,8 @@ class ReviewerPool(db.Model, Crud):
     def save(self):
         if User.query.get(self.owner_id) is not None:
             Crud.save(self)
-        self.members.append(self.owner)
+            self.members.append(self.owner)
+            db.session.commit()
 
     def add_user(self, user: User):
         if not self.has_user(user):
