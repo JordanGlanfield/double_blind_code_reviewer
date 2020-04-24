@@ -13,15 +13,19 @@ import RepoFile from "./routes/RepoFile/RepoFile";
 import TopBar from "./mainLayout/TopBar/TopBar";
 import ReviewerPoolDashboard from "./review/ReviewerPoolDashboard";
 import Signup from "./routes/Signup/Signup";
+import { useDataSource } from "../utils/hooks";
+import { isAuthenticated, setUsername } from "../utils/authenticationService";
 
 export default () => {
+  let isAuthenticatedSource = useDataSource(isAuthenticated);
+
   return (
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <Switch>
           <Route exact path={routes.SIGNUP} component={Signup} />
           <Route exact path={routes.LOGIN} component={Login} />
-          <ProtectedRoute>
+          {!isAuthenticatedSource.isFetching && isAuthenticatedSource.data && <Route>
             <Route path={routes.NAV} component={TopBar} />
             <Switch>
               <Route path={routes.HOME} component={Home} />
@@ -29,7 +33,7 @@ export default () => {
               <Route path={routes.REPO_FILES} component={RepoFile} />
               <Route path={routes.REVIEWER_POOL} component={ReviewerPoolDashboard} />
             </Switch>
-          </ProtectedRoute>
+          </Route>}
         </Switch>
       </BrowserRouter>
     </ThemeProvider>

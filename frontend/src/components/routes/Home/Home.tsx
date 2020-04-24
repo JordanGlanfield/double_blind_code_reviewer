@@ -13,8 +13,6 @@ const { Title } = Typography;
 
 // TODO - get username
 const Home = () => {
-  const {user} = useParams();
-
   return (
     <BodyDiv>
 
