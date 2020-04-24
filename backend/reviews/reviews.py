@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from flask import Blueprint, jsonify, make_response, request, abort
 from flask_login import login_required
 
@@ -12,7 +14,7 @@ reviews_bp = Blueprint("reviews", __name__, url_prefix="/api/v1.0/reviews", stat
 
 @reviews_bp.errorhandler(404)
 def not_found(error):
-    return make_response(jsonify({'error': 'Not found'}), 404)
+    return make_response(jsonify({'error': 'Not found'}), HTTPStatus.NOT_FOUND)
 
 
 @reviews_bp.route("/create/pool", methods=["POST"])
@@ -26,7 +28,7 @@ def create_pool():
     active_user = get_active_user()
     pool = ReviewerPool(name=name, description=description, owner_id=active_user.id)
 
-    DB.db.session.add(pool)
+    pool.save()
     pool.add_user(active_user)
     DB.db.session.commit()
 
@@ -58,9 +60,12 @@ def delete_user_from_pool(pool_name: str, username: str):
     check_owner(reviewer_pool)
     user = check_and_get_user(username)
 
+    if not user in reviewer_pool.members:
+        abort(HTTPStatus.NOT_FOUND)
+
     # Can't remove owner
     if reviewer_pool.owner_id == user.id:
-        abort(409) # Conflict
+        abort(HTTPStatus.CONFLICT)
 
     reviewer_pool.remove_user(user)
     DB.db.session.commit()
@@ -82,7 +87,7 @@ def get_pool(pool_name: str):
     reviewer_pool = check_and_get_pool(pool_name)
 
     if not reviewer_pool.has_user(get_active_user()):
-        return make_response(jsonify({"error": "Access Denied"}), 403)
+        return make_response(jsonify({"error": "Access Denied"}), HTTPStatus.UNAUTHORIZED)
 
     return jsonify(ReviewerPoolDto.from_db(reviewer_pool))
 
@@ -91,20 +96,20 @@ def check_and_get_pool(pool_name: str) -> ReviewerPool:
     reviewer_pool: ReviewerPool = ReviewerPool.find_by_name(pool_name)
 
     if not reviewer_pool:
-        abort(404)
+        abort(HTTPStatus.NOT_FOUND)
 
     return reviewer_pool
 
 
 def check_owner(reviewer_pool: ReviewerPool):
     if get_active_user().username != reviewer_pool.owner.username:
-        abort(403)
+        abort(HTTPStatus.UNAUTHORIZED)
 
 
 def check_and_get_user(username: str):
     user = User.find_by_username(username)
 
     if not user:
-        abort(404)
+        abort(HTTPStatus.NOT_FOUND)
 
     return user
