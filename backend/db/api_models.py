@@ -6,11 +6,11 @@ from backend import User, ReviewerPool, DB
 
 
 class UserDto():
-    def __init__(self, id: int, username: str, first_name: str, surname: str):
-        self.id = id
-        self.username = username
-        self.first_name = first_name
-        self.surname = surname
+    def __init__(self, id: str, username: str, first_name: str, surname: str):
+        self.id: str = id
+        self.username: str = username
+        self.first_name: str = first_name
+        self.surname: str = surname
 
     @staticmethod
     def from_db(user: User):
@@ -18,12 +18,12 @@ class UserDto():
 
 
 class ReviewerPoolDto():
-    def __init__(self, id: int, name: str, description: str, owner: UserDto, members: List[UserDto]):
-        self.id = id
-        self.name = name
-        self.description = description
-        self.owner = owner
-        self.members = members
+    def __init__(self, id: str, name: str, description: str, owner: UserDto, members: List[UserDto]):
+        self.id: str = id
+        self.name: str = name
+        self.description: str = description
+        self.owner: UserDto = owner
+        self.members: List[UserDto] = members
 
     @staticmethod
     def from_db(reviewer_pool: ReviewerPool):
@@ -35,12 +35,12 @@ class ReviewerPoolDto():
 
 
 class ReviewerPoolSummaryDto():
-    def __init__(self, id: int, name: str, description: str, owner: UserDto, num_members: int):
-        self.id = id
-        self.name = name
-        self.description = description
-        self.owner = owner
-        self.num_members = num_members
+    def __init__(self, id: str, name: str, description: str, owner: UserDto, num_members: int):
+        self.id: str = id
+        self.name: str = name
+        self.description: str = description
+        self.owner: UserDto = owner
+        self.num_members: int = num_members
 
     @staticmethod
     def from_db(reviewer_pool: ReviewerPool):
