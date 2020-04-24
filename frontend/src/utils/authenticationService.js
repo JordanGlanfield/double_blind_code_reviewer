@@ -24,6 +24,18 @@ export async function login(username, password) {
   return false;
 }
 
+export async function setUsername() {
+  const response = await fetch("/api/userinfo");
+
+  if (!response.ok) {
+    return undefined;
+  }
+
+  let user = await extractData(response);
+  storeTokens(user.username);
+  return user.username;
+}
+
 export async function logout() {
   removeTokens();
   return fetch("/api/logout");
