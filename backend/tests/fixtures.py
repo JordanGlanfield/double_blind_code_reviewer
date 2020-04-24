@@ -4,13 +4,15 @@ import tempfile
 from unittest.mock import patch
 
 import pytest
+from flask import Response, Flask
+from flask.testing import FlaskClient
 
 from backend import create_app, User
-from backend.db.database import DB
+from backend.db.database import DB, Database
 
 
 @pytest.fixture
-def app():
+def app() -> Flask:
     db_fd, db_path = tempfile.mkstemp()
     app = create_app(
         dict(
@@ -28,12 +30,12 @@ def app():
 
 
 @pytest.fixture
-def client(app):
+def client(app) -> FlaskClient:
     return app.test_client()
 
 
 @pytest.fixture
-def db(app):
+def db(app) -> Database:
     with app.app_context():
         DB.create_all()
         try:
@@ -70,12 +72,12 @@ class AuthenticationActions:
 
 
 @pytest.fixture
-def test_auth(client):
+def test_auth(client) -> AuthenticationActions:
     return AuthenticationActions(client)
 
 
 @pytest.fixture
-def authed_user(app, db, api):
+def authed_user(app, db, api) -> User:
     password = "password"
     user = User(username="test_user")
     user.set_password(password)
@@ -88,12 +90,18 @@ def authed_user(app, db, api):
 
 class ApiActions:
     def __init__(self, client):
-        self._client = client
+        self._client: FlaskClient = client
 
-    def post(self, url: str, dictionary: dict):
+    def get(self, url: str) -> Response:
+        return self._client.get(url)
+
+    def post(self, url: str, dictionary: dict) -> Response:
         return self._client.post(url, data=json.dumps(dictionary), content_type="application/json")
+
+    def delete(self, url: str) -> Response:
+        return self._client.delete(url)
 
 
 @pytest.fixture
-def api(client):
+def api(client) -> ApiActions:
     return ApiActions(client)
