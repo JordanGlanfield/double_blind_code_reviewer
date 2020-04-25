@@ -16,6 +16,7 @@ import Signup from "./routes/Signup/Signup";
 import { Layout } from "antd"
 import styled from "styled-components";
 import { Centered } from "./styles/Centered";
+import CreateRepo from "./routes/CreateRepo/CreateRepo";
 
 const App = () => {
   return (
@@ -47,6 +48,7 @@ const PageRoutes = () => {
     <Route path={routes.REPO_DIRS} component={RepoDir} />
     <Route path={routes.REPO_FILES} component={RepoFile} />
     <Route path={routes.REVIEWER_POOL} component={ReviewerPoolDashboard} />
+    <Route path={routes.CREATE_REPO} component={CreateRepo} />
   </Switch>
 };
 

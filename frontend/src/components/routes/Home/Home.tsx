@@ -1,6 +1,6 @@
 import * as React from "react"
 import ViewRepos from "../ViewRepos/ViewRepos";
-import { Button, Typography } from "antd";
+import { Button, PageHeader, Typography } from "antd";
 import ReviewList from "../../review/ReviewList";
 import { getReviewStats, getReviewSubmissionStats } from "../../../utils/reviewApi";
 import ReviewerPools from "../../review/ReviewerPools";
@@ -12,10 +12,11 @@ const { Title } = Typography;
 
 // TODO - get username
 const Home = () => {
-  return (
+  return <>
+    <PageHeader title="DBCR Dashboard" />
     <ContentArea>
       <Section>
-        <Title level={2}>Your repositories:</Title>
+        <Title level={3}>Your repositories:</Title>
         <NewRepoSection>
           <Button type="primary" href={routes.CREATE_REPO}><PlusOutlined /> Create New Repository</Button>
         </NewRepoSection>
@@ -23,26 +24,25 @@ const Home = () => {
       </Section>
 
       <Section>
-        <Title level={2}>Reviews received:</Title>
+        <Title level={3}>Reviews received:</Title>
         <ReviewList getReviews={getReviewSubmissionStats}/>
       </Section>
 
       <Section>
-        <Title level={2}>Code to review:</Title>
+        <Title level={3}>Code to review:</Title>
         <ReviewList getReviews={getReviewStats}/>
       </Section>
 
       <Section>
-        <Title level={2}>Your reviewer pools</Title>
+        <Title level={3}>Your reviewer pools</Title>
         <ReviewerPools/>
       </Section>
     </ContentArea>
-  )
+  </>
 };
 
 const ContentArea = styled.div`
   background-color: white;
-  margin-top: 32px;
   padding-top: 16px;
   padding-left: 32px;
   padding-right: 32px;
