@@ -1,17 +1,19 @@
 import React from "react";
 
-import { Affix, Button } from "antd";
+import { Affix, Button, Menu } from "antd";
 
 import routes from "../../../constants/routes";
 import { getUsername, logout } from "../../../utils/authenticationService";
 
 const TopBar = () => {
-  return <Affix offsetTop={0}>
-    <div>
-      <Button type={"primary"} href={routes.getHome(getUsername())}>Home</Button>
-      <Button type={"primary"} onClick={logout} href={routes.LOGIN}>Log Out</Button>
-    </div>
-  </Affix>
+  return <Menu theme="dark" mode="horizontal">
+    <Menu.Item>
+      <a href={routes.getHome(getUsername())}>Home</a>
+    </Menu.Item>
+    <Menu.Item>
+      <a onClick={logout} href={routes.LOGIN}>Log Out</a>
+    </Menu.Item>
+  </Menu>
 };
 
 export default TopBar;

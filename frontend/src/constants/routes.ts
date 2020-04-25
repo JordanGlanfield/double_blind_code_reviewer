@@ -10,6 +10,7 @@ export default {
   REPO_DIRS: "/:user/repo/:repo/",
   REPO_FILES: "/:user/repofiles/:repo",
   REVIEWER_POOL: "/:user/pool/:pool",
+  CREATE_REPO: "/repo/new",
   getHome: getHome,
   getRepoDir: getRepoDir,
   getRepoFile: getRepoFile,
