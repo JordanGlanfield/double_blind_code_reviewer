@@ -6,6 +6,7 @@ import routes from "../../../constants/routes";
 import BodyDiv from "../../styles/BodyDiv";
 import styled from "styled-components";
 import { CenteredText } from "../../styles/Centered";
+import { setUsername } from "../../../utils/authenticationService";
 
 const Signup = withRouter(({history}) => {
 
@@ -13,7 +14,7 @@ const Signup = withRouter(({history}) => {
     signUp(values.username, values.firstName, values.surname, values.password)
       .then(signupResult => {
         if (signupResult.success) {
-          history.push(routes.getHome(values.username));
+          setUsername().then(() => history.push(routes.getHome(values.username)));
         } else {
           alert(signupResult.errorMessage);
         }

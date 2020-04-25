@@ -26,12 +26,13 @@ import "prismjs/components/prism-python";
 import { getComments, postComment } from "../../../utils/commentApi";
 import Comment from "../../../types/Comment";
 import { useDataSource } from "../../../utils/hooks";
+import { getUsername } from "../../../utils/authenticationService";
 
 interface Props extends RouteComponentProps {
 }
 
 const RepoFile = (props: Props) => {
-  const {user, repo} = useParams();
+  const {repo} = useParams();
   const filePath = extractPathFromRoute(props);
 
   useEffect(() => {
@@ -42,7 +43,7 @@ const RepoFile = (props: Props) => {
   let fileSource = useDataSource(() => getFile(repoId, filePath));
   let commentsSource = useDataSource(() => getComments(repoId, filePath));
 
-  if (!user || !repo) {
+  if (!repo) {
     return <div>Invalid parameters</div>;
   }
 
@@ -67,7 +68,7 @@ const RepoFile = (props: Props) => {
       .then(commentsSource.forceRefetch);
   };
 
-  const dirHref = routes.getRepoDir(user, repo, getNextDirUp(filePath));
+  const dirHref = routes.getRepoDir(getUsername(), repo, getNextDirUp(filePath));
 
   return <>
     <Button href={dirHref}>Back To Folder</Button>

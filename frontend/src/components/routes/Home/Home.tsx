@@ -2,7 +2,6 @@ import * as React from "react"
 import ViewRepos from "../ViewRepos/ViewRepos";
 import { Typography } from "antd";
 import NewRepo from "../ViewRepos/NewRepo";
-import { useParams } from "react-router-dom";
 import ReviewList from "../../review/ReviewList";
 import { getReviewStats, getReviewSubmissionStats } from "../../../utils/reviewApi";
 import ReviewerPools from "../../review/ReviewerPools";
@@ -15,7 +14,6 @@ const { Title } = Typography;
 const Home = () => {
   return (
     <BodyDiv>
-
       <Bordered>
         <Title level={2}>Your repos:</Title>
         <ViewRepos/>

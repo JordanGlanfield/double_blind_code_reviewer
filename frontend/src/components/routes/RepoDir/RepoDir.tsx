@@ -6,6 +6,7 @@ import routes from "../../../constants/routes";
 import { extractPathFromRoute, getNextDirUp } from "../../../utils/routeUtil";
 import { getDir } from "../../../utils/repoApi";
 import { useDataSourceWithMessages } from "../../../utils/hooks";
+import { getUsername } from "../../../utils/authenticationService";
 
 interface Props extends RouteComponentProps {
 }
@@ -17,12 +18,12 @@ interface DirEntry {
 }
 
 const RepoDir = (props: Props) => {
-  let { user, repo } = useParams();
+  let {repo} = useParams();
   let currentDir = extractPathFromRoute(props);
 
   let dirSource = useDataSourceWithMessages(() => getDir(repo ? repo : "", currentDir));
 
-  if (!user || !repo) {
+  if (!repo) {
     return <Redirect to={{
       pathname: routes.HOME,
       state: { from: props.location }
@@ -33,7 +34,7 @@ const RepoDir = (props: Props) => {
     return <Typography>{dirSource.message}</Typography>;
   }
 
-  const dirContents = getDirectoryEntries(user, repo, currentDir, dirSource.data);
+  const dirContents = getDirectoryEntries(getUsername(), repo, currentDir, dirSource.data);
 
   return <div>
     <Typography>Current directory: {currentDir === "" ? "/" : ""}{currentDir}</Typography>

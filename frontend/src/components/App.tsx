@@ -13,8 +13,6 @@ import RepoFile from "./routes/RepoFile/RepoFile";
 import TopBar from "./mainLayout/TopBar/TopBar";
 import ReviewerPoolDashboard from "./review/ReviewerPoolDashboard";
 import Signup from "./routes/Signup/Signup";
-import { useDataSource } from "../utils/hooks";
-import { isAuthenticated, setUsername } from "../utils/authenticationService";
 
 export default () => {
   return (

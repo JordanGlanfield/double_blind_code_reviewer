@@ -49,5 +49,6 @@ export async function isAuthenticated() {
 }
 
 export function getUsername() {
-  return sessionStorage.getItem(authConstants.USERNAME);
+  let username = sessionStorage.getItem(authConstants.USERNAME);
+  return username ? username : "";
 }
