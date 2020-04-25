@@ -7,16 +7,11 @@ import { useDataSource } from "../../utils/hooks";
 export default function ProtectedRoute({component: Component, ...rest}) {
     let isAuthenticatedSource = useDataSource(isAuthenticated);
 
-    if (isAuthenticatedSource.isFetching) {
-      return <Route />
-    }
+    return <Route {...rest} render={props => {
+      if (!isAuthenticatedSource.isFetching && !isAuthenticatedSource.data) {
+        return <Redirect to={{pathname: routes.LOGIN, state: {from: props.location}}}/>;
+      }
 
-    if (!isAuthenticatedSource.data) {
-      return <Route {...rest} render={props =>
-            <Redirect to={{pathname: routes.LOGIN, state: {from: props.location}}}/>
-        }
-      />
-    }
-
-    return <Route {...rest} render={props => <Component {...props} />} />;
+      return <Component {...props} />
+    }} />;
 }
