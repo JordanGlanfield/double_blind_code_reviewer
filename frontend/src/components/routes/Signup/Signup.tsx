@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Form, Input, Typography } from "antd";
+import { Button, Form, Input, PageHeader, Typography } from "antd";
 import { signUp } from "../../../utils/userApi";
 import { withRouter } from "react-router-dom";
 import routes from "../../../constants/routes";
@@ -20,8 +20,8 @@ const Signup = withRouter(({history}) => {
       });
   };
 
-  return <SignupDiv>
-    <CenteredText><Typography.Title level={2}>Sign up to DBCR!</Typography.Title></CenteredText>
+  return <>
+    <PageHeader title={"Sign up to DBCR"} onBack={() => window.history.back()}/>
     <Form labelCol={{span: 4}} wrapperCol={{span: 16}} onFinish={sendSignUp}>
       <Form.Item label="Username"
                  name="username"
@@ -42,12 +42,7 @@ const Signup = withRouter(({history}) => {
         <Button type="primary" htmlType="submit">Sign Up</Button>
       </Form.Item>
     </Form>
-  </SignupDiv>
+  </>
 });
-
-const SignupDiv = styled.div`
-  margin-top: 20px
-`;
-
 
 export default Signup;

@@ -52,7 +52,7 @@ export async function checkIsAuthenticated() {
   return data.is_authenticated;
 }
 
-export function checkHasBeenAuthenticated() {
+export function hasBeenAuthenticated() {
   return getUsername() !== "";
 }
 
