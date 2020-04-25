@@ -17,21 +17,25 @@ import { Layout } from "antd"
 import styled from "styled-components";
 import { Centered } from "./styles/Centered";
 import CreateRepo from "./routes/CreateRepo/CreateRepo";
+import { checkIsAuthenticated } from "../utils/authenticationService";
+import { useDataSource } from "../utils/hooks";
 
 const App = () => {
+  const isAuthenticatedSource = useDataSource(checkIsAuthenticated);
+
   return (
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <Layout>
           <Layout.Header>
-            <TopBar />
+            <TopBar isAuthenticatedSource={isAuthenticatedSource} />
           </Layout.Header>
           <Layout.Content>
             <ContentDiv>
               <Switch>
                 <Route exact path={routes.SIGNUP} component={Signup} />
                 <Route exact path={routes.LOGIN} component={Login} />
-                <ProtectedRoute component={PageRoutes} />
+                <ProtectedRoute isAuthenticatedSource={isAuthenticatedSource} component={PageRoutes} />
               </Switch>
             </ContentDiv>
           </Layout.Content>
