@@ -47,7 +47,7 @@ const ReviewerPools = () => {
         </Table>
     </TableDiv>
     <FormDiv>
-      <Typography.Title level={2}>Create new reviewer pool</Typography.Title>
+      <Typography.Title level={3}>Create new reviewer pool</Typography.Title>
       <Form
         labelCol={{span: 4}}
         wrapperCol={{span: 16}}
