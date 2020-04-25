@@ -17,25 +17,27 @@ import { useDataSource } from "../utils/hooks";
 import { isAuthenticated, setUsername } from "../utils/authenticationService";
 
 export default () => {
-  let isAuthenticatedSource = useDataSource(isAuthenticated);
-
   return (
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <Switch>
           <Route exact path={routes.SIGNUP} component={Signup} />
           <Route exact path={routes.LOGIN} component={Login} />
-          {!isAuthenticatedSource.isFetching && isAuthenticatedSource.data && <Route>
-            <Route path={routes.NAV} component={TopBar} />
-            <Switch>
-              <Route path={routes.HOME} component={Home} />
-              <Route path={routes.REPO_DIRS} component={RepoDir} />
-              <Route path={routes.REPO_FILES} component={RepoFile} />
-              <Route path={routes.REVIEWER_POOL} component={ReviewerPoolDashboard} />
-            </Switch>
-          </Route>}
+          <ProtectedRoute component={PageRoutes} />
         </Switch>
       </BrowserRouter>
     </ThemeProvider>
   )
+}
+
+const PageRoutes = () => {
+  return <>
+    <Route path={routes.NAV} component={TopBar} />
+    <Switch>
+      <Route path={routes.HOME} component={Home} />
+      <Route path={routes.REPO_DIRS} component={RepoDir} />
+      <Route path={routes.REPO_FILES} component={RepoFile} />
+      <Route path={routes.REVIEWER_POOL} component={ReviewerPoolDashboard} />
+    </Switch>
+  </>
 }

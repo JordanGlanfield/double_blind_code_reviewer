@@ -38,7 +38,7 @@ export async function setUsername() {
 
 export async function logout() {
   removeTokens();
-  return fetch("/api/logout");
+  return fetch("/api/logout", {method: "POST"});
 }
 
 export async function isAuthenticated() {
