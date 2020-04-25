@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { Redirect } from "react-router-dom"
 import { Button, Container, CssBaseline, TextField, Typography } from "@material-ui/core/index"
 import useStyles from "./style"
-import { getUsername, isAuthenticated, login } from "../../../utils/authenticationService"
+import { getUsername, isAuthenticated, login, setUsername } from "../../../utils/authenticationService"
 import routes from "../../../constants/routes"
 import { useDataSource } from "../../../utils/hooks";
 
@@ -23,7 +23,9 @@ export default props => {
   const loginPressed = async event => {
     event.preventDefault()
     const success = await login(username, password)
-    if (success) setAllowRedirection(success)
+    if (success) {
+      setUsername().then(() => setAllowRedirection(true));
+    }
     else {
       setUser("")
       setPassword("")
