@@ -42,10 +42,12 @@ export async function logout() {
 }
 
 export async function checkIsAuthenticated() {
-    let response = await fetch("/api/is_authenticated");
+  let usernamePromise = setUsername();
+  let response = await fetch("/api/is_authenticated");
+  await usernamePromise;
 
-    let data = await extractData(response);
-    return data.is_authenticated;
+  let data = await extractData(response);
+  return data.is_authenticated;
 }
 
 export function checkHasBeenAuthenticated() {
