@@ -21,6 +21,10 @@ def load_user(user_id):
     return User.query.get(user_id)
 
 
+@LOGIN_MANAGER.unauthorized_handler
+def unauthorized():
+    abort(HTTPStatus.UNAUTHORIZED)
+
 @bp.before_request
 def get_current_user():
     g.user = current_user
@@ -99,6 +103,7 @@ def is_authenticated():
 @bp.route("/userinfo")
 @login_required
 def user_info():
+    HTTPStatus
     return jsonify(UserDto.from_db(current_user))
 
 

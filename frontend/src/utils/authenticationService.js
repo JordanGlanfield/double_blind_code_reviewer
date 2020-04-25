@@ -25,9 +25,10 @@ export async function login(username, password) {
 }
 
 export async function setUsername() {
-  const response = await fetch("/api/userinfo");
+  let response = await fetch("/api/userinfo");
 
   if (!response.ok) {
+    removeTokens();
     return undefined;
   }
 
@@ -47,6 +48,7 @@ export async function checkIsAuthenticated() {
   await usernamePromise;
 
   let data = await extractData(response);
+
   return data.is_authenticated;
 }
 
