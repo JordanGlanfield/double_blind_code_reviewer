@@ -3,7 +3,6 @@ import { Button, Form, Input, Typography } from "antd";
 import { signUp } from "../../../utils/userApi";
 import { withRouter } from "react-router-dom";
 import routes from "../../../constants/routes";
-import BodyDiv from "../../styles/BodyDiv";
 import styled from "styled-components";
 import { CenteredText } from "../../styles/Centered";
 import { setUsername } from "../../../utils/authenticationService";
@@ -46,7 +45,7 @@ const Signup = withRouter(({history}) => {
   </SignupDiv>
 });
 
-const SignupDiv = styled(BodyDiv) `
+const SignupDiv = styled.div`
   margin-top: 20px
 `;
 
