@@ -3,7 +3,6 @@ import { ReviewStats } from "../../types/ReviewStats";
 import { Badge, Button, Col, Row, Tag } from "antd";
 import styled from "styled-components";
 import { BellFilled } from "@ant-design/icons/lib";
-import { Centered } from "../styles/Centered";
 
 interface Props {
   reviewUrl: string,
@@ -18,7 +17,7 @@ const ReviewInfo = (props: Props) => {
   return <BoundingDiv><Row>
     <Col span={6}>
       <LeftAligned>
-        <Button href={reviewUrl}>{reviewStats.repoName}</Button>
+        <Button type="primary" ghost href={reviewUrl}>{reviewStats.repoName}</Button>
       </LeftAligned>
     </Col>
     <Col span={6}>

@@ -41,11 +41,15 @@ export async function logout() {
   return fetch("/api/logout", {method: "POST"});
 }
 
-export async function isAuthenticated() {
+export async function checkIsAuthenticated() {
     let response = await fetch("/api/is_authenticated");
 
     let data = await extractData(response);
     return data.is_authenticated;
+}
+
+export function checkHasBeenAuthenticated() {
+  return getUsername() !== "";
 }
 
 export function getUsername() {

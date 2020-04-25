@@ -1,17 +1,21 @@
 import React from "react";
 
-import { Affix, Button, Menu } from "antd";
+import { Menu } from "antd";
 
 import routes from "../../../constants/routes";
-import { getUsername, logout } from "../../../utils/authenticationService";
+import { checkHasBeenAuthenticated, getUsername, logout } from "../../../utils/authenticationService";
 
 const TopBar = () => {
+  const hasAuthenticated = checkHasBeenAuthenticated();
+
   return <Menu theme="dark" mode="horizontal">
     <Menu.Item>
-      <a href={routes.getHome(getUsername())}>Home</a>
+      <a href={hasAuthenticated ? routes.getHome(getUsername()) : routes.LOGIN}>Home</a>
     </Menu.Item>
     <Menu.Item>
-      <a onClick={logout} href={routes.LOGIN}>Log Out</a>
+      {hasAuthenticated
+        ? <a onClick={logout} href={routes.LOGIN}>Log Out</a>
+        : <a href={routes.SIGNUP}>Sign Up</a>}
     </Menu.Item>
   </Menu>
 };
