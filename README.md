@@ -210,9 +210,12 @@ mv /path/to/favicon.png /path/to/tapp/frontend/public/static/favicon.ico
 
 Run `docker build --tag dbcr:1.0 .` from top level directory of project to build image.
 
-`docker run --publish 80:80 --detach --name dbcr dbcr:1.0` to start
+`docker run --publish 80:80 --detach -v storage_volume:/dbcr/storage --name dbcr dbcr:1.0` to start
 
 Get shell in docker container: `docker exec -i -t dbcr /bin/bash`
 
 Note, "dangling" images may be produced by the build process. Use:
 `docker rmi $(docker images -f "dangling=true" -q)` to remove these
+
+For run configuration in IntelliJ, add the following to the run options:
+- `--publish 80:80 --detach -v storage_volume:/dbcr/storage`
