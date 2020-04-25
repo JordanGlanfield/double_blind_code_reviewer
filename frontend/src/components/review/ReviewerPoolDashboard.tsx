@@ -1,7 +1,7 @@
 import React from "react";
 import { useDataSourceWithMessages } from "../../utils/hooks";
 import { addUserToPool, getReviewerPool, removeUserFromPool } from "../../utils/reviewApi";
-import { Button, Descriptions, Form, Input, List, Space, Typography } from "antd";
+import { Button, Descriptions, Form, Input, List, Typography } from "antd";
 import { getUsername } from "../../utils/authenticationService";
 import User from "../../types/User";
 import ReviewerPool from "../../types/ReviewerPool";
@@ -11,7 +11,7 @@ import { DeleteOutlined } from "@ant-design/icons/lib";
 
 
 const ReviewerPoolDashboard = () => {
-  const {user, pool} = useParams();
+  const {pool} = useParams();
 
   const poolSource = useDataSourceWithMessages(() => getReviewerPool(pool ? pool : ""));
 

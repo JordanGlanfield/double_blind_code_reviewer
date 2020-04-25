@@ -1,4 +1,4 @@
-import { buildPost, extractData } from "./apiUtil";
+import { buildPost } from "./apiUtil";
 
 export interface SignupResult {
   success: boolean,
