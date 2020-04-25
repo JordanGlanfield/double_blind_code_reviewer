@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { Redirect } from "react-router-dom"
 import { Button, Container, CssBaseline, TextField, Typography } from "@material-ui/core/index"
 import useStyles from "./style"
-import { getUsername, isAuthenticated, login, setUsername } from "../../../utils/authenticationService"
+import { checkIsAuthenticated, getUsername, login, setUsername } from "../../../utils/authenticationService"
 import routes from "../../../constants/routes"
 import { useDataSource } from "../../../utils/hooks";
 
@@ -14,7 +14,7 @@ export default props => {
   const [allowRedirection, setAllowRedirection] = useState(false)
   let { from } = props.location.state || { from: { pathname: routes.getHome(username) } }
 
-  let isAuthenticatedSource = useDataSource(isAuthenticated);
+  let isAuthenticatedSource = useDataSource(checkIsAuthenticated);
 
   if (!isAuthenticatedSource.isFetching && isAuthenticatedSource.data) {
     return <Redirect to={{pathname: routes.getHome(getUsername())}} />
