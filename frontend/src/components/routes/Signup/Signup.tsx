@@ -1,10 +1,8 @@
 import React from "react";
-import { Button, Form, Input, PageHeader, Typography } from "antd";
+import { Button, Form, Input, PageHeader } from "antd";
 import { signUp } from "../../../utils/userApi";
 import { withRouter } from "react-router-dom";
 import routes from "../../../constants/routes";
-import styled from "styled-components";
-import { CenteredText } from "../../styles/Centered";
 import { setUsername } from "../../../utils/authenticationService";
 
 const Signup = withRouter(({history}) => {

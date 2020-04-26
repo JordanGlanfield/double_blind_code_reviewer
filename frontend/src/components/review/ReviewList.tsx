@@ -2,7 +2,6 @@ import * as React from "react";
 import { ReviewStats } from "../../types/ReviewStats";
 import { List, Typography } from "antd";
 import ReviewInfo from "./ReviewInfo";
-import styled from "styled-components";
 import { useDataSourceWithMessages } from "../../utils/hooks";
 
 interface Props {

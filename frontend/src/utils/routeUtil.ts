@@ -1,4 +1,4 @@
-import {RouteComponentProps} from "react-router-dom";
+import { RouteComponentProps } from "react-router-dom";
 
 export function extractPath(prefix: string, fullPath: string): string {
   let parts = fullPath.split(prefix);
