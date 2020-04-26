@@ -1,22 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Form, Input, PageHeader } from "antd";
 import { signUp } from "../../../utils/userApi";
-import { withRouter } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import routes from "../../../constants/routes";
 import { setUsername } from "../../../utils/authenticationService";
 
-const Signup = withRouter(({history}) => {
+const Signup = () => {
+  const [redirect, setRedirect] = useState(undefined as string | undefined);
 
   const sendSignUp = (values: any) => {
     signUp(values.username, values.firstName, values.surname, values.password)
       .then(signupResult => {
         if (signupResult.success) {
-          setUsername().then(() => history.push(routes.getHome(values.username)));
+          setUsername().then(() => setRedirect(routes.getHome(values.username)));
         } else {
           alert(signupResult.errorMessage);
         }
       });
   };
+
+  if (redirect) {
+    return <Redirect to={redirect} />
+  }
 
   return <>
     <PageHeader title={"Sign up to DBCR"} onBack={() => window.history.back()}/>
@@ -41,6 +46,6 @@ const Signup = withRouter(({history}) => {
       </Form.Item>
     </Form>
   </>
-});
+};
 
 export default Signup;
