@@ -3,7 +3,7 @@ import React from "react";
 import { Menu } from "antd";
 
 import routes from "../../../constants/routes";
-import { hasBeenAuthenticated, getUsername, logout } from "../../../utils/authenticationService";
+import { getUsername, hasBeenAuthenticated, logout } from "../../../utils/authenticationService";
 import { FetchableData } from "../../../utils/hooks";
 
 interface Props {
