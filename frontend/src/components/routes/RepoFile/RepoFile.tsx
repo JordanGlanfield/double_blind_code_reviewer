@@ -11,6 +11,7 @@ import routes from "../../../constants/routes";
 
 import "prismjs/plugins/line-numbers/prism-line-numbers";
 import "prismjs/plugins/line-numbers/prism-line-numbers.css";
+import "./code.css"
 
 import "prismjs/components/prism-yaml";
 import "prismjs/components/prism-java";
@@ -28,6 +29,7 @@ import Comment from "../../../types/Comment";
 import { useDataSource } from "../../../utils/hooks";
 import { getUsername } from "../../../utils/authenticationService";
 import ContentArea from "../../styles/ContentArea";
+import styled from "styled-components";
 
 interface Props extends RouteComponentProps {
 }
@@ -39,6 +41,8 @@ const RepoFile = (props: Props) => {
   useEffect(() => {
     Prism.highlightAll();
   });
+
+  const [newCommentLine, setNewCommentLine] = useState(undefined as undefined | number);
 
   let repoId = repo ? repo : "";
   let fileSource = useDataSource(() => getFile(repoId, filePath));
@@ -64,9 +68,12 @@ const RepoFile = (props: Props) => {
     commentInformation = <Typography>Failed to load comments.</Typography>
   }
 
-  const onClickComment = (comment: string, lineNumber: undefined | number) => {
-    postComment(repo, filePath, lineNumber, undefined, comment)
-      .then(commentsSource.forceRefetch);
+  const onClickComment = (comment: string) => {
+    postComment(repo, filePath, newCommentLine, undefined, comment)
+      .then(() => {
+        commentsSource.forceRefetch();
+        setNewCommentLine(undefined);
+      });
   };
 
   const dirHref = routes.getRepoDir(getUsername(), repo, getNextDirUp(filePath));
@@ -75,86 +82,101 @@ const RepoFile = (props: Props) => {
     <Link to={dirHref}><Button>Back To Folder</Button></Link>
     <Typography>{filePath}</Typography>
     {commentInformation}
-    {getFileComponents(filePath, fileSource.data, commentsSource.data)}
-    <AddComment onClick={onClickComment} maxLines={fileSource.data?.split("\n").length}/>
+    <table>
+      <tbody>
+        {getFileComponents(filePath,
+          fileSource.data,
+          commentsSource.data ? commentsSource.data : new Map(),
+          newCommentLine,
+          setNewCommentLine,
+          onClickComment)}
+      </tbody>
+    </table>
   </ContentArea>
 };
 
-function getFileComponents(filePath: string, fileContents: string, commentsMap: Map<number, Comment[]> | undefined) {
-  if (!commentsMap || commentsMap.size === 0) {
-    return [<CodeSection key={0} filePath={filePath} lines={fileContents} lineNumber={0} />]
-  }
-
+function getFileComponents(filePath: string, fileContents: string, commentsMap: Map<number, Comment[]>,
+                           newCommentLine: number | undefined, onLineClicked: (lineNumber: number) => void,
+                           onNewComment: (text: string) => void) {
   let lines = fileContents.split("\n");
   let components: JSX.Element[] = [];
   let lastLine = 0;
   let key = 0;
+  const language = getFileExtension(getFileName(filePath));
 
-  function createCodeSection(from: number, to: number): JSX.Element {
-    return <CodeSection key={key++}
-                 filePath={filePath}
-                 lineNumber={from}
-                 lines={lines.slice(from, to).join("\n")} />
-  }
-
-  commentsMap.forEach((comments, lineNumber) => {
-    components.push(createCodeSection(lastLine, lineNumber + 1));
-
-    comments.forEach(comment => {
-      components.push(<FileComment key={key++} comment={comment}/>)
-    });
-
-    lastLine = lineNumber + 1;
+  lines.forEach((line, index) => {
+    components.push(<CodeSection language={language}
+                                 lineNumber={index}
+                                 lines={line}
+                                 onLineClicked={onLineClicked}
+                                 key={key++}/>);
+    if (commentsMap.has(index)) {
+      (commentsMap.get(index) as Comment[]).forEach(comment => {
+        components.push(<FileComment key={key++} comment={comment}/>)
+      });
+    }
+    if (index === newCommentLine) {
+      components.push(<InlineSection><AddComment onClick={onNewComment}/></InlineSection>)
+    }
   });
-
-  if (lastLine < lines.length) {
-    components.push(createCodeSection(lastLine, lines.length));
-  }
 
   return components;
 }
 
 interface AddCommentProps {
-  onClick: (text: string, lineNumber: number | undefined) => void;
-  maxLines: number;
+  onClick: (text: string) => void;
 }
 
 const AddComment = (props: AddCommentProps) => {
   const [comment, setComment] = useState("");
-  const [lineNumber, setLineNumber] = useState(0 as undefined | number);
 
   return <>
-    <Input value={comment} onChange={(e) => setComment(e.target.value)}/>
-    <InputNumber value={lineNumber}
-                 min={0}
-                 max={props.maxLines}
-                 onChange={(number) => setLineNumber(number)}/>
-    <Button onClick={() => props.onClick(comment, lineNumber)}>Comment</Button>
+    <Input.TextArea value={comment} onChange={(e) => setComment(e.target.value)}/>
+    <Button onClick={() => props.onClick(comment)}>Comment</Button>
   </>
 };
+
+const InlineSection = styled.div`
+  border: #e8e8e8 1px solid;
+  margin: 16px;
+  padding: 16px;
+`;
 
 interface CommentProps {
   comment: Comment
 }
 
 const FileComment = (props: CommentProps) => {
-  return <AntdComment content={<p>{props.comment.contents}</p>} author={props.comment.author_pseudonym}/>
+  return <InlineSection>
+    <AntdComment content={<p>{props.comment.contents}</p>} author={props.comment.author_pseudonym}/>
+  </InlineSection>
 };
 
 interface CodeSectionProps {
-  filePath: string;
+  language: string;
   lineNumber: number;
   lines: string;
+  onLineClicked: (lineClicked: number) => void;
 }
 
 const CodeSection = (props: CodeSectionProps) => {
-  const language = getFileExtension(getFileName(props.filePath));
-
-  return <pre className="line-numbers" data-start={props.lineNumber}>
-      <code className={"language-" + language}>
-        {props.lines}
-      </code>
-    </pre>
+  return <tr onClick={() => props.onLineClicked(props.lineNumber)}>
+    <td>
+      <HoverablePre className="line-numbers"
+                    data-start={props.lineNumber}
+                    style={{paddingTop: 0, paddingBottom: 0, margin: 0, border: "none"}}>
+        <code className={"language-" + props.language + " hoverableCode"}>
+          {props.lines !== "" ? props.lines : " "}
+        </code>
+      </HoverablePre>
+    </td>
+  </tr>
 };
+
+const HoverablePre = styled.pre`
+  &:hover {
+    background-color: #bae7ff;
+  }
+`;
 
 export default RepoFile;
