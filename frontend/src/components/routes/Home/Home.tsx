@@ -8,6 +8,7 @@ import styled from "styled-components";
 import routes from "../../../constants/routes";
 import { PlusOutlined } from "@ant-design/icons/lib";
 import ContentArea from "../../styles/ContentArea";
+import { Link } from "react-router-dom";
 
 const { Title } = Typography;
 
@@ -19,7 +20,7 @@ const Home = () => {
       <Section>
         <Title level={3}>Your repositories:</Title>
         <NewRepoSection>
-          <Button type="primary" href={routes.CREATE_REPO}><PlusOutlined /> Create New Repository</Button>
+          <Link to={routes.CREATE_REPO}><Button type="primary"><PlusOutlined /> Create New Repository</Button></Link>
         </NewRepoSection>
         <ViewRepos />
       </Section>
