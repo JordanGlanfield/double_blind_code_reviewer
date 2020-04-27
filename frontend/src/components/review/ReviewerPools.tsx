@@ -6,6 +6,7 @@ import ReviewerPoolSummary from "../../types/ReviewerPoolSummary";
 import styled from "styled-components";
 import { getUsername } from "../../utils/authenticationService";
 import routes from "../../constants/routes";
+import { Link } from "react-router-dom";
 
 const ReviewerPools = () => {
   let poolsSource = useDataSourceWithMessages(getReviewerPools);
@@ -32,7 +33,7 @@ const ReviewerPools = () => {
                       key="name"
                       colSpan={1}
                       render={name =>
-                        <Button href={routes.getReviewerPool(getUsername() as string, name)}>{name}</Button>}
+                        <Link to={routes.getReviewerPool(getUsername() as string, name)}><Button>{name}</Button></Link>}
         />
         <Table.Column dataIndex="description"
                       key="description"

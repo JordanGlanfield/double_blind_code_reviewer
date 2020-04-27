@@ -7,6 +7,7 @@ import ReviewerPools from "../../review/ReviewerPools";
 import styled from "styled-components";
 import routes from "../../../constants/routes";
 import { PlusOutlined } from "@ant-design/icons/lib";
+import ContentArea from "../../styles/ContentArea";
 
 const { Title } = Typography;
 
@@ -40,13 +41,6 @@ const Home = () => {
     </ContentArea>
   </>
 };
-
-const ContentArea = styled.div`
-  background-color: white;
-  padding-top: 16px;
-  padding-left: 32px;
-  padding-right: 32px;
-`;
 
 const Bordered = styled.div`
   border-bottom: 1px solid #f0f0f0;

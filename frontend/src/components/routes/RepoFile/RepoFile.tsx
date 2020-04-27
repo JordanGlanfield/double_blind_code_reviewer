@@ -5,7 +5,7 @@ import Prism from "prismjs";
 import "./prism-vs.css"
 import { extractPathFromRoute, getFileExtension, getFileName, getNextDirUp } from "../../../utils/routeUtil";
 
-import { RouteComponentProps, useParams } from "react-router-dom";
+import { Link, RouteComponentProps, useParams } from "react-router-dom";
 import { getFile } from "../../../utils/repoApi";
 import routes from "../../../constants/routes";
 
@@ -27,6 +27,7 @@ import { getComments, postComment } from "../../../utils/commentApi";
 import Comment from "../../../types/Comment";
 import { useDataSource } from "../../../utils/hooks";
 import { getUsername } from "../../../utils/authenticationService";
+import ContentArea from "../../styles/ContentArea";
 
 interface Props extends RouteComponentProps {
 }
@@ -70,13 +71,13 @@ const RepoFile = (props: Props) => {
 
   const dirHref = routes.getRepoDir(getUsername(), repo, getNextDirUp(filePath));
 
-  return <>
-    <Button href={dirHref}>Back To Folder</Button>
+  return <ContentArea>
+    <Link to={dirHref}><Button>Back To Folder</Button></Link>
     <Typography>{filePath}</Typography>
     {commentInformation}
     {getFileComponents(filePath, fileSource.data, commentsSource.data)}
     <AddComment onClick={onClickComment} maxLines={fileSource.data?.split("\n").length}/>
-  </>
+  </ContentArea>
 };
 
 function getFileComponents(filePath: string, fileContents: string, commentsMap: Map<number, Comment[]> | undefined) {

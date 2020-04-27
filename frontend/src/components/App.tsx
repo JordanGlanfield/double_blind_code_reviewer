@@ -1,8 +1,8 @@
-import React, { useEffect } from "react"
+import React, { useState } from "react"
 
 import { ThemeProvider } from "@material-ui/styles"
 
-import { BrowserRouter, Route, RouteProps, Switch } from "react-router-dom"
+import { BrowserRouter, Route, Switch } from "react-router-dom"
 import Login from "./routes/Login/Login"
 import routes from "../constants/routes"
 import theme from "../theme"
@@ -17,45 +17,56 @@ import styled from "styled-components";
 import { Centered } from "./styles/Centered";
 import CreateRepo from "./routes/CreateRepo/CreateRepo";
 import { checkIsAuthenticated } from "../utils/authenticationService";
-import { useDataSource } from "../utils/hooks";
 import NotFound from "./routes/NotFound/NotFound";
 
 const App = () => {
-  const isAuthenticatedSource = useDataSource(checkIsAuthenticated);
-  const isLoggedIn = !isAuthenticatedSource.isFetching && isAuthenticatedSource.data;
+  const [isAuthenticated, setIsAuthenticated] = useState(undefined as undefined | boolean);
+  let isLoggedIn: boolean;
+
+  console.log("Authed:", isAuthenticated);
+
+  if (isAuthenticated === undefined) {
+    isLoggedIn = false;
+    checkIsAuthenticated().then(setIsAuthenticated);
+  } else {
+    isLoggedIn = isAuthenticated;
+  }
+
+  console.log("Logged in: ", isLoggedIn);
+
+  const loggedIn = () => setIsAuthenticated(true);
+  const loggedOut = () => setIsAuthenticated(false);
 
   // useEffect(() => {console.log("TopBar Mounted Again"); return () => console.log("TopBar unmounted")}, [])
 
   return (
-    <ThemeProvider theme={theme}>
-      <BrowserRouter forceRefresh={false}>
-        <Layout>
-          <Layout.Header>
-            <TopBar isLoggedIn={isLoggedIn}/>
-          </Layout.Header>
-          <Layout.Content>
-            <ContentDiv>
-              <Switch>
-                <Route exact path={routes.SIGNUP} component={Signup} />
-                <Route exact path={routes.LOGIN}
-                       render={props =>
-                         <Login {...props} isLoggedIn={isLoggedIn} loggedIn={isAuthenticatedSource.forceRefetch} />} />
-                {!isLoggedIn && <Route render={props => <div>Not authenticated</div>}/>}
-                <Route path={routes.HOME} component={Home} />
-                <Route path={routes.REPO_DIRS} component={RepoDir} />
-                <Route path={routes.REPO_FILES} component={RepoFile} />
-                <Route path={routes.REVIEWER_POOL} component={ReviewerPoolDashboard} />
-                <Route path={routes.CREATE_REPO} component={CreateRepo} />
-                <Route component={NotFound} />
-              </Switch>
-            </ContentDiv>
-          </Layout.Content>
-          <Layout.Footer>
-            <Empty />
-          </Layout.Footer>
-        </Layout>
-      </BrowserRouter>
-    </ThemeProvider>
+    <BrowserRouter  forceRefresh={false}>
+      <Layout>
+        <Layout.Header>
+          <TopBar isLoggedIn={isLoggedIn} loggedOut={loggedOut}/>
+        </Layout.Header>
+        <Layout.Content>
+          <ContentDiv>
+            <Switch>
+              <Route exact path={routes.SIGNUP} render={props => <Signup {...props} loggedIn={loggedIn} />} />
+              <Route exact path={routes.LOGIN}
+                     render={props =>
+                       <Login {...props} isLoggedIn={isLoggedIn} loggedIn={loggedIn} />} />
+              {!isLoggedIn && <Route render={props => <div>Not authenticated</div>}/>}
+              <Route path={routes.HOME} component={Home} />
+              <Route path={routes.REPO_DIRS} component={RepoDir} />
+              <Route path={routes.REPO_FILES} component={RepoFile} />
+              <Route path={routes.REVIEWER_POOL} component={ReviewerPoolDashboard} />
+              <Route path={routes.CREATE_REPO} component={CreateRepo} />
+              <Route component={NotFound} />
+            </Switch>
+          </ContentDiv>
+        </Layout.Content>
+        <Layout.Footer>
+          <Empty />
+        </Layout.Footer>
+      </Layout>
+    </BrowserRouter>
   )
 };
 
