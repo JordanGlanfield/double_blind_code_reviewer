@@ -25,11 +25,13 @@ def create_pool():
     name: str = request.json["name"]
     description: str = request.json["description"]
 
+    if ReviewerPool.find_by_name(name):
+        abort(HTTPStatus.CONFLICT)
+
     active_user = get_active_user()
     pool = ReviewerPool(name=name, description=description, owner_id=active_user.id)
 
     pool.save()
-    pool.add_user(active_user)
     DB.db.session.commit()
 
     return jsonify({"id": pool.id})
