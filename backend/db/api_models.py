@@ -1,8 +1,6 @@
 from typing import NamedTuple, List
 
-from sqlalchemy import func
-
-from backend import User, ReviewerPool, DB
+from backend import User, ReviewerPool, File
 
 
 class UserDto():
@@ -57,3 +55,25 @@ class ReviewerPoolSummariesDto(NamedTuple):
     @staticmethod
     def from_db(reviewer_pools: List[ReviewerPool]):
         return [ReviewerPoolSummaryDto.from_db(pool) for pool in reviewer_pools]
+
+
+class CommentDto():
+    def __init__(self, author_pseudonym: str, content: str, line_number: int, replies: List):
+        self.author_pseudonym = author_pseudonym
+        self.content = content
+        self.line_number = line_number
+        self.replies = replies
+
+
+class FileCommentsDto():
+    def __init__(self, comments: List[CommentDto]):
+        self.comments = comments
+
+    # TODO: take into consideration review id
+    @staticmethod
+    def from_db(file: File):
+        # comments = Comment.query.filter_by(file_id=file.id).all()
+        # comments_by_id = dict()
+        #
+        # for comment in comments:
+        pass
