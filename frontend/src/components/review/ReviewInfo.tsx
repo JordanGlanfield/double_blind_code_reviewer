@@ -3,6 +3,7 @@ import { ReviewStats } from "../../types/ReviewStats";
 import { Badge, Button, Col, Row, Tag } from "antd";
 import styled from "styled-components";
 import { BellFilled } from "@ant-design/icons/lib";
+import { Link } from "react-router-dom";
 
 interface Props {
   reviewUrl: string,
@@ -17,7 +18,7 @@ const ReviewInfo = (props: Props) => {
   return <BoundingDiv><Row>
     <Col span={6}>
       <LeftAligned>
-        <Button type="primary" ghost href={reviewUrl}>{reviewStats.repoName}</Button>
+        <Link to={reviewUrl}><Button type="primary" ghost>{reviewStats.repoName}</Button></Link>
       </LeftAligned>
     </Col>
     <Col span={6}>
@@ -41,6 +42,6 @@ const BoundingDiv = styled.div`
 
 const LeftAligned = styled.div`
   text-align: left;
-`
+`;
 
 export default ReviewInfo;

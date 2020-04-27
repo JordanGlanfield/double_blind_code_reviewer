@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Redirect } from "react-router-dom"
+import { Link, Redirect } from "react-router-dom"
 import { Button, Container, CssBaseline, TextField, Typography } from "@material-ui/core/index"
 import useStyles from "./style"
 import { checkIsAuthenticated, getUsername, login, setUsername } from "../../../utils/authenticationService"
@@ -82,7 +82,7 @@ export default props => {
             Log In
           </Button>
         </form>
-        <a href={routes.SIGNUP}>Not a user? Create an account!</a>
+        <Link to={routes.SIGNUP}>Not a user? Create an account!</Link>
       </div>
       <Container hidden={!error}>
         <Typography variant="body2" align="center" color="error">
