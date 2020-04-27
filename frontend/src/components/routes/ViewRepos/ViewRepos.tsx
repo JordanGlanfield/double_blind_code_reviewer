@@ -1,5 +1,5 @@
 import * as React from "react"
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import { Button, List, Typography } from "antd"
 import routes from "../../../constants/routes";
@@ -11,7 +11,7 @@ const ViewRepos = () => {
     let { user } = useParams();
 
     if (!user) {
-        return <div></div>;
+        return <div />;
     }
 
     if (repoSource.message) {
@@ -24,7 +24,7 @@ const ViewRepos = () => {
         size="large"
         dataSource={repoSource.data as string[]}
         renderItem={item => <List.Item>
-            <Button type="primary" ghost href={routes.getRepoDir(userString, item, "")}>{item}</Button>
+            <Link to={routes.getRepoDir(userString, item, "")}><Button type="primary" ghost>{item}</Button></Link>
         </List.Item>}
     />
 };

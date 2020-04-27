@@ -1,30 +1,42 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 import { Menu } from "antd";
 
 import routes from "../../../constants/routes";
 import { getUsername, logout } from "../../../utils/authenticationService";
-import { FetchableData } from "../../../utils/hooks";
+import { Link, NavLink } from "react-router-dom";
+import styled from "styled-components";
 
 interface Props {
-  isLoggedIn: FetchableData
+  isLoggedIn: boolean;
+  loggedOut: () => void;
 }
 
 const TopBar = (props: Props) => {
   let isLoggedIn = props.isLoggedIn;
 
+  const logOutClicked = () => logout().then(props.loggedOut);
+
   return <Menu theme="dark" mode="horizontal">
     <Menu.Item>
-      <a href={!isLoggedIn
+      <NoHighlightLink to={!isLoggedIn
         ? routes.LOGIN
-        : routes.getHome(getUsername())}>Home</a>
+        : routes.getHome(getUsername())}>Home</NoHighlightLink>
     </Menu.Item>
     <Menu.Item>
       {isLoggedIn
-        ? <a onClick={logout} href={routes.LOGIN}>Log Out</a>
+        ? <a onClick={logOutClicked} href={routes.LOGIN}>Log Out</a>
         : <a href={routes.SIGNUP}>Sign Up</a>}
     </Menu.Item>
   </Menu>
 };
+
+const NoHighlightLink = styled(Link)`
+    text-decoration: none;
+
+    &:focus, &:hover, &:visited, &:link, &:active {
+        text-decoration: none;
+    }
+`;
 
 export default TopBar;

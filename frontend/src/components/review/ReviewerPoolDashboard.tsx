@@ -8,6 +8,8 @@ import ReviewerPool from "../../types/ReviewerPool";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import { DeleteOutlined } from "@ant-design/icons/lib";
+import ContentArea from "../styles/ContentArea";
+import GoBackPageHeader from "../layout/GoBackPageHeader";
 
 
 const ReviewerPoolDashboard = () => {
@@ -33,15 +35,17 @@ const ReviewerPoolDashboard = () => {
     a.username.toLowerCase().localeCompare(b.username.toLowerCase()));
 
   return <>
-    <DescriptionsDiv>
-      <Typography.Title level={4}>Pool Details</Typography.Title>
-      <Descriptions>
-        <Descriptions.Item label="Name">{reviewerPool.name}</Descriptions.Item>
-        <Descriptions.Item label="Description">{reviewerPool.description}</Descriptions.Item>
-        <Descriptions.Item label="Owner">{reviewerPool.owner.username}</Descriptions.Item>
-      </Descriptions>
-    </DescriptionsDiv>
-    {reviewerPool.owner.username === getUsername() &&
+    <GoBackPageHeader title={`Currently Viewing: ${reviewerPool.name}`} />
+    <ContentArea>
+      <DescriptionsDiv>
+        <Typography.Title level={4}>Pool Details</Typography.Title>
+        <Descriptions>
+          <Descriptions.Item label="Name">{reviewerPool.name}</Descriptions.Item>
+          <Descriptions.Item label="Description">{reviewerPool.description}</Descriptions.Item>
+          <Descriptions.Item label="Owner">{reviewerPool.owner.username}</Descriptions.Item>
+        </Descriptions>
+      </DescriptionsDiv>
+      {reviewerPool.owner.username === getUsername() &&
       <>
         <Typography.Title level={4}>Add User</Typography.Title>
         <Form title="Add Users" labelCol={{span: 4}} wrapperCol={{span: 16}} onFinish={addUser}>
@@ -53,18 +57,19 @@ const ReviewerPoolDashboard = () => {
           </Form.Item>
         </Form>
       </>
-    }
-    <Typography.Title level={4}>Users</Typography.Title>
-    <List dataSource={sortedMembers}
-          renderItem={(member: User) => <UserDiv><List.Item
-            actions={[member.username !== getUsername() &&
+      }
+      <Typography.Title level={4}>Users</Typography.Title>
+      <List dataSource={sortedMembers}
+            renderItem={(member: User) => <UserDiv><List.Item
+              actions={[member.username !== getUsername() &&
               <Button type="danger" onClick={() => removeUser(member)}>
                 {<DeleteOutlined />} Remove User
               </Button>
-            ]}>
-            <UsernameSpan><Typography.Text strong>{member.username}</Typography.Text></UsernameSpan>
-          </List.Item></UserDiv>}
-    />
+              ]}>
+              <UsernameSpan><Typography.Text strong>{member.username}</Typography.Text></UsernameSpan>
+            </List.Item></UserDiv>}
+      />
+    </ContentArea>
   </>
 };
 
