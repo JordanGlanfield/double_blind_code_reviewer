@@ -37,8 +37,6 @@ const App = () => {
   const loggedIn = () => setIsAuthenticated(true);
   const loggedOut = () => setIsAuthenticated(false);
 
-  // useEffect(() => {console.log("TopBar Mounted Again"); return () => console.log("TopBar unmounted")}, [])
-
   return (
     <BrowserRouter  forceRefresh={false}>
       <Layout>
