@@ -14,7 +14,6 @@ export function useDataSource(api: () => Promise<any>): FetchableData {
 
   useEffect(() => {
     const requestId = fetchId;
-    setState({data: undefined, isFetching: true, hasError: false});
 
     api()
       .then(data => {

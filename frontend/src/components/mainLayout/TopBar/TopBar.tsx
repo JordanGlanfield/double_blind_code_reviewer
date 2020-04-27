@@ -1,26 +1,26 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Menu } from "antd";
 
 import routes from "../../../constants/routes";
-import { getUsername, hasBeenAuthenticated, logout } from "../../../utils/authenticationService";
+import { getUsername, logout } from "../../../utils/authenticationService";
 import { FetchableData } from "../../../utils/hooks";
 
 interface Props {
-  isAuthenticatedSource: FetchableData
+  isLoggedIn: FetchableData
 }
 
 const TopBar = (props: Props) => {
-  let isAuthenticatedSource = props.isAuthenticatedSource;
+  let isLoggedIn = props.isLoggedIn;
 
   return <Menu theme="dark" mode="horizontal">
     <Menu.Item>
-      <a href={!isAuthenticatedSource.isFetching && !isAuthenticatedSource.data
+      <a href={!isLoggedIn
         ? routes.LOGIN
         : routes.getHome(getUsername())}>Home</a>
     </Menu.Item>
     <Menu.Item>
-      {(isAuthenticatedSource.isFetching && hasBeenAuthenticated()) || isAuthenticatedSource.data
+      {isLoggedIn
         ? <a onClick={logout} href={routes.LOGIN}>Log Out</a>
         : <a href={routes.SIGNUP}>Sign Up</a>}
     </Menu.Item>
