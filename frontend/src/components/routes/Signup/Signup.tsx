@@ -5,14 +5,21 @@ import { Redirect } from "react-router-dom";
 import routes from "../../../constants/routes";
 import { setUsername } from "../../../utils/authenticationService";
 
-const Signup = () => {
+interface Props {
+  loggedIn: () => void;
+}
+
+const Signup = (props: Props) => {
   const [redirect, setRedirect] = useState(undefined as string | undefined);
 
   const sendSignUp = (values: any) => {
     signUp(values.username, values.firstName, values.surname, values.password)
       .then(signupResult => {
         if (signupResult.success) {
-          setUsername().then(() => setRedirect(routes.getHome(values.username)));
+          setUsername().then(() => {
+            props.loggedIn();
+            setRedirect(routes.getHome(values.username))
+          });
         } else {
           alert(signupResult.errorMessage);
         }
