@@ -91,7 +91,12 @@ def init_new_repo(repo_name: str):
     if not repo:
         abort(HTTPStatus.INTERNAL_SERVER_ERROR)
 
-    repo.config_writer().set_value("receive", "denyCurrentBranch", "updateInstead")
+    with repo.config_writer() as writer:
+        writer.set_value("receive", "denyCurrentBranch", "updateInstead")
+        writer.set_value("http", "receivepack", "true")
+        writer.release()
+
+    repo.close()
 
     try:
         recursive_chown(repo_path, "www-data", "www-data")

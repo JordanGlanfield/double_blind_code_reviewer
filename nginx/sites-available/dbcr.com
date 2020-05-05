@@ -36,8 +36,6 @@ server {
     # Git server
     location ~ (/*/\.git/) {
       client_max_body_size 0; # Git pushes can be massive, just to make sure nginx doesn't suddenly cut the connection add this.
-      auth_basic "Git Login"; # Whatever text will do.
-      auth_basic_user_file "/dbcr/git/htpasswd";
       include /etc/nginx/fastcgi_params; # Include the default fastcgi configs
       fastcgi_param SCRIPT_FILENAME /usr/lib/git-core/git-http-backend; # Tells fastcgi to pass the request to the git http backend executable
       fastcgi_param GIT_HTTP_EXPORT_ALL "";
