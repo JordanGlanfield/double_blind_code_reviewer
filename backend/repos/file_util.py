@@ -1,13 +1,9 @@
 import os
 
-BASE_PATH = "./backend/repos/static/"
-
 
 def get_directory_contents(path: str):
     if ".." in path:
         return
-
-    path = BASE_PATH + path
 
     contents = {"directories": [], "files": []}
 
