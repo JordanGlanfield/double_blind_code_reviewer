@@ -22,6 +22,7 @@ class DevConfig(BaseConfig):
     SQLALCHEMY_DATABASE_URI = "sqlite:///dev.db"
     DEBUG = True
     REPOS_PATH = os.path.sep.join([os.path.dirname(__file__), "repos", "static"])
+    LOG_FILE = "flask.log"
 
 
 class StagingConfig(BaseConfig):
@@ -32,4 +33,5 @@ class ProductionConfig(BaseConfig):
     # This one should be changed to a postgres db
     SQLALCHEMY_DATABASE_URI = "sqlite:////dbcr/storage/production.db"
     REPOS_PATH = "/dbcr/storage/repos"
+    LOG_FILE = "/dbcr/logs/flask.log"
 

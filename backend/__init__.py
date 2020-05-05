@@ -1,14 +1,17 @@
+import logging
 import os
+from logging.handlers import RotatingFileHandler
 
 from flask import Flask
+from flask.logging import default_handler
 from flask_login import LoginManager
 from flask_migrate import Migrate
 
 from .auth import ldap_handler
-from .mocks import fake_ldap_handler
-from .db.models import *
 from .db import database
+from .db.models import *
 from .messages import messages
+from .mocks import fake_ldap_handler
 from .utils.json import ObjectJsonEncoder
 
 configuration_switch = {
@@ -17,7 +20,7 @@ configuration_switch = {
     "production": "backend.config.ProductionConfig",  # Production configuration
 }
 
-ENV = os.environ.get("ENV", "default")
+ENV = os.environ.get("FLASK_ENV", "default")
 
 # SET UP =====================================
 
@@ -32,6 +35,21 @@ MIGRATE = None
 
 # ===================================================
 
+def config_logger(app: Flask):
+    if not app.config["LOG_FILE"]:
+        return
+
+    app.logger.removeHandler(default_handler)
+
+    formatter = logging.Formatter('[%(asctime)s] %(levelname)s in %(module)s: %(message)s')
+    handler = RotatingFileHandler(filename=app.config["LOG_FILE"], maxBytes=1024**3, backupCount=3)
+    handler.setFormatter(formatter)
+    handler.setLevel(logging.INFO)
+    app.logger.addHandler(handler)
+    app.logger.info("Erhmugrul")
+    app.logger.info(app.config["LOG_FILE"])
+    app.logger.info(os.environ.get("ENV", "default"))
+
 
 def create_app(test_configuration=None):
     """Application factory method"""
@@ -42,6 +60,8 @@ def create_app(test_configuration=None):
         app.config.update(test_configuration)
     else:
         app.config.from_object(configuration_switch[ENV])
+
+    config_logger(app)
 
     # Register extensions ################################
     # |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  #
