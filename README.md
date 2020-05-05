@@ -38,8 +38,8 @@ The application's configuration (in `tapp/config.py`) is object-based. Many prec
 are provided, one per standard deployment environment. The available
 configurations are _development_, _staging_ and _production_.
 Any configuration other than _development_ (selected by default) can be enabled
-by setting the `ENV` environment variable to the desired configuration name
-(e.g. `export ENV=production` to enable the _production_ configuration).
+by setting the `FLASK_ENV` environment variable to the desired configuration name
+(e.g. `export FLASK_ENV=production` to enable the _production_ configuration).
 The default _development_ configuration sets up the application to
 run in isolation by replacing any external service provider (like LDAP) with its fake counterpart (in `tapp/mocks/`).
 
