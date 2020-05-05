@@ -27,18 +27,8 @@ RUN apt-get update && apt-get -y install nginx && \
 RUN apt-get update && apt-get -y install libsasl2-dev python-dev libldap2-dev libssl-dev && \
     python3 -m venv venv && source venv/bin/activate
 
-# Set up nginx
-COPY nginx/htpasswd git/
-COPY nginx/nginx.conf /etc/nginx/nginx.conf
-COPY nginx/sites-available/ /etc/nginx/sites-available/
-RUN ln -s /etc/nginx/sites-available/dbcr.com /etc/nginx/sites-enabled/ && \
-    rm /etc/nginx/sites-enabled/default
-
-# Add start up script
-COPY scripts/start.sh .
-
 # Set up persistence volume
-RUN mkdir storage
+RUN mkdir storage && mkdir storage/repos
 VOLUME storage
 
 ##################################################
@@ -51,6 +41,15 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY backend backend/
 COPY migrations migrations/
 COPY scripts/dev_exports.sh scripts/
+
+COPY nginx/htpasswd git/
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+COPY nginx/sites-available/ /etc/nginx/sites-available/
+RUN ln -s /etc/nginx/sites-available/dbcr.com /etc/nginx/sites-enabled/ && \
+    rm /etc/nginx/sites-enabled/default
+
+# Add start up script
+COPY scripts/start.sh .
 
 # Run database migrations
 RUN export FLASK_APP=backend && \
