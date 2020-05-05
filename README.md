@@ -214,7 +214,7 @@ Run `docker build --tag dbcr:1.0 .` from top level directory of project to build
 
 Get shell in docker container: `docker exec -i -t dbcr /bin/bash`
 
-Read nginx logs: `tail -f /var/log/nginx/`
+Read nginx logs: `tail -f /var/log/nginx/access.log`
 
 Note, "dangling" images may be produced by the build process. Use:
 `docker rmi $(docker images -f "dangling=true" -q)` to remove these

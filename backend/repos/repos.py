@@ -1,8 +1,9 @@
+import os
 from collections import defaultdict
 from http import HTTPStatus
 from typing import Dict, List
 
-from flask import Blueprint, jsonify, abort, send_from_directory, make_response, request
+from flask import Blueprint, jsonify, abort, send_from_directory, make_response, request, current_app
 from git import Repo
 
 from .file_util import get_directory_contents
@@ -26,6 +27,15 @@ comments: Dict[str, Dict[int, List[Comment]]] = defaultdict(lambda: defaultdict(
 comment_id = 0
 
 pseudonym_id = 0
+
+
+def get_repos_path() -> str:
+    return current_app.config["REPOS_PATH"]
+
+
+def get_repo_path(repo_name: str) -> str:
+    return os.path.sep.join([get_repos_path(), repo_name])
+
 
 def generate_pseudonym():
     global pseudonym_id
@@ -75,8 +85,7 @@ def flatten_directories(dir_contents):
 
 
 def init_new_repo(repo_name: str):
-    # TODO - not hardcoded path
-    repo_path = "./backend/repos/static/" + repo_name
+    repo_path = get_repo_path(repo_name)
     repo = Repo.init(repo_path, mkdir=True)
 
     if not repo:
@@ -93,6 +102,7 @@ def init_new_repo(repo_name: str):
 
 @repos_bp.route("/create", methods=["POST"])
 def create_repo():
+    current_app.logger.info("Please print this info")
     check_json(["repo_name"])
 
     repo_name: str = request.json["repo_name"]
@@ -107,8 +117,8 @@ def create_repo():
 
 @repos_bp.route("/view/all", methods=["GET"])
 def get_repos():
-    contents = get_directory_contents("")
-    print(contents)
+    current_app.logger.info(f"Path: {get_repos_path()}")
+    contents = get_directory_contents(get_repos_path())
     return jsonify(contents["directories"])
 
 
@@ -118,7 +128,8 @@ def get_repo(repo_id: str, path: str):
     if repo_id == "":
         abort(HTTPStatus.NOT_FOUND)
 
-    contents = get_directory_contents(repo_id + "/" + path)
+    # TODO: replace slashes in path with os.path.sep
+    contents = get_directory_contents(get_repo_path(repo_id) + os.path.sep + path)
 
     if not contents:
         abort(HTTPStatus.INTERNAL_SERVER_ERROR)
@@ -135,8 +146,9 @@ def get_repo(repo_id: str, path: str):
 def get_file(repo_id: str, path: str):
     file_path, file_name = splitFilePath(path)
 
-    full_file_path = repos_bp.static_folder + "/" + repo_id + "/" + file_path
+    full_file_path = get_repo_path(repo_id) + os.path.sep + file_path
 
+    # TODO: try and improve performance by leveraging nginx here
     return send_from_directory(full_file_path, file_name)
 
 

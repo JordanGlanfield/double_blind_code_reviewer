@@ -27,7 +27,7 @@ RUN apt-get update && apt-get -y install nginx && \
 RUN apt-get update && apt-get -y install libsasl2-dev python-dev libldap2-dev libssl-dev && \
     python3 -m venv venv && source venv/bin/activate
 
-# Set up persistence volume
+# Set up persistence volume. TODO: move this to a later stage
 RUN mkdir storage && mkdir storage/repos
 VOLUME storage
 
@@ -54,8 +54,10 @@ COPY scripts/start.sh .
 # Run database migrations
 RUN export FLASK_APP=backend && \
     export FLASK_ENV=production && \
+    mkdir /dbcr/logs/ && \
     flask db migrate && \
     flask db upgrade
+
 
 # Include frontend
 COPY --from=frontend build/ build/
