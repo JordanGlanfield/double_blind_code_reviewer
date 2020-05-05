@@ -1,3 +1,6 @@
+# Logging
+flask.log
+
 # build directory
 build
 
