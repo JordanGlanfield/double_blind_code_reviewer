@@ -35,6 +35,8 @@ server {
 
     # Git server
     location ~ (/*/\.git/) {
+      set $auth_arguments $args;
+      auth_request /api/v1.0/repos/check_auth;
       client_max_body_size 0; # Git pushes can be massive, just to make sure nginx doesn't suddenly cut the connection add this.
       include /etc/nginx/fastcgi_params; # Include the default fastcgi configs
       fastcgi_param SCRIPT_FILENAME /usr/lib/git-core/git-http-backend; # Tells fastcgi to pass the request to the git http backend executable
@@ -53,6 +55,7 @@ server {
       proxy_set_header   X-Real-IP $remote_addr;
       proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
       proxy_set_header   X-Forwarded-Host $server_name;
+      proxy_set_header   Git-Auth-Params $auth_arguments;
     }
 
     # location / {

@@ -42,7 +42,6 @@ COPY backend backend/
 COPY migrations migrations/
 COPY scripts/dev_exports.sh scripts/
 
-COPY nginx/htpasswd git/
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 COPY nginx/sites-available/ /etc/nginx/sites-available/
 RUN ln -s /etc/nginx/sites-available/dbcr.com /etc/nginx/sites-enabled/ && \

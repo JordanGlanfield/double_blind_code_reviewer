@@ -105,6 +105,21 @@ def init_new_repo(repo_name: str):
         abort(HTTPStatus.INTERNAL_SERVER_ERROR)
 
 
+@repos_bp.route("/check_auth", methods=["GET"])
+def check_auth():
+    auth_header = "Git-Auth-Params"
+
+    if auth_header not in request.headers:
+        current_app.logger.info("No auth header, unauthorised")
+        abort(HTTPStatus.UNAUTHORIZED)
+
+    params = request.headers[auth_header].split("service=")
+
+    current_app.logger.info(params)
+
+    return no_content_response()
+
+
 @repos_bp.route("/create", methods=["POST"])
 def create_repo():
     current_app.logger.info("Please print this info")
