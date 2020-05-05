@@ -15,12 +15,12 @@ from .mocks import fake_ldap_handler
 from .utils.json import ObjectJsonEncoder
 
 configuration_switch = {
-    "default": "backend.config.DevConfig",  # Development configuration (fake LDAP)
+    "development": "backend.config.DevConfig",  # Development configuration (fake LDAP)
     "staging": "backend.config.StagingConfig",  # Staging configuration (should be as close as possible to prod)
     "production": "backend.config.ProductionConfig",  # Production configuration
 }
 
-ENV = os.environ.get("FLASK_ENV", "default")
+ENV = os.environ.get("FLASK_ENV", "development")
 
 # SET UP =====================================
 
@@ -44,11 +44,8 @@ def config_logger(app: Flask):
     formatter = logging.Formatter('[%(asctime)s] %(levelname)s in %(module)s: %(message)s')
     handler = RotatingFileHandler(filename=app.config["LOG_FILE"], maxBytes=1024**3, backupCount=3)
     handler.setFormatter(formatter)
-    handler.setLevel(logging.INFO)
     app.logger.addHandler(handler)
-    app.logger.info("Erhmugrul")
-    app.logger.info(app.config["LOG_FILE"])
-    app.logger.info(os.environ.get("ENV", "default"))
+    app.logger.setLevel(logging.INFO)
 
 
 def create_app(test_configuration=None):
