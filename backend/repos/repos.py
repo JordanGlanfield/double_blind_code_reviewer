@@ -8,6 +8,7 @@ from git import Repo
 
 from .file_util import get_directory_contents
 from .. import User
+from ..db import models
 from ..dbcr.comments import Comment, CommentDto, comment_to_dto
 from ..utils.file_utils import recursive_chown
 from ..utils.json import check_json
@@ -30,12 +31,12 @@ comment_id = 0
 pseudonym_id = 0
 
 
-def get_repos_path() -> str:
-    return current_app.config["REPOS_PATH"]
+def get_repos_path(username: str) -> str:
+    return os.path.sep.join([current_app.config["REPOS_PATH"], username])
 
 
-def get_repo_path(repo_name: str) -> str:
-    return os.path.sep.join([get_repos_path(), repo_name])
+def get_repo_path(repo_name: str, username: str) -> str:
+    return os.path.sep.join([get_repos_path(username), repo_name])
 
 
 def generate_pseudonym():
@@ -85,8 +86,8 @@ def flatten_directories(dir_contents):
     return flattened
 
 
-def init_new_repo(repo_name: str):
-    repo_path = get_repo_path(repo_name)
+def init_new_repo(repo_name: str, user: User):
+    repo_path = get_repo_path(repo_name, user.username)
     repo = Repo.init(repo_path, mkdir=True)
 
     if not repo:
@@ -100,10 +101,13 @@ def init_new_repo(repo_name: str):
     repo.close()
 
     try:
+        # TODO - graceful recovery if fails
         recursive_chown(repo_path, "www-data", "www-data")
     except:
-        print("Failed to change " + repo_path + " ownership to www-data")
+        current_app.logger.error("Failed to change " + repo_path + " ownership to www-data")
         abort(HTTPStatus.INTERNAL_SERVER_ERROR)
+
+    models.Repo(name=repo_name, owner_id=user.id).save()
 
 
 @repos_bp.route("/check_auth", methods=["GET"])
@@ -143,7 +147,6 @@ def check_auth():
 
 @repos_bp.route("/create", methods=["POST"])
 def create_repo():
-    current_app.logger.info("Please print this info")
     check_json(["repo_name"])
 
     repo_name: str = request.json["repo_name"]
@@ -151,15 +154,14 @@ def create_repo():
     if repo_name == "" or "\\" in repo_name or "/" in repo_name:
         abort(HTTPStatus.BAD_REQUEST)
 
-    init_new_repo(repo_name)
+    init_new_repo(repo_name, get_active_user())
 
     return no_content_response()
 
 
 @repos_bp.route("/view/all", methods=["GET"])
 def get_repos():
-    current_app.logger.info(f"Path: {get_repos_path()}")
-    contents = get_directory_contents(get_repos_path())
+    contents = get_directory_contents(get_repos_path(get_active_user().username))
     return jsonify(contents["directories"])
 
 
@@ -170,7 +172,7 @@ def get_repo(repo_id: str, path: str):
         abort(HTTPStatus.NOT_FOUND)
 
     # TODO: replace slashes in path with os.path.sep
-    contents = get_directory_contents(get_repo_path(repo_id) + os.path.sep + path)
+    contents = get_directory_contents(get_repo_path(repo_id, get_active_user().username) + os.path.sep + path)
 
     if not contents:
         abort(HTTPStatus.INTERNAL_SERVER_ERROR)
@@ -187,7 +189,7 @@ def get_repo(repo_id: str, path: str):
 def get_file(repo_id: str, path: str):
     file_path, file_name = splitFilePath(path)
 
-    full_file_path = get_repo_path(repo_id) + os.path.sep + file_path
+    full_file_path = get_repo_path(repo_id, get_active_user().username) + os.path.sep + file_path
 
     # TODO: try and improve performance by leveraging nginx here
     return send_from_directory(full_file_path, file_name)
