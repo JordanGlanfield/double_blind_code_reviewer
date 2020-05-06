@@ -4,7 +4,7 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from .database import DB
-from ..utils.authentication import update_password_file
+from ..auth.password_manager import PASSWORD_MANAGER
 
 db = DB.db
 
@@ -44,7 +44,7 @@ class User(UserMixin, Crud, db.Model):
         super().save()
 
         if self.id is not None:
-            update_password_file(self.username, password)
+            PASSWORD_MANAGER.update_password(self.username, password)
 
     def check_password(self, password: str):
         return check_password_hash(self.password_hash, password)
