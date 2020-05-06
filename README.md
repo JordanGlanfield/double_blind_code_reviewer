@@ -145,6 +145,9 @@ To use pre-commit (RECOMMENDED):
 To test endpoints:
 - 'curl -i http://localhost:5000/tapp/api/v1.0/repos/view/dir/gson/' for example
 
+To test repository serving, add a folder corresponding to a username and add repository folders
+beneath there, which will be served when the owner user is logged in.
+
 ### Frontend Development
 
 If working with Gunicorn or flask server directly then set proxy to localhost:5000 in package.json. If using nginx web server set port to 80.
