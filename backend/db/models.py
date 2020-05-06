@@ -4,6 +4,7 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from .database import DB
+from ..utils.authentication import update_password_file
 
 db = DB.db
 
@@ -38,8 +39,12 @@ class User(UserMixin, Crud, db.Model):
     reviews = db.relationship("Review", secondary=reviewers, back_populates="reviewers")
     reviewer_pools = db.relationship("ReviewerPool", secondary=pool_members, back_populates="members")
 
-    def set_password(self, password: str):
+    def save_with_password(self, password: str):
         self.password_hash = generate_password_hash(password)
+        super().save()
+
+        if self.id is not None:
+            update_password_file(self.username, password)
 
     def check_password(self, password: str):
         return check_password_hash(self.password_hash, password)

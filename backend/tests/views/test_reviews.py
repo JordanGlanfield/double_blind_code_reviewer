@@ -1,11 +1,10 @@
 from http import HTTPStatus
 from typing import List
 
-from backend import User, ReviewerPool
-
+from backend import ReviewerPool
 from ..fixtures import *
-from ..test_utils import response_ok, status_code
-from ...db.api_models import ReviewerPoolSummariesDto, ReviewerPoolSummaryDto, ReviewerPoolDto
+from ..utils import status_code
+from ...db.api_models import ReviewerPoolSummaryDto
 from ...reviews.reviews import reviews_bp
 from ...utils.json import from_response_json
 

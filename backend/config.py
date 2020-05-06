@@ -34,4 +34,5 @@ class ProductionConfig(BaseConfig):
     SQLALCHEMY_DATABASE_URI = "sqlite:////dbcr/storage/production.db"
     REPOS_PATH = "/dbcr/storage/repos"
     LOG_FILE = "/dbcr/logs/flask.log"
+    PASSWORD_FILE = "/dbcr/storage/.htpasswd"
 

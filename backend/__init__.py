@@ -36,7 +36,7 @@ MIGRATE = None
 # ===================================================
 
 def config_logger(app: Flask):
-    if not app.config["LOG_FILE"]:
+    if "LOG_FILE" not in app.config:
         return
 
     app.logger.removeHandler(default_handler)
