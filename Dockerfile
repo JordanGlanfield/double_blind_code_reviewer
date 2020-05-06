@@ -29,8 +29,7 @@ RUN apt-get update && apt-get -y install libsasl2-dev python-dev libldap2-dev li
 
 # Set up persistence volume. TODO: move this to a later stage
 RUN mkdir storage && \
-    mkdir storage/repos && \
-    touch storage/.htpasswd
+    mkdir storage/repos
 
 VOLUME storage
 

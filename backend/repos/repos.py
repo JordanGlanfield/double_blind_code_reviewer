@@ -7,6 +7,7 @@ from flask import Blueprint, jsonify, abort, send_from_directory, make_response,
 from git import Repo
 
 from .file_util import get_directory_contents
+from .. import User
 from ..dbcr.comments import Comment, CommentDto, comment_to_dto
 from ..utils.file_utils import recursive_chown
 from ..utils.json import check_json
@@ -109,24 +110,25 @@ def init_new_repo(repo_name: str):
 def check_auth():
     original_uri_header = "X-Original-URI"
 
+    if "Username" not in request.headers or original_uri_header not in request.headers:
+        abort(HTTPStatus.UNAUTHORIZED)
+
     current_app.logger.info(request)
+    # current_app.logger.info(request.headers)
 
-    current_app.logger.info(request.headers)
-
-    abort(HTTPStatus.UNAUTHORIZED)
-
-    if original_uri_header not in request.headers:
-        current_app.logger.info(f"No {original_uri_header} header, unauthorised")
-        # Forbidden used instead of unauthorised because client should not be asked to authenticate, request is simply
-        # denied.
-        abort(HTTPStatus.FORBIDDEN)
-
+    username = request.headers["Username"]
     original_uri = request.headers[original_uri_header]
+
     push_service = "git-receive-pack"
     pull_service = "git-upload-pack"
 
     if push_service in original_uri and pull_service in original_uri:
         abort(HTTPStatus.FORBIDDEN)
+
+    user = User.find_by_username(username)
+
+    if not user:
+        abort(HTTPStatus.UNAUTHORIZED)
 
     # TODO: authorisation checks on user
 
