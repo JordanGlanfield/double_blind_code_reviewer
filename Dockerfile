@@ -28,7 +28,10 @@ RUN apt-get update && apt-get -y install libsasl2-dev python-dev libldap2-dev li
     python3 -m venv venv && source venv/bin/activate
 
 # Set up persistence volume. TODO: move this to a later stage
-RUN mkdir storage && mkdir storage/repos
+RUN mkdir storage && \
+    mkdir storage/repos && \
+    touch storage/.htpasswd
+
 VOLUME storage
 
 ##################################################

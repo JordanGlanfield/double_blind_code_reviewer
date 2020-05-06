@@ -107,15 +107,34 @@ def init_new_repo(repo_name: str):
 
 @repos_bp.route("/check_auth", methods=["GET"])
 def check_auth():
-    auth_header = "Git-Auth-Params"
+    original_uri_header = "X-Original-URI"
 
-    if auth_header not in request.headers:
-        current_app.logger.info("No auth header, unauthorised")
-        abort(HTTPStatus.UNAUTHORIZED)
+    current_app.logger.info(request)
 
-    params = request.headers[auth_header].split("service=")
+    current_app.logger.info(request.headers)
 
-    current_app.logger.info(params)
+    abort(HTTPStatus.UNAUTHORIZED)
+
+    if original_uri_header not in request.headers:
+        current_app.logger.info(f"No {original_uri_header} header, unauthorised")
+        # Forbidden used instead of unauthorised because client should not be asked to authenticate, request is simply
+        # denied.
+        abort(HTTPStatus.FORBIDDEN)
+
+    original_uri = request.headers[original_uri_header]
+    push_service = "git-receive-pack"
+    pull_service = "git-upload-pack"
+
+    if push_service in original_uri and pull_service in original_uri:
+        abort(HTTPStatus.FORBIDDEN)
+
+    # TODO: authorisation checks on user
+
+    if push_service in original_uri:
+        current_app.logger.info("Push in progress")
+
+    if pull_service in original_uri:
+        current_app.logger.info("Pull or clone in progress")
 
     return no_content_response()
 
