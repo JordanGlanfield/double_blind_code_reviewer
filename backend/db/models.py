@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from flask_login import UserMixin
+from sqlalchemy import and_
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from .database import DB
@@ -65,6 +66,12 @@ class Repo(db.Model, Crud):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128))
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    owner = db.relationship("User", uselist=False)
+
+    # TODO: test
+    @classmethod
+    def find_by_names(cls, repo_name: str, owner_name: str):
+        return cls.query.filter(and_(cls.name == repo_name, cls.owner.name == owner_name))
 
 
 class Review(db.Model, Crud):
