@@ -7,7 +7,7 @@ from flask.logging import default_handler
 from flask_login import LoginManager
 from flask_migrate import Migrate
 
-from .auth import ldap_handler
+from .auth import ldap_handler, password_manager
 from .db import database
 from .db.models import *
 from .messages import messages
@@ -30,6 +30,7 @@ LOGIN_MANAGER.login_message = messages.LOGIN_MANAGER_MESSAGE
 
 LDAP = fake_ldap_handler.FAKE_LDAP # if ENV == "default" else ldap_handler.LDAP
 DB = database.DB
+PASSWORD_MANAGER = password_manager.PASSWORD_MANAGER
 MIGRATE = None
 
 
@@ -66,6 +67,7 @@ def create_app(test_configuration=None):
     DB.init_app(app)
     LDAP.init_app(app)
     LOGIN_MANAGER.init_app(app)
+    PASSWORD_MANAGER.init_app(app)
     global MIGRATE
     MIGRATE = Migrate(app, DB.db)
 
