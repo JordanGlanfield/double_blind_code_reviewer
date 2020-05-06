@@ -42,7 +42,6 @@ def sign_up():
     if User.find_by_username(username):
         return "Username is taken", HTTPStatus.CONFLICT
 
-
     if len(password) < PASSWORD_MIN_LENGTH:
         return "Password too short", HTTPStatus.NOT_ACCEPTABLE
 
@@ -50,8 +49,7 @@ def sign_up():
         return "Names cannot be empty", HTTPStatus.NOT_ACCEPTABLE
 
     user = User(username=username, first_name=first_name, surname=surname)
-    user.set_password(password)
-    user.save()
+    user.save_with_password(password)
 
     if current_user.is_authenticated:
         logout_user()

@@ -28,7 +28,7 @@ def test_can_set_password(db):
     password = "banter"
     user = get_test_user()
 
-    user.set_password(password)
+    user.save_with_password(password)
 
     assert user.check_password(password)
 
@@ -36,6 +36,6 @@ def test_can_set_password(db):
 def test_wrong_passwords_are_denied(db):
     user = get_test_user()
 
-    user.set_password("banter")
+    user.save_with_password("banter")
 
     assert not user.check_password("bento")

@@ -80,8 +80,7 @@ def test_auth(client) -> AuthenticationActions:
 def authed_user(app, db, api) -> User:
     password = "password"
     user = User(username="test_user")
-    user.set_password(password)
-    user.save()
+    user.save_with_password(password)
 
     api.post("/api/login", dict(username=user.username, password=password))
 
