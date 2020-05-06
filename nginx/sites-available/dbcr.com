@@ -35,8 +35,9 @@ server {
 
     # Git server
     location ~ (/*/\.git/) {
-      auth_request /check_auth;
-      auth_basic_user_file /dbcr/storage/.htpasswd;
+        auth_basic "Git Operations";
+        auth_basic_user_file /dbcr/storage/.htpasswd;
+        auth_request /check_auth;
 
       client_max_body_size 0; # Git pushes can be massive, just to make sure nginx doesn't suddenly cut the connection add this.
       include /etc/nginx/fastcgi_params; # Include the default fastcgi configs
