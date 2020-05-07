@@ -3,19 +3,21 @@ from http import HTTPStatus
 from flask import Blueprint, jsonify, make_response, request, abort
 from flask_login import login_required
 
-from .. import ReviewerPool, DB, User
+from .. import ReviewerPool, DB, User, Repo, Review
 from ..db.api_models import ReviewerPoolSummariesDto, ReviewerPoolDto
 from ..utils.json import check_json
 from ..utils.session import get_active_user, no_content_response
 
 reviews_bp = Blueprint("reviews", __name__, url_prefix="/api/v1.0/reviews", static_folder="static")
 
-# TODO: more informative error handling
 
+# TODO: more informative error handling
 @reviews_bp.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), HTTPStatus.NOT_FOUND)
 
+
+# Reviewer pools
 
 @reviews_bp.route("/create/pool", methods=["POST"])
 @login_required
@@ -93,6 +95,23 @@ def get_pool(pool_name: str):
 
     return jsonify(ReviewerPoolDto.from_db(reviewer_pool))
 
+
+# Reviews
+
+# TODO: decide how to use this. Admin functionality only? Users submit their reviews?
+@reviews_bp.route("/create/review", methods=["POST"])
+def start_review():
+    username, repo_name = check_json(["username", "repo_name"])
+
+    repo = Repo.find_by_names(repo_name, username)
+    user = User.find_by_username(username)
+
+    review = Review(repo_id=repo.id, submitter_id=user.id)
+    review.save()
+
+    return jsonify({"review_id": review.id})
+
+# Utility functions
 
 def check_and_get_pool(pool_name: str) -> ReviewerPool:
     reviewer_pool: ReviewerPool = ReviewerPool.find_by_name(pool_name)
