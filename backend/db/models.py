@@ -77,7 +77,7 @@ class Repo(db.Model, Crud):
 class Review(db.Model, Crud):
     id = db.Column(db.Integer, primary_key=True)
     repo_id = db.Column(db.Integer, db.ForeignKey("repo.id"))
-    submitter = db.Column(db.Integer, db.ForeignKey("user.id"))
+    submitter_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     reviewers = db.relationship("User", secondary=reviewers, back_populates="reviews")
 
 

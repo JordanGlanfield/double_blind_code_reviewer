@@ -22,43 +22,12 @@ def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), HTTPStatus.NOT_FOUND)
 
 
-# Track repo id and file path. Store mapping from line numbers to chronologically ordered
-# comments.
-
-comments: Dict[str, Dict[int, List[Comment]]] = defaultdict(lambda: defaultdict(lambda: []))
-comment_id = 0
-
-pseudonym_id = 0
-
-
 def get_repos_path(username: str) -> str:
     return os.path.sep.join([current_app.config["REPOS_PATH"], username])
 
 
 def get_repo_path(repo_name: str, username: str) -> str:
     return os.path.sep.join([get_repos_path(username), repo_name])
-
-
-def generate_pseudonym():
-    global pseudonym_id
-    pseudonym_id += 1
-    return "anonymous" + str(pseudonym_id)
-
-pseudonyms: Dict[str, str] = defaultdict(generate_pseudonym)
-
-
-def get_comment_key(repo_id: str, file_path: str) -> str:
-    return str(repo_id) + ":" + file_path
-
-
-def add_comment(repo_id: str, comment: Comment):
-    key = get_comment_key(repo_id, comment.get_file_path())
-
-    global comments
-    global comment_id
-
-    comments[key][comment.get_line_number()].append(comment)
-    comment_id += 1
 
 
 # Return tuple of path and filename. Path will not end with a slash
@@ -196,6 +165,36 @@ def get_file(repo_id: str, path: str):
 
 
 # Comments - TODO extract elsewhere
+
+# Track repo id and file path. Store mapping from line numbers to chronologically ordered
+# comments.
+
+comments: Dict[str, Dict[int, List[Comment]]] = defaultdict(lambda: defaultdict(lambda: []))
+comment_id = 0
+
+pseudonym_id = 0
+
+def generate_pseudonym():
+    global pseudonym_id
+    pseudonym_id += 1
+    return "anonymous" + str(pseudonym_id)
+
+pseudonyms: Dict[str, str] = defaultdict(generate_pseudonym)
+
+
+def get_comment_key(repo_id: str, file_path: str) -> str:
+    return str(repo_id) + ":" + file_path
+
+
+def add_comment(repo_id: str, comment: Comment):
+    key = get_comment_key(repo_id, comment.get_file_path())
+
+    global comments
+    global comment_id
+
+    comments[key][comment.get_line_number()].append(comment)
+    comment_id += 1
+
 
 @repos_bp.route("/view/comments/<string:repo_id>/<path:path>", methods=["GET"])
 def get_comments(repo_id: str, path: str):
