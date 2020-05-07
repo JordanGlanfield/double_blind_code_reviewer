@@ -3,7 +3,7 @@ from http import HTTPStatus
 from flask import Blueprint, jsonify, make_response, request, abort
 from flask_login import login_required
 
-from .. import ReviewerPool, DB, User, Repo, Review
+from .. import ReviewerPool, DB, User, Repo, Review, File, Comment
 from ..db.api_models import ReviewerPoolSummariesDto, ReviewerPoolDto
 from ..utils.json import check_request_json
 from ..utils.session import get_active_user, no_content_response
@@ -94,6 +94,7 @@ def get_pool(pool_name: str):
 
 # TODO: decide how to use this. Admin functionality only? Users submit their reviews?
 @reviews_bp.route("/create/review", methods=["POST"])
+@login_required
 def start_review():
     username, repo_name = check_request_json(["username", "repo_name"])
 
@@ -104,6 +105,29 @@ def start_review():
     review.save()
 
     return jsonify({"review_id": review.id})
+
+
+@reviews_bp.route("/create/comment", methods=["POST"])
+@login_required
+def add_comment():
+    review_id, file_path, parent_id, contents, line_number = \
+        check_request_json(["review_id", "file_path", "parent_id", "contents", "line_number"])
+
+    # TODO: check file existence in repo
+
+    review = Review.query.get(review_id)
+
+    if not review:
+        abort(HTTPStatus.BAD_REQUEST)
+
+    file = File.find_or_create(review.repo_id, file_path)
+
+    comment = Comment(review_id=review_id, file_id=file.id, parent_id=parent_id, author_id=get_active_user().id,
+                      contents=contents, line_number=line_number)
+    comment.save()
+
+    return no_content_response()
+
 
 # Utility functions
 
