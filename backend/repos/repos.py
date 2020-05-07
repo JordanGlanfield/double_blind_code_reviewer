@@ -116,9 +116,7 @@ def check_auth():
 
 @repos_bp.route("/create", methods=["POST"])
 def create_repo():
-    check_request_json(["repo_name"])
-
-    repo_name: str = request.json["repo_name"]
+    repo_name, = check_request_json(["repo_name"])
 
     if repo_name == "" or "\\" in repo_name or "/" in repo_name:
         abort(HTTPStatus.BAD_REQUEST)
@@ -214,9 +212,7 @@ def get_comments(repo_id: str, path: str):
 
 @repos_bp.route("/comment/<string:repo_id>/<path:file_path>", methods=["POST"])
 def post_comment(repo_id: str, file_path):
-    check_request_json(["comment"])
-
-    comment = request.json["comment"]
+    comment, = check_request_json(["comment"])
 
     if comment == "":
         abort(HTTPStatus.BAD_REQUEST)
