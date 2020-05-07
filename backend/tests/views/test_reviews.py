@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from typing import List
 
-from backend import ReviewerPool
+from backend import ReviewerPool, Repo, Review
 from ..fixtures import *
 from ..utils import status_code
 from ...db.api_models import ReviewerPoolSummaryDto
@@ -113,3 +113,33 @@ def test_can_get_pools(db, authed_user, api):
     summary_dtos: List[ReviewerPoolSummaryDto] = from_response_json(response)
 
     assert len(summary_dtos) == 2
+
+
+def get_review(authed_user):
+    repo = Repo(name="test_repo", owner_id=authed_user.id)
+    repo.save()
+
+    review = Review(repo_id=repo.id, submitter_id=authed_user.id)
+    review.save()
+
+    return review
+
+
+def test_can_start_a_review(db, authed_user, api):
+    repo = Repo(name="test_repo", owner_id=authed_user.id)
+    repo.save()
+
+    response = api.post(get_url(f"/create/review"), dict(username=authed_user.username, repo_name=repo.name))
+
+    review_id = from_response_json(response)["review_id"]
+
+    review = Review.query.get(review_id)
+
+    assert review
+    assert review.repo_id == repo.id
+    assert review.submitter_id == authed_user.id
+
+
+def test_can_leave_a_comment_during_a_review(db, authed_user, api):
+    # repo = get_review(authed_user)
+    pass

@@ -71,7 +71,7 @@ class Repo(db.Model, Crud):
     # TODO: test
     @classmethod
     def find_by_names(cls, repo_name: str, owner_name: str):
-        return cls.query.filter(and_(cls.name == repo_name, cls.owner.name == owner_name))
+        return cls.query.filter(and_(Repo.name == repo_name, Repo.owner.has(username=owner_name))).first()
 
 
 class Review(db.Model, Crud):
@@ -132,6 +132,21 @@ class File(db.Model, Crud):
     repo_id = db.Column(db.Integer, db.ForeignKey("repo.id"))
     file_path = db.Column(db.String(4096))
 
+    @classmethod
+    def find_or_create(cls, repo_id: str, file_path: str):
+        file = cls.find_by_path(repo_id, file_path)
+
+        if file:
+            return file
+
+        file = File(repo_id=repo_id, file_path=file_path)
+        file.save()
+        return file
+
+    @classmethod
+    def find_by_path(cls, repo_id: str, file_path: str):
+        return File.query.filter(repo_id=repo_id, file_path=file_path).first()
+
 
 class Comment(db.Model, Crud):
     id = db.Column(db.Integer, primary_key=True)
@@ -142,4 +157,3 @@ class Comment(db.Model, Crud):
     contents = db.Column(db.String(8000))
     line_number = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-
