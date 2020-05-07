@@ -32,12 +32,7 @@ def get_current_user():
 
 @bp.route("/signup", methods=["POST"])
 def sign_up():
-    check_request_json(["username", "first_name", "surname", "password"])
-
-    username: str = request.json["username"]
-    first_name: str = request.json["first_name"]
-    surname: str = request.json["surname"]
-    password: str = request.json["password"]
+    username, first_name, surname, password = check_request_json(["username", "first_name", "surname", "password"])
 
     if User.find_by_username(username):
         return "Username is taken", HTTPStatus.CONFLICT
@@ -64,12 +59,7 @@ def login():
     if current_user.is_authenticated:
         abort(HTTPStatus.CONFLICT)
 
-    check_request_json(["username", "password"])
-
-    username, password = (
-        request.json["username"].strip().lower(),
-        request.json["password"].strip(),
-    )
+    username, password = check_request_json(["username", "password"])
 
     if "remember" in request.json:
         remember = request.json["remember"]

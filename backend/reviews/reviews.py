@@ -22,10 +22,7 @@ def not_found(error):
 @reviews_bp.route("/create/pool", methods=["POST"])
 @login_required
 def create_pool():
-    check_request_json(["name", "description"])
-
-    name: str = request.json["name"]
-    description: str = request.json["description"]
+    name, description = check_request_json(["name", "description"])
 
     if ReviewerPool.find_by_name(name):
         abort(HTTPStatus.CONFLICT)
@@ -42,10 +39,7 @@ def create_pool():
 @reviews_bp.route("/add/pool/user", methods=["POST"])
 @login_required
 def add_user_to_pool():
-    check_request_json(["pool_name", "username"])
-
-    pool_name = request.json["pool_name"]
-    username = request.json["username"]
+    pool_name, username = check_request_json(["pool_name", "username"])
 
     reviewer_pool = check_and_get_pool(pool_name)
     check_owner(reviewer_pool)
