@@ -5,7 +5,7 @@ from flask_login import login_required
 
 from .. import ReviewerPool, DB, User, Repo, Review
 from ..db.api_models import ReviewerPoolSummariesDto, ReviewerPoolDto
-from ..utils.json import check_json
+from ..utils.json import check_request_json
 from ..utils.session import get_active_user, no_content_response
 
 reviews_bp = Blueprint("reviews", __name__, url_prefix="/api/v1.0/reviews", static_folder="static")
@@ -22,7 +22,7 @@ def not_found(error):
 @reviews_bp.route("/create/pool", methods=["POST"])
 @login_required
 def create_pool():
-    check_json(["name", "description"])
+    check_request_json(["name", "description"])
 
     name: str = request.json["name"]
     description: str = request.json["description"]
@@ -42,7 +42,7 @@ def create_pool():
 @reviews_bp.route("/add/pool/user", methods=["POST"])
 @login_required
 def add_user_to_pool():
-    check_json(["pool_name", "username"])
+    check_request_json(["pool_name", "username"])
 
     pool_name = request.json["pool_name"]
     username = request.json["username"]
@@ -101,7 +101,7 @@ def get_pool(pool_name: str):
 # TODO: decide how to use this. Admin functionality only? Users submit their reviews?
 @reviews_bp.route("/create/review", methods=["POST"])
 def start_review():
-    username, repo_name = check_json(["username", "repo_name"])
+    username, repo_name = check_request_json(["username", "repo_name"])
 
     repo = Repo.find_by_names(repo_name, username)
     user = User.find_by_username(username)

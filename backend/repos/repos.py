@@ -11,7 +11,7 @@ from .. import User
 from ..db import models
 from ..dbcr.comments import Comment, CommentDto, comment_to_dto
 from ..utils.file_utils import recursive_chown
-from ..utils.json import check_json
+from ..utils.json import check_request_json
 from ..utils.session import get_active_user, no_content_response
 
 repos_bp = Blueprint("repos", __name__, url_prefix="/api/v1.0/repos", static_folder="static")
@@ -116,7 +116,7 @@ def check_auth():
 
 @repos_bp.route("/create", methods=["POST"])
 def create_repo():
-    check_json(["repo_name"])
+    check_request_json(["repo_name"])
 
     repo_name: str = request.json["repo_name"]
 
@@ -214,7 +214,7 @@ def get_comments(repo_id: str, path: str):
 
 @repos_bp.route("/comment/<string:repo_id>/<path:file_path>", methods=["POST"])
 def post_comment(repo_id: str, file_path):
-    check_json(["comment"])
+    check_request_json(["comment"])
 
     comment = request.json["comment"]
 

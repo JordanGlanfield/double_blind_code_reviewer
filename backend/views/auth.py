@@ -7,7 +7,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from backend import LOGIN_MANAGER, DB
 from ..db.api_models import UserDto
 from ..db.models import User
-from ..utils.json import check_json
+from ..utils.json import check_request_json
 from ..utils.session import no_content_response
 
 bp = Blueprint("auth", __name__, url_prefix="/api")
@@ -32,7 +32,7 @@ def get_current_user():
 
 @bp.route("/signup", methods=["POST"])
 def sign_up():
-    check_json(["username", "first_name", "surname", "password"])
+    check_request_json(["username", "first_name", "surname", "password"])
 
     username: str = request.json["username"]
     first_name: str = request.json["first_name"]
@@ -64,7 +64,7 @@ def login():
     if current_user.is_authenticated:
         abort(HTTPStatus.CONFLICT)
 
-    check_json(["username", "password"])
+    check_request_json(["username", "password"])
 
     username, password = (
         request.json["username"].strip().lower(),
