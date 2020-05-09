@@ -129,6 +129,19 @@ def add_comment():
     return no_content_response()
 
 
+@reviews_bp.route("/view/comments/<string:review_id>/<path:file_path>")
+@login_required
+def view_comments(review_id: str, file_path: str):
+    review = Review.get(review_id)
+
+    if not review:
+        abort(HTTPStatus.NOT_FOUND)
+
+    comments = review.get_file_comments(file_path)
+
+    return jsonify(comments)
+
+
 # Utility functions
 
 def check_and_get_pool(pool_name: str) -> ReviewerPool:

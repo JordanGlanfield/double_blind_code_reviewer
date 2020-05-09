@@ -1,6 +1,6 @@
 from typing import NamedTuple, List
 
-from backend import User, ReviewerPool, File
+from backend import User, ReviewerPool, File, Comment
 
 
 class UserDto():
@@ -63,6 +63,10 @@ class CommentDto():
         self.content = content
         self.line_number = line_number
         self.replies = replies
+
+    @staticmethod
+    def from_comments(comments: List[Comment]):
+        pass
 
 
 class FileCommentsDto():

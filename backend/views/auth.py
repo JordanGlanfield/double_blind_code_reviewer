@@ -91,7 +91,6 @@ def is_authenticated():
 @bp.route("/userinfo")
 @login_required
 def user_info():
-    HTTPStatus
     return jsonify(UserDto.from_db(current_user))
 
 
