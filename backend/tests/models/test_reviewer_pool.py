@@ -1,4 +1,4 @@
-from backend import User, ReviewerPool
+from backend import ReviewerPool
 
 from ..fixtures import *
 
@@ -29,7 +29,11 @@ def test_owner_is_in_pool_initially(db):
 def test_cannot_save_pool_without_owner(db):
     name = "Testing Pool"
     reviewer_pool = ReviewerPool(name=name, description="Well good")
-    reviewer_pool.save()
+
+    with pytest.raises(Exception):
+        reviewer_pool.save()
+
+    db.db.session.rollback()
 
     assert not ReviewerPool.find_by_name(name)
 
