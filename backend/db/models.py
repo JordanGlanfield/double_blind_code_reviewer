@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 from typing import List
 
@@ -22,7 +23,7 @@ pool_members = db.Table("pool_members",
 )
 
 
-class Crud(db.Model):
+class Crud():
 
     def save(self):
         if self.id is None:
@@ -36,7 +37,7 @@ class Crud(db.Model):
         return cls.query.get(id)
 
 
-class User(UserMixin, Crud):
+class User(db.Model, UserMixin, Crud):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(128))
     first_name = db.Column(db.String(128))
@@ -67,7 +68,7 @@ class User(UserMixin, Crud):
         return '<User {}>'.format(self.username)
 
 
-class Repo(Crud):
+class Repo(db.Model, Crud):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128))
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
@@ -79,13 +80,12 @@ class Repo(Crud):
         return cls.query.filter(and_(Repo.name == repo_name, Repo.owner.has(username=owner_name))).first()
 
 
-class Comment(Crud):
-    id = db.Column(UUIDType(binary=False), primary_key=True)
+class Comment(db.Model, Crud):
+    id = db.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
     review_id = db.Column(db.Integer, db.ForeignKey("review.id"))
     file_id = db.Column(db.Integer, db.ForeignKey("file.id"))
-    parent_id = db.Column(db.Integer, db.ForeignKey("comment.id"), nullable=True)
-    parent = db.relationship("Comment", back_populates="replies", uselist=False)
-    replies = db.relationship("Comment", back_populates="parent", lazy="dynamic")
+    parent_id = db.Column(UUIDType(binary=False), db.ForeignKey("comment.id"), nullable=True)
+    parent = db.relationship("Comment", remote_side=[id], backref="replies", uselist=False)
     author_id = db.Column(db.Integer, db.ForeignKey("anon_user.id"))
     contents = db.Column(db.String(8000))
     line_number = db.Column(db.Integer)
@@ -94,14 +94,14 @@ class Comment(Crud):
     # TODO - prevent recursive parental relationships
 
 
-class Review(Crud):
+class Review(db.Model, Crud):
     id = db.Column(db.Integer, primary_key=True)
     repo_id = db.Column(db.Integer, db.ForeignKey("repo.id"))
     submitter_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     reviewers = db.relationship("User", secondary=reviewers, back_populates="reviews")
     comments = db.relationship("Comment", lazy="dynamic")
 
-    def get_file_comments(self, file_path: str) -> List[Comment]:
+    def get_comments_flat(self, file_path: str) -> List[Comment]:
         file = File.find_by_path(self.repo_id, file_path)
 
         if not file:
@@ -109,8 +109,16 @@ class Review(Crud):
 
         return self.comments.filter_by(file_id=file.id).all()
 
+    def get_comments_nested(self, file_path: str) -> List[Comment]:
+        file = File.find_by_path(self.repo_id, file_path)
 
-class ReviewerPool(Crud):
+        if not file:
+            return []
+
+        return self.comments.filter_by(file_id=file.id, parent_id=None).all()
+
+
+class ReviewerPool(db.Model, Crud):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128))
     description = db.Column(db.String(8000))
@@ -148,7 +156,7 @@ class ReviewerPool(Crud):
         return cls.query.filter_by(name=name).first()
 
 
-class AnonUser(Crud):
+class AnonUser(db.Model, Crud):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     review_id = db.Column(db.Integer, db.ForeignKey("review.id"))
@@ -156,7 +164,7 @@ class AnonUser(Crud):
     comments = db.relationship("Comment", backref="author", lazy="dynamic")
 
 
-class File(Crud):
+class File(db.Model, Crud):
     id = db.Column(db.Integer, primary_key=True)
     repo_id = db.Column(db.Integer, db.ForeignKey("repo.id"))
     file_path = db.Column(db.String(4096))

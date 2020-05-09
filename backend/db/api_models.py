@@ -58,15 +58,26 @@ class ReviewerPoolSummariesDto(NamedTuple):
 
 
 class CommentDto():
-    def __init__(self, author_pseudonym: str, content: str, line_number: int, replies: List):
+    def __init__(self, id: str, author_pseudonym: str, content: str, line_number: int, replies: List):
+        self.id = id
         self.author_pseudonym = author_pseudonym
         self.content = content
         self.line_number = line_number
         self.replies = replies
 
     @staticmethod
-    def from_comments(comments: List[Comment]):
-        pass
+    def from_comment(comment: Comment):
+        replies = [CommentDto.from_comment(reply) for reply in comment.replies]
+        return CommentDto(str(comment.id), comment.author.name, comment.contents, comment.line_number, replies)
+
+
+class CommentListDto():
+    def __init__(self, comments: List[CommentDto]):
+        self.comments = comments
+
+    @staticmethod
+    def from_comments_nested(comments: List[Comment]) -> "CommentListDto":
+        return CommentListDto([CommentDto.from_comment(comment) for comment in comments])
 
 
 class FileCommentsDto():
