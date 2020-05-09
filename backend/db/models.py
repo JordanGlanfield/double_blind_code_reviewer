@@ -112,6 +112,16 @@ class Review(db.Model, Crud):
     anon_users = db.relationship("AnonUser", back_populates="review", lazy="dynamic")
     comments = db.relationship("Comment", back_populates="review", lazy="dynamic")
 
+    def save(self) -> bool:
+        if not super().save():
+            return False
+
+        anon_user = AnonUser(name="Submitter", user_id=self.submitter_id, review_id=self.id)
+        anon_user.save()
+
+        self.anon_users.append(anon_user)
+        db.session.commit()
+
     def get_comments_flat(self, file_path: str) -> List[Comment]:
         file = File.find_by_path(self.repo_id, file_path)
 

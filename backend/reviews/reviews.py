@@ -4,7 +4,7 @@ from flask import Blueprint, jsonify, make_response, request, abort
 from flask_login import login_required
 
 from .. import ReviewerPool, DB, User, Repo, Review, File, Comment, AnonUser
-from ..db.api_models import ReviewerPoolSummariesDto, ReviewerPoolDto
+from ..db.api_models import ReviewerPoolSummariesDto, ReviewerPoolDto, CommentListDto
 from ..utils.json import check_request_json
 from ..utils.session import get_active_user, no_content_response
 
@@ -145,7 +145,7 @@ def view_comments(review_id: str, file_path: str):
     if not review:
         abort(HTTPStatus.NOT_FOUND)
 
-    comments = review.get_comments_flat(file_path)
+    comments = CommentListDto.from_comments_nested(review.get_comments_nested(file_path))
 
     return jsonify(comments)
 
