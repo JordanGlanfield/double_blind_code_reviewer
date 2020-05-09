@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from typing import List
 
-from backend import ReviewerPool, Repo, Review
+from backend import ReviewerPool, Repo, Review, File, Comment
 from ..fixtures import *
 from ..utils import status_code
 from ...db.api_models import ReviewerPoolSummaryDto
@@ -141,5 +141,16 @@ def test_can_start_a_review(db, authed_user, api):
 
 
 def test_can_leave_a_comment_during_a_review(db, authed_user, api):
-    # repo = get_review(authed_user)
-    pass
+    review = get_review(authed_user)
+
+    contents = "Test comment"
+    file_path = "/test/path/file"
+
+    api.post(get_url(f"/create/comment"), dict(review_id=review.id, file_path=file_path,
+                                               parent_id=None, contents=contents, line_number=10))
+
+    comments = review.comments.all()
+
+    assert len(comments) == 1
+    assert comments[0].contents == contents
+    assert comments[0].file_id == File.find_by_path(review.repo_id, file_path).id

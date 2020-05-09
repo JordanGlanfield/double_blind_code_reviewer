@@ -79,6 +79,7 @@ class Review(db.Model, Crud):
     repo_id = db.Column(db.Integer, db.ForeignKey("repo.id"))
     submitter_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     reviewers = db.relationship("User", secondary=reviewers, back_populates="reviews")
+    comments = db.relationship("Comment", lazy="dynamic")
 
 
 class ReviewerPool(db.Model, Crud):
@@ -145,14 +146,14 @@ class File(db.Model, Crud):
 
     @classmethod
     def find_by_path(cls, repo_id: str, file_path: str):
-        return File.query.filter(repo_id=repo_id, file_path=file_path).first()
+        return cls.query.filter_by(repo_id=repo_id, file_path=file_path).first()
 
 
 class Comment(db.Model, Crud):
     id = db.Column(db.Integer, primary_key=True)
     review_id = db.Column(db.Integer, db.ForeignKey("review.id"))
     file_id = db.Column(db.Integer, db.ForeignKey("file.id"))
-    parent_id = db.Column(db.Integer, db.ForeignKey("comment.id"))
+    parent_id = db.Column(db.Integer, db.ForeignKey("comment.id"), nullable=True)
     author_id = db.Column(db.Integer, db.ForeignKey("anon_user.id"))
     contents = db.Column(db.String(8000))
     line_number = db.Column(db.Integer)
