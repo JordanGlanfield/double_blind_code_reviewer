@@ -3,7 +3,7 @@ from http import HTTPStatus
 from flask import Blueprint, jsonify, make_response, request, abort
 from flask_login import login_required
 
-from .. import ReviewerPool, DB, User, Repo, Review, File, Comment
+from .. import ReviewerPool, DB, User, Repo, Review, File, Comment, AnonUser
 from ..db.api_models import ReviewerPoolSummariesDto, ReviewerPoolDto
 from ..utils.json import check_request_json
 from ..utils.session import get_active_user, no_content_response
@@ -122,9 +122,17 @@ def add_comment():
 
     file = File.find_or_create(review.repo_id, file_path)
 
-    comment = Comment(review_id=review_id, file_id=file.id, parent_id=parent_id, author_id=get_active_user().id,
+    anon_user = AnonUser.find_or_create(get_active_user().id, review.id)
+
+    if not anon_user:
+        # TODO - look at specific error conditions
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR)
+
+    comment = Comment(review_id=review_id, file_id=file.id, parent_id=parent_id, author_id=anon_user.id,
                       contents=contents, line_number=line_number)
     comment.save()
+
+    author = comment.author_id
 
     return no_content_response()
 

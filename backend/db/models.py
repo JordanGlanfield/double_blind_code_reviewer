@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import List
+from typing import List, Union
 
 from flask_login import UserMixin
 from sqlalchemy_utils import UUIDType
@@ -24,17 +24,22 @@ pool_members = db.Table("pool_members",
 
 
 class Crud():
-
-    def save(self):
+    def save(self) -> bool:
         if self.id is None:
             DB.add(self)
+            return True
+        return False
 
     def delete(self):
         DB.delete(self)
 
     @classmethod
-    def get(cls, id):
+    def get(cls, id: str):
         return cls.query.get(id)
+
+    @classmethod
+    def exists(cls, id: str) -> bool:
+        return bool(cls.get(id))
 
 
 class User(db.Model, UserMixin, Crud):
@@ -43,15 +48,19 @@ class User(db.Model, UserMixin, Crud):
     first_name = db.Column(db.String(128))
     surname = db.Column(db.String(128))
     password_hash = db.Column(db.String(128))
-    reviews = db.relationship("Review", secondary=reviewers, back_populates="reviewers")
+    anon_users = db.relationship("AnonUser", back_populates="user")
     reviewer_pools = db.relationship("ReviewerPool", secondary=pool_members, back_populates="members")
 
-    def save_with_password(self, password: str):
+    def save_with_password(self, password: str) -> bool:
         self.password_hash = generate_password_hash(password)
-        super().save()
+        if not super().save():
+            return False
 
         if self.id is not None:
             PASSWORD_MANAGER.update_password(self.username, password)
+            return True
+
+        return False
 
     def check_password(self, password: str):
         return check_password_hash(self.password_hash, password)
@@ -71,7 +80,7 @@ class User(db.Model, UserMixin, Crud):
 class Repo(db.Model, Crud):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128))
-    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     owner = db.relationship("User", uselist=False)
 
     # TODO: test
@@ -82,11 +91,13 @@ class Repo(db.Model, Crud):
 
 class Comment(db.Model, Crud):
     id = db.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
-    review_id = db.Column(db.Integer, db.ForeignKey("review.id"))
-    file_id = db.Column(db.Integer, db.ForeignKey("file.id"))
+    review_id = db.Column(db.Integer, db.ForeignKey("review.id"), nullable=False)
+    review = db.relationship("Review", back_populates="comments", uselist=False)
+    file_id = db.Column(db.Integer, db.ForeignKey("file.id"), nullable=False)
     parent_id = db.Column(UUIDType(binary=False), db.ForeignKey("comment.id"), nullable=True)
     parent = db.relationship("Comment", remote_side=[id], backref="replies", uselist=False)
-    author_id = db.Column(db.Integer, db.ForeignKey("anon_user.id"))
+    author_id = db.Column(db.Integer, db.ForeignKey("anon_user.id"), nullable=False)
+    author = db.relationship("AnonUser", back_populates="comments", uselist=False)
     contents = db.Column(db.String(8000))
     line_number = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
@@ -96,10 +107,10 @@ class Comment(db.Model, Crud):
 
 class Review(db.Model, Crud):
     id = db.Column(db.Integer, primary_key=True)
-    repo_id = db.Column(db.Integer, db.ForeignKey("repo.id"))
-    submitter_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    reviewers = db.relationship("User", secondary=reviewers, back_populates="reviews")
-    comments = db.relationship("Comment", lazy="dynamic")
+    repo_id = db.Column(db.Integer, db.ForeignKey("repo.id"), nullable=False)
+    submitter_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    anon_users = db.relationship("AnonUser", back_populates="review", lazy="dynamic")
+    comments = db.relationship("Comment", back_populates="review", lazy="dynamic")
 
     def get_comments_flat(self, file_path: str) -> List[Comment]:
         file = File.find_by_path(self.repo_id, file_path)
@@ -126,14 +137,17 @@ class ReviewerPool(db.Model, Crud):
                                 secondary=pool_members,
                                 back_populates="reviewer_pools",
                                 lazy="dynamic")
-    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     owner = db.relationship("User", uselist=False)
 
     def save(self):
-        if User.query.get(self.owner_id) is not None:
-            Crud.save(self)
-            self.members.append(self.owner)
-            db.session.commit()
+        if not Crud.save(self):
+            return False
+
+        self.members.append(self.owner)
+        db.session.commit()
+
+        return True
 
     def add_user(self, user: User):
         if not self.has_user(user):
@@ -158,15 +172,33 @@ class ReviewerPool(db.Model, Crud):
 
 class AnonUser(db.Model, Crud):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    review_id = db.Column(db.Integer, db.ForeignKey("review.id"))
     name = db.Column(db.String(128))
-    comments = db.relationship("Comment", backref="author", lazy="dynamic")
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    user = db.relationship("User", back_populates="anon_users")
+    review_id = db.Column(db.Integer, db.ForeignKey("review.id"), nullable=False)
+    review = db.relationship("Review", back_populates="anon_users")
+    comments = db.relationship("Comment", back_populates="author", lazy="dynamic")
+
+    @classmethod
+    def find_or_create(cls, user_id: str, review_id: str) -> Union[None, "AnonUser"]:
+        review = Review.get(review_id)
+
+        if not User.exists(user_id) or not review:
+            return None
+
+        anon_user = cls.query.filter_by(user_id=user_id, review_id=review_id).first()
+
+        if not anon_user:
+            new_name = f"Anonymous{review.reviewers.count()}"
+            anon_user = AnonUser(user_id=user_id, review_id=review_id, name=new_name)
+            anon_user.save()
+
+        return anon_user
 
 
 class File(db.Model, Crud):
     id = db.Column(db.Integer, primary_key=True)
-    repo_id = db.Column(db.Integer, db.ForeignKey("repo.id"))
+    repo_id = db.Column(db.Integer, db.ForeignKey("repo.id"), nullable=False)
     file_path = db.Column(db.String(4096))
 
     @classmethod

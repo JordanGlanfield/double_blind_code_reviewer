@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from typing import List
 
-from backend import ReviewerPool, Repo, Review, File, Comment
+from backend import ReviewerPool, Repo, Review, File, Comment, AnonUser
 from ..fixtures import *
 from ..utils import status_code
 from ...db.api_models import ReviewerPoolSummaryDto
@@ -142,6 +142,9 @@ def test_can_start_a_review(db, authed_user, api):
 
 def test_can_leave_a_comment_during_a_review(db, authed_user, api):
     review = get_review(authed_user)
+
+    anon_user = AnonUser(name="Submitter", user_id=authed_user.id, review_id=review.id)
+    anon_user.save()
 
     contents = "Test comment"
     file_path = "/test/path/file"
