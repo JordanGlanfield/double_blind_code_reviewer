@@ -115,7 +115,7 @@ def test_can_get_pools(db, authed_user, api):
     assert len(summary_dtos) == 2
 
 
-def get_review(authed_user):
+def create_review(authed_user):
     repo = Repo(name="test_repo", owner_id=authed_user.id)
     repo.save()
 
@@ -141,10 +141,7 @@ def test_can_start_a_review(db, authed_user, api):
 
 
 def test_can_leave_a_comment_during_a_review(db, authed_user, api):
-    review = get_review(authed_user)
-
-    anon_user = AnonUser(name="Submitter", user_id=authed_user.id, review_id=review.id)
-    anon_user.save()
+    review = create_review(authed_user)
 
     contents = "Test comment"
     file_path = "/test/path/file"
@@ -157,3 +154,29 @@ def test_can_leave_a_comment_during_a_review(db, authed_user, api):
     assert len(comments) == 1
     assert comments[0].contents == contents
     assert comments[0].file_id == File.find_by_path(review.repo_id, file_path).id
+
+
+def test_can_view_comments(db, authed_user, api):
+    review = create_review(authed_user)
+
+    file_path = "test/file/path"
+    file = File.find_or_create(review.repo_id, file_path)
+
+    author: AnonUser = authed_user.anon_users[0]
+
+    comments = [Comment(review_id=review.id, file_id=file.id, author_id=author.id, line_number=i, contents=f"Comment{i}")
+                for i in range(0, 4)]
+
+    for comment in comments:
+        comment.save()
+
+    response = api.get(get_url(f"/view/comments/{review.id}/{file_path}"))
+    comment_dtos = from_response_json(response)["comments"]
+
+    assert len(comment_dtos) == len(comments)
+
+    for i in range(0, len(comment_dtos)):
+        assert comment_dtos[i]["contents"] == comments[i].contents
+
+
+

@@ -58,10 +58,10 @@ class ReviewerPoolSummariesDto(NamedTuple):
 
 
 class CommentDto():
-    def __init__(self, id: str, author_pseudonym: str, content: str, line_number: int, replies: List):
+    def __init__(self, id: str, author_pseudonym: str, contents: str, line_number: int, replies: List):
         self.id = id
         self.author_pseudonym = author_pseudonym
-        self.content = content
+        self.contents = contents
         self.line_number = line_number
         self.replies = replies
 
