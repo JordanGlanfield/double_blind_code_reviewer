@@ -137,7 +137,7 @@ def view_comments(review_id: str, file_path: str):
     if not review:
         abort(HTTPStatus.NOT_FOUND)
 
-    comments = review.get_file_comments(file_path)
+    comments = review.get_comments_flat(file_path)
 
     return jsonify(comments)
 
