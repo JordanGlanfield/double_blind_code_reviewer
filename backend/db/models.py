@@ -1,6 +1,8 @@
 from datetime import datetime
+from typing import List
 
 from flask_login import UserMixin
+from sqlalchemy_utils import UUIDType
 from sqlalchemy import and_
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -20,18 +22,21 @@ pool_members = db.Table("pool_members",
 )
 
 
-class Crud:
+class Crud(db.Model):
 
     def save(self):
         if self.id is None:
             DB.add(self)
 
-
     def delete(self):
         DB.delete(self)
 
+    @classmethod
+    def get(cls, id):
+        return cls.query.get(id)
 
-class User(UserMixin, Crud, db.Model):
+
+class User(UserMixin, Crud):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(128))
     first_name = db.Column(db.String(128))
@@ -62,7 +67,7 @@ class User(UserMixin, Crud, db.Model):
         return '<User {}>'.format(self.username)
 
 
-class Repo(db.Model, Crud):
+class Repo(Crud):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128))
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
@@ -74,15 +79,38 @@ class Repo(db.Model, Crud):
         return cls.query.filter(and_(Repo.name == repo_name, Repo.owner.has(username=owner_name))).first()
 
 
-class Review(db.Model, Crud):
+class Comment(Crud):
+    id = db.Column(UUIDType(binary=False), primary_key=True)
+    review_id = db.Column(db.Integer, db.ForeignKey("review.id"))
+    file_id = db.Column(db.Integer, db.ForeignKey("file.id"))
+    parent_id = db.Column(db.Integer, db.ForeignKey("comment.id"), nullable=True)
+    parent = db.relationship("Comment", back_populates="replies", uselist=False)
+    replies = db.relationship("Comment", back_populates="parent", lazy="dynamic")
+    author_id = db.Column(db.Integer, db.ForeignKey("anon_user.id"))
+    contents = db.Column(db.String(8000))
+    line_number = db.Column(db.Integer)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+
+    # TODO - prevent recursive parental relationships
+
+
+class Review(Crud):
     id = db.Column(db.Integer, primary_key=True)
     repo_id = db.Column(db.Integer, db.ForeignKey("repo.id"))
     submitter_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     reviewers = db.relationship("User", secondary=reviewers, back_populates="reviews")
     comments = db.relationship("Comment", lazy="dynamic")
 
+    def get_file_comments(self, file_path: str) -> List[Comment]:
+        file = File.find_by_path(self.repo_id, file_path)
 
-class ReviewerPool(db.Model, Crud):
+        if not file:
+            return []
+
+        return self.comments.filter_by(file_id=file.id).all()
+
+
+class ReviewerPool(Crud):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128))
     description = db.Column(db.String(8000))
@@ -120,7 +148,7 @@ class ReviewerPool(db.Model, Crud):
         return cls.query.filter_by(name=name).first()
 
 
-class AnonUser(db.Model, Crud):
+class AnonUser(Crud):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     review_id = db.Column(db.Integer, db.ForeignKey("review.id"))
@@ -128,7 +156,7 @@ class AnonUser(db.Model, Crud):
     comments = db.relationship("Comment", backref="author", lazy="dynamic")
 
 
-class File(db.Model, Crud):
+class File(Crud):
     id = db.Column(db.Integer, primary_key=True)
     repo_id = db.Column(db.Integer, db.ForeignKey("repo.id"))
     file_path = db.Column(db.String(4096))
@@ -147,14 +175,3 @@ class File(db.Model, Crud):
     @classmethod
     def find_by_path(cls, repo_id: str, file_path: str):
         return cls.query.filter_by(repo_id=repo_id, file_path=file_path).first()
-
-
-class Comment(db.Model, Crud):
-    id = db.Column(db.Integer, primary_key=True)
-    review_id = db.Column(db.Integer, db.ForeignKey("review.id"))
-    file_id = db.Column(db.Integer, db.ForeignKey("file.id"))
-    parent_id = db.Column(db.Integer, db.ForeignKey("comment.id"), nullable=True)
-    author_id = db.Column(db.Integer, db.ForeignKey("anon_user.id"))
-    contents = db.Column(db.String(8000))
-    line_number = db.Column(db.Integer)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
