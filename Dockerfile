@@ -31,6 +31,8 @@ RUN apt-get update && apt-get -y install libsasl2-dev python-dev libldap2-dev li
 RUN mkdir storage && \
     mkdir storage/repos
 
+COPY nginx/htpasswd storage/.htpasswd
+
 VOLUME storage
 
 ##################################################
