@@ -88,12 +88,21 @@ def init_new_repo(repo_name: str, user: User) -> models.Repo:
     return repo
 
 
-def check_push_auth(user: User, repo: Repo):
-    pass
+def check_push_auth(user: User, repo: models.Repo):
+    if repo.owner_id == user.id:
+        return no_content_response()
+
+    abort(HTTPStatus.UNAUTHORIZED)
 
 
-def check_pull_auth(user: User, repo: Repo):
-    pass
+def check_pull_auth(user: User, repo: models.Repo):
+    if repo.owner_id == user.id:
+        return no_content_response()
+
+    if repo.is_user_a_contributor(user.id):
+        return no_content_response()
+
+    abort(HTTPStatus.UNAUTHORIZED)
 
 
 def extract_repo(git_uri: str) -> str:
@@ -120,11 +129,14 @@ def check_auth():
     pull_service = "git-upload-pack"
 
     if push_service in original_uri and pull_service in original_uri:
-        abort(HTTPStatus.FORBIDDEN)
+        abort(HTTPStatus.UNAUTHORIZED)
 
-    repo_name = extract_repo(original_uri)
+    repo_id = extract_repo(original_uri)
 
-    # repo_name = models.Repo.find_by_names()
+    repo = models.Repo.query.get(repo_id)
+
+    if not repo:
+        abort(HTTPStatus.NOT_FOUND)
 
     user = User.find_by_username(username)
 
@@ -134,12 +146,12 @@ def check_auth():
     # TODO: authorisation checks on user
 
     if push_service in original_uri:
-        current_app.logger.info("Push in progress")
+        return check_push_auth(user, repo)
 
     if pull_service in original_uri:
-        current_app.logger.info("Pull or clone in progress")
+        return check_pull_auth(user, repo)
 
-    return no_content_response()
+    abort(HTTPStatus.UNAUTHORIZED)
 
 
 def get_base_url():
