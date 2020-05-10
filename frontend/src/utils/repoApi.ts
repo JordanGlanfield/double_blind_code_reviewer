@@ -1,4 +1,5 @@
 import { extractData } from "./apiUtil";
+import Repo from "../types/Repo";
 
 async function get(uriSuffix: string) {
   const uri = "/api/v1.0/repos/view/" + uriSuffix;
@@ -8,7 +9,7 @@ async function get(uriSuffix: string) {
   return extractData(response);
 }
 
-export function getRepos() {
+export function getRepos(): Promise<Repo[]> {
   return get("all");
 }
 
@@ -21,7 +22,7 @@ export async function getFile(repoId: string, path: string) {
   return get("file/" + repoId + "/" + path);
 }
 
-export async function createRepo(repo_name: string) {
+export async function createRepo(repo_name: string): Promise<Repo> {
   const uri = "/api/v1.0/repos/create";
 
   const requestOptions = {
@@ -30,5 +31,7 @@ export async function createRepo(repo_name: string) {
     body: JSON.stringify({ repo_name })
   };
 
-  return fetch(uri, requestOptions);
+  let response = await fetch(uri, requestOptions);
+
+  return extractData(response);
 }

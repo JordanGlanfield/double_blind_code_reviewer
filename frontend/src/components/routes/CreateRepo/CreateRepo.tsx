@@ -4,27 +4,28 @@ import { createRepo } from "../../../utils/repoApi";
 import { Redirect } from "react-router-dom";
 import routes from "../../../constants/routes";
 import { getUsername } from "../../../utils/authenticationService";
+import Repo from "../../../types/Repo";
 
 const CreateRepo = () => {
-  const [newRepoName, setNewRepoName] = useState(undefined as undefined | string);
+  const [newRepo, setNewRepo] = useState(undefined as undefined | Repo);
 
-  const newRepo = (values: any) => {
+  const createNewRepo = (values: any) => {
     let repoName = values.name;
     createRepo(repoName)
-      .then(() => setNewRepoName(repoName))
+      .then(repo => setNewRepo(repo))
       .catch((error) => {
         console.log(error);
         alert("Failed to create repo");
       });
   };
 
-  if (newRepoName) {
-    return <Redirect to={routes.getRepoDir(getUsername(), newRepoName, "")} />
+  if (newRepo) {
+    return <Redirect to={routes.getRepoDir(getUsername(), newRepo.id, newRepo.name, "")} />
   }
 
   return <>
     <PageHeader title={"Create a New Repository"} onBack={() => window.history.back()} />
-    <Form labelCol={{span: 4}} wrapperCol={{span: 16}} onFinish={newRepo}>
+    <Form labelCol={{span: 4}} wrapperCol={{span: 16}} onFinish={createNewRepo}>
       <Form.Item label="Repository Name"
                  name="name"
                  rules={[{required: true, message: "Enter a name for the repository"}]}

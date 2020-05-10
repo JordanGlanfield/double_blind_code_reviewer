@@ -7,25 +7,25 @@ test("can get a home URI", () => {
 });
 
 test ("can get a repo directory", () => {
-  const result = routes.getRepoDir("james", "gson", "build/issues");
+  const result = routes.getRepoDir("james", "id", "gson", "build/issues");
 
-  expect(result).toEqual("/james/repo/gson/build/issues");
+  expect(result).toEqual("/james/repo/id/gson/build/issues");
 });
 
 test("can get base repo directory", () => {
-  const result = routes.getRepoDir("james", "gson", "");
+  const result = routes.getRepoDir("james", "id", "gson", "");
 
-  expect(result).toEqual("/james/repo/gson")
+  expect(result).toEqual("/james/repo/id/gson")
 });
 
 test ("can get a file", () => {
-  const result = routes.getRepoFile("james", "gson", "build/issues/errors.txt");
+  const result = routes.getRepoFile("james", "id", "gson", "build/issues/errors.txt");
 
-  expect(result).toEqual("/james/repofiles/gson/build/issues/errors.txt");
+  expect(result).toEqual("/james/repofiles/id/gson/build/issues/errors.txt");
 });
 
 test("can get top level file", () => {
-  const result = routes.getRepoFile("james", "gson", "README.md");
+  const result = routes.getRepoFile("james", "id", "gson", "README.md");
 
-  expect(result).toEqual("/james/repofiles/gson/README.md")
+  expect(result).toEqual("/james/repofiles/id/gson/README.md")
 });
