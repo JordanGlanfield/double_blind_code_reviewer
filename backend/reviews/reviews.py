@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from uuid import UUID
 
 from flask import Blueprint, jsonify, make_response, request, abort
 from flask_login import login_required
@@ -33,7 +34,7 @@ def create_pool():
     pool.save()
     DB.db.session.commit()
 
-    return jsonify({"id": pool.id})
+    return jsonify({"id": pool.id.hex})
 
 
 @reviews_bp.route("/add/pool/user", methods=["POST"])
@@ -104,7 +105,7 @@ def start_review():
     review = Review(repo_id=repo.id, submitter_id=user.id)
     review.save()
 
-    return jsonify({"review_id": review.id})
+    return jsonify({"review_id": review.id.hex})
 
 
 @reviews_bp.route("/create/comment", methods=["POST"])

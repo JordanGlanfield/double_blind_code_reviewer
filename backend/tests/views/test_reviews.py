@@ -35,7 +35,8 @@ def test_can_create_reviewer_pool(db, authed_user, api):
     data = from_response_json(response)
 
     assert "id" in data
-    assert ReviewerPool.query.get(data["id"]) is not None
+    id = data["id"]
+    assert ReviewerPool.query.get(id) is not None
 
 
 def test_can_add_user_to_pool(db, authed_user, api):
@@ -146,7 +147,7 @@ def test_can_leave_a_comment_during_a_review(db, authed_user, api):
     contents = "Test comment"
     file_path = "/test/path/file"
 
-    api.post(get_url(f"/create/comment"), dict(review_id=review.id, file_path=file_path,
+    api.post(get_url(f"/create/comment"), dict(review_id=review.id.hex, file_path=file_path,
                                                parent_id=None, contents=contents, line_number=10))
 
     comments = review.comments.all()

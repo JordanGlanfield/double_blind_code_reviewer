@@ -79,6 +79,21 @@ def init_new_repo(repo_name: str, user: User):
     models.Repo(name=repo_name, owner_id=user.id).save()
 
 
+def check_push_auth(user: User, repo: Repo):
+    pass
+
+
+def check_pull_auth(user: User, repo: Repo):
+    pass
+
+
+def extract_repo(git_uri: str) -> str:
+    first_half = git_uri.split("/.git")[0]
+    split = first_half.split("/")
+    repo_name = split[len(split) - 1]
+    return repo_name
+
+
 @repos_bp.route("/check_auth", methods=["GET"])
 def check_auth():
     original_uri_header = "X-Original-URI"
@@ -97,6 +112,10 @@ def check_auth():
 
     if push_service in original_uri and pull_service in original_uri:
         abort(HTTPStatus.FORBIDDEN)
+
+    repo_name = extract_repo(original_uri)
+
+    # repo_name = models.Repo.find_by_names()
 
     user = User.find_by_username(username)
 
