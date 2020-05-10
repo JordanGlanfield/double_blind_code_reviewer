@@ -13,13 +13,13 @@ from ..auth.password_manager import PASSWORD_MANAGER
 db = DB.db
 
 reviewers = db.Table("reviewers",
-    db.Column("review_id", db.Integer, db.ForeignKey("review.id")),
-    db.Column("user_id", db.Integer, db.ForeignKey("user.id"))
+    db.Column("review_id", UUIDType(binary=False), db.ForeignKey("review.id")),
+    db.Column("user_id", UUIDType(binary=False), db.ForeignKey("user.id"))
 )
 
 pool_members = db.Table("pool_members",
-    db.Column("reviewer_pool_id", db.Integer, db.ForeignKey("reviewer_pool.id")),
-    db.Column("user_id", db.Integer, db.ForeignKey("user.id"))
+    db.Column("reviewer_pool_id", UUIDType(binary=False), db.ForeignKey("reviewer_pool.id")),
+    db.Column("user_id", UUIDType(binary=False), db.ForeignKey("user.id"))
 )
 
 
@@ -34,16 +34,16 @@ class Crud():
         DB.delete(self)
 
     @classmethod
-    def get(cls, id: str):
+    def get(cls, id):
         return cls.query.get(id)
 
     @classmethod
-    def exists(cls, id: str) -> bool:
+    def exists(cls, id) -> bool:
         return bool(cls.get(id))
 
 
 class User(db.Model, UserMixin, Crud):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
     username = db.Column(db.String(128))
     first_name = db.Column(db.String(128))
     surname = db.Column(db.String(128))
@@ -78,9 +78,9 @@ class User(db.Model, UserMixin, Crud):
 
 
 class Repo(db.Model, Crud):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
     name = db.Column(db.String(128))
-    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    owner_id = db.Column(UUIDType(binary=False), db.ForeignKey("user.id"), nullable=False)
     owner = db.relationship("User", uselist=False)
 
     # TODO: test
@@ -91,12 +91,12 @@ class Repo(db.Model, Crud):
 
 class Comment(db.Model, Crud):
     id = db.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
-    review_id = db.Column(db.Integer, db.ForeignKey("review.id"), nullable=False)
+    review_id = db.Column(UUIDType(binary=False), db.ForeignKey("review.id"), nullable=False)
     review = db.relationship("Review", back_populates="comments", uselist=False)
-    file_id = db.Column(db.Integer, db.ForeignKey("file.id"), nullable=False)
+    file_id = db.Column(UUIDType(binary=False), db.ForeignKey("file.id"), nullable=False)
     parent_id = db.Column(UUIDType(binary=False), db.ForeignKey("comment.id"), nullable=True)
     parent = db.relationship("Comment", remote_side=[id], backref="replies", uselist=False)
-    author_id = db.Column(db.Integer, db.ForeignKey("anon_user.id"), nullable=False)
+    author_id = db.Column(UUIDType(binary=False), db.ForeignKey("anon_user.id"), nullable=False)
     author = db.relationship("AnonUser", back_populates="comments", uselist=False)
     contents = db.Column(db.String(8000))
     line_number = db.Column(db.Integer)
@@ -106,9 +106,9 @@ class Comment(db.Model, Crud):
 
 
 class Review(db.Model, Crud):
-    id = db.Column(db.Integer, primary_key=True)
-    repo_id = db.Column(db.Integer, db.ForeignKey("repo.id"), nullable=False)
-    submitter_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    id = db.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
+    repo_id = db.Column(UUIDType(binary=False), db.ForeignKey("repo.id"), nullable=False)
+    submitter_id = db.Column(UUIDType(binary=False), db.ForeignKey("user.id"), nullable=False)
     anon_users = db.relationship("AnonUser", back_populates="review", lazy="dynamic")
     comments = db.relationship("Comment", back_populates="review", lazy="dynamic")
 
@@ -140,14 +140,14 @@ class Review(db.Model, Crud):
 
 
 class ReviewerPool(db.Model, Crud):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
     name = db.Column(db.String(128))
     description = db.Column(db.String(8000))
     members = db.relationship("User",
                                 secondary=pool_members,
                                 back_populates="reviewer_pools",
                                 lazy="dynamic")
-    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    owner_id = db.Column(UUIDType(binary=False), db.ForeignKey("user.id"), nullable=False)
     owner = db.relationship("User", uselist=False)
 
     def save(self):
@@ -181,11 +181,11 @@ class ReviewerPool(db.Model, Crud):
 
 
 class AnonUser(db.Model, Crud):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
     name = db.Column(db.String(128))
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    user_id = db.Column(UUIDType(binary=False), db.ForeignKey("user.id"), nullable=False)
     user = db.relationship("User", back_populates="anon_users")
-    review_id = db.Column(db.Integer, db.ForeignKey("review.id"), nullable=False)
+    review_id = db.Column(UUIDType(binary=False), db.ForeignKey("review.id"), nullable=False)
     review = db.relationship("Review", back_populates="anon_users")
     comments = db.relationship("Comment", back_populates="author", lazy="dynamic")
 
@@ -207,8 +207,8 @@ class AnonUser(db.Model, Crud):
 
 
 class File(db.Model, Crud):
-    id = db.Column(db.Integer, primary_key=True)
-    repo_id = db.Column(db.Integer, db.ForeignKey("repo.id"), nullable=False)
+    id = db.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
+    repo_id = db.Column(UUIDType(binary=False), db.ForeignKey("repo.id"), nullable=False)
     file_path = db.Column(db.String(4096))
 
     @classmethod
