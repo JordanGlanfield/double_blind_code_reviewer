@@ -142,6 +142,10 @@ def check_auth():
     return no_content_response()
 
 
+def get_base_url():
+    return request.base_url.split(repos_bp.url_prefix)[0]
+
+
 @repos_bp.route("/create", methods=["POST"])
 @login_required
 def create_repo():
@@ -152,14 +156,14 @@ def create_repo():
 
     repo = init_new_repo(repo_name, get_active_user())
 
-    return jsonify(RepoDto.from_db(repo))
+    return jsonify(RepoDto.from_db(repo, get_base_url()))
 
 
 @repos_bp.route("/view/all", methods=["GET"])
 @login_required
 def get_repos():
     repos = get_active_user().get_repos()
-    return jsonify([RepoDto.from_db(repo) for repo in repos])
+    return jsonify([RepoDto.from_db(repo, get_base_url()) for repo in repos])
 
 
 @repos_bp.route("/view/dir/<string:repo_id>/", defaults={"path": ""}, methods=["GET"])

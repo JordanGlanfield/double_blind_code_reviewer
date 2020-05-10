@@ -95,10 +95,12 @@ class FileCommentsDto():
 
 
 class RepoDto():
-    def __init__(self, id: str, name: str):
+    def __init__(self, id: str, name: str, clone_url: str):
         self.id = id
         self.name = name
+        self.clone_url = clone_url
 
     @staticmethod
-    def from_db(repo: Repo):
-        return RepoDto(repo.id.hex, repo.name)
+    def from_db(repo: Repo, base_url: str):
+        clone_url = "/".join([base_url, repo.id.hex, ".git"])
+        return RepoDto(repo.id.hex, repo.name, clone_url)
