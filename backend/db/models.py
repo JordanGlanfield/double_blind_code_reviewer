@@ -3,8 +3,9 @@ from datetime import datetime
 from typing import List, Union
 
 from flask_login import UserMixin
+from flask_sqlalchemy import BaseQuery
 from sqlalchemy_utils import UUIDType
-from sqlalchemy import and_
+from sqlalchemy import and_, select
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from .database import DB
@@ -90,6 +91,15 @@ class Repo(db.Model, Crud):
     name = db.Column(db.String(128))
     owner_id = db.Column(UUIDType(binary=False), db.ForeignKey("user.id"), nullable=False)
     owner = db.relationship("User", back_populates="repos", uselist=False)
+
+    def _get_anon_users(self) -> BaseQuery:
+        return Repo.query.filter_by(id=self.id).join(Review).join(AnonUser).with_entities(AnonUser)
+
+    def get_review_contributors(self) -> List["AnonUser"]:
+        return self._get_anon_users().all()
+
+    def is_user_a_contributor(self, user_id: uuid.UUID) -> bool:
+        return bool(self._get_anon_users().filter_by(user_id=user_id).first())
 
     # TODO: test
     @classmethod
