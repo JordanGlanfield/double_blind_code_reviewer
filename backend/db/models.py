@@ -48,6 +48,7 @@ class User(db.Model, UserMixin, Crud):
     first_name = db.Column(db.String(128))
     surname = db.Column(db.String(128))
     password_hash = db.Column(db.String(128))
+    repos = db.relationship("Repo", back_populates="owner", lazy="dynamic")
     anon_users = db.relationship("AnonUser", back_populates="user")
     reviewer_pools = db.relationship("ReviewerPool", secondary=pool_members, back_populates="members")
 
@@ -65,6 +66,13 @@ class User(db.Model, UserMixin, Crud):
     def check_password(self, password: str):
         return check_password_hash(self.password_hash, password)
 
+    def add_repo(self, repo: "Repo"):
+        self.repos.append(repo)
+        db.session.commit()
+
+    def get_repos(self) -> List["Repo"]:
+        return self.repos.all()
+
     @property
     def is_anonymous(self):
         return False
@@ -81,7 +89,7 @@ class Repo(db.Model, Crud):
     id = db.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
     name = db.Column(db.String(128))
     owner_id = db.Column(UUIDType(binary=False), db.ForeignKey("user.id"), nullable=False)
-    owner = db.relationship("User", uselist=False)
+    owner = db.relationship("User", back_populates="repos", uselist=False)
 
     # TODO: test
     @classmethod

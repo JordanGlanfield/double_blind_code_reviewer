@@ -5,6 +5,7 @@ import { Button, List, Typography } from "antd"
 import routes from "../../../constants/routes";
 import { getRepos } from "../../../utils/repoApi";
 import { useDataSourceWithMessages } from "../../../utils/hooks";
+import Repo from "../../../types/Repo";
 
 const ViewRepos = () => {
     let repoSource = useDataSourceWithMessages(getRepos);
@@ -22,9 +23,11 @@ const ViewRepos = () => {
 
     return <List
         size="large"
-        dataSource={repoSource.data as string[]}
-        renderItem={item => <List.Item>
-            <Link to={routes.getRepoDir(userString, item, "")}><Button type="primary" ghost>{item}</Button></Link>
+        dataSource={repoSource.data as Repo[]}
+        renderItem={repo => <List.Item>
+            <Link to={routes.getRepoDir(userString, repo.id, repo.name,"")}>
+                <Button type="primary" ghost>{repo.name}</Button>
+            </Link>
         </List.Item>}
     />
 };

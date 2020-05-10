@@ -1,14 +1,18 @@
 import os
+import shutil
 from collections import defaultdict
 from http import HTTPStatus
 from typing import Dict, List
+from uuid import UUID
 
 from flask import Blueprint, jsonify, abort, send_from_directory, make_response, request, current_app
+from flask_login import login_required
 from git import Repo
 
 from .file_util import get_directory_contents
-from .. import User
+from .. import User, DB, ENV
 from ..db import models
+from ..db.api_models import RepoDto
 from ..dbcr.comments import Comment, CommentDto, comment_to_dto
 from ..utils.file_utils import recursive_chown
 from ..utils.json import check_request_json
@@ -22,12 +26,8 @@ def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), HTTPStatus.NOT_FOUND)
 
 
-def get_repos_path(username: str) -> str:
-    return os.path.sep.join([current_app.config["REPOS_PATH"], username])
-
-
-def get_repo_path(repo_name: str, username: str) -> str:
-    return os.path.sep.join([get_repos_path(username), repo_name])
+def get_repo_path(repo_id: UUID) -> str:
+    return os.path.sep.join([current_app.config["REPOS_PATH"], repo_id.hex])
 
 
 # Return tuple of path and filename. Path will not end with a slash
@@ -55,28 +55,37 @@ def flatten_directories(dir_contents):
     return flattened
 
 
-def init_new_repo(repo_name: str, user: User):
-    repo_path = get_repo_path(repo_name, user.username)
-    repo = Repo.init(repo_path, mkdir=True)
+def init_new_repo(repo_name: str, user: User) -> models.Repo:
+    repo = models.Repo(name=repo_name, owner_id=user.id)
 
-    if not repo:
+    if not repo.save():
         abort(HTTPStatus.INTERNAL_SERVER_ERROR)
 
-    with repo.config_writer() as writer:
+    repo_path = get_repo_path(repo.id)
+
+    local_repo = Repo.init(repo_path, mkdir=True)
+
+    if not local_repo:
+        DB.delete(repo)
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR)
+
+    with local_repo.config_writer() as writer:
         writer.set_value("receive", "denyCurrentBranch", "updateInstead")
         writer.set_value("http", "receivepack", "true")
         writer.release()
 
-    repo.close()
+    local_repo.close()
 
-    try:
-        # TODO - graceful recovery if fails
-        recursive_chown(repo_path, "www-data", "www-data")
-    except:
-        current_app.logger.error("Failed to change " + repo_path + " ownership to www-data")
-        abort(HTTPStatus.INTERNAL_SERVER_ERROR)
+    if ENV == "production":
+        try:
+            recursive_chown(repo_path, "www-data", "www-data")
+        except:
+            DB.delete(repo)
+            shutil.rmtree(repo_path)
+            current_app.logger.error("Failed to change " + repo_path + " ownership to www-data")
+            abort(HTTPStatus.INTERNAL_SERVER_ERROR)
 
-    models.Repo(name=repo_name, owner_id=user.id).save()
+    return repo
 
 
 def check_push_auth(user: User, repo: Repo):
@@ -134,31 +143,35 @@ def check_auth():
 
 
 @repos_bp.route("/create", methods=["POST"])
+@login_required
 def create_repo():
     repo_name, = check_request_json(["repo_name"])
 
     if repo_name == "" or "\\" in repo_name or "/" in repo_name:
         abort(HTTPStatus.BAD_REQUEST)
 
-    init_new_repo(repo_name, get_active_user())
+    repo = init_new_repo(repo_name, get_active_user())
 
-    return no_content_response()
+    return jsonify(RepoDto.from_db(repo))
 
 
 @repos_bp.route("/view/all", methods=["GET"])
+@login_required
 def get_repos():
-    contents = get_directory_contents(get_repos_path(get_active_user().username))
-    return jsonify(contents["directories"])
+    repos = get_active_user().get_repos()
+    return jsonify([RepoDto.from_db(repo) for repo in repos])
 
 
 @repos_bp.route("/view/dir/<string:repo_id>/", defaults={"path": ""}, methods=["GET"])
 @repos_bp.route("/view/dir/<string:repo_id>/<path:path>", methods=["GET"])
+@login_required
 def get_repo(repo_id: str, path: str):
     if repo_id == "":
         abort(HTTPStatus.NOT_FOUND)
 
-    # TODO: replace slashes in path with os.path.sep
-    contents = get_directory_contents(get_repo_path(repo_id, get_active_user().username) + os.path.sep + path)
+    # TODO - verify permission to view repo
+
+    contents = get_directory_contents(get_repo_path(UUID(hex=repo_id)) + os.path.sep + path)
 
     if not contents:
         abort(HTTPStatus.INTERNAL_SERVER_ERROR)
@@ -172,10 +185,11 @@ def get_repo(repo_id: str, path: str):
 
 
 @repos_bp.route("/view/file/<string:repo_id>/<path:path>", methods=["GET"])
+@login_required
 def get_file(repo_id: str, path: str):
     file_path, file_name = splitFilePath(path)
 
-    full_file_path = get_repo_path(repo_id, get_active_user().username) + os.path.sep + file_path
+    full_file_path = get_repo_path(UUID(hex=repo_id)) + os.path.sep + file_path
 
     # TODO: try and improve performance by leveraging nginx here
     return send_from_directory(full_file_path, file_name)
@@ -214,6 +228,7 @@ def add_comment(repo_id: str, comment: Comment):
 
 
 @repos_bp.route("/view/comments/<string:repo_id>/<path:path>", methods=["GET"])
+@login_required
 def get_comments(repo_id: str, path: str):
     key = get_comment_key(repo_id, path)
 
@@ -230,6 +245,7 @@ def get_comments(repo_id: str, path: str):
 
 
 @repos_bp.route("/comment/<string:repo_id>/<path:file_path>", methods=["POST"])
+@login_required
 def post_comment(repo_id: str, file_path):
     comment, = check_request_json(["comment"])
 

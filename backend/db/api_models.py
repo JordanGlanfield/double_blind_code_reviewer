@@ -1,6 +1,6 @@
 from typing import NamedTuple, List
 
-from backend import User, ReviewerPool, File, Comment
+from backend import User, ReviewerPool, File, Comment, Repo
 
 
 class UserDto():
@@ -92,3 +92,13 @@ class FileCommentsDto():
         #
         # for comment in comments:
         pass
+
+
+class RepoDto():
+    def __init__(self, id: str, name: str):
+        self.id = id
+        self.name = name
+
+    @staticmethod
+    def from_db(repo: Repo):
+        return RepoDto(repo.id.hex, repo.name)

@@ -7,8 +7,8 @@ export default {
   REFRESH: "/token/refresh",
   NAV: "/:user",
   HOME: "/:user/home",
-  REPO_DIRS: "/:user/repo/:repo/",
-  REPO_FILES: "/:user/repofiles/:repo",
+  REPO_DIRS: "/:user/repo/:repoId/:repoName",
+  REPO_FILES: "/:user/repofiles/:repoId/:repoName",
   REVIEWER_POOL: "/:user/pool/:pool",
   CREATE_REPO: "/repo/new",
   getHome: getHome,
@@ -21,8 +21,8 @@ function getHome(user: string) {
   return "/" + user + "/home";
 }
 
-function getRepoDir(user: string, repo: string, path: string) {
-  let baseUri = "/" + user + "/repo/" + repo;
+function getRepoDir(user: string, repoId: string, repoName: string, path: string) {
+  let baseUri = "/" + user + "/repo/" + repoId + "/" + repoName;
 
   if (path !== "") {
     return baseUri + "/" + path;
@@ -31,8 +31,8 @@ function getRepoDir(user: string, repo: string, path: string) {
   return baseUri
 }
 
-function getRepoFile(user: string, repo: string, path: string) {
-  return "/" + user + "/repofiles/" + repo + "/" + path;
+function getRepoFile(user: string, repoId: string, repoName: string, path: string) {
+  return "/" + user + "/repofiles/" + repoId + "/" + repoName + "/" + path;
 }
 
 function getReviewerPool(user: string, pool_name: string) {
