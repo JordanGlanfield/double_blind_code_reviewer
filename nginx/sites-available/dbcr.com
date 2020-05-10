@@ -43,7 +43,7 @@ server {
       include /etc/nginx/fastcgi_params; # Include the default fastcgi configs
       fastcgi_param SCRIPT_FILENAME /usr/lib/git-core/git-http-backend; # Tells fastcgi to pass the request to the git http backend executable
       fastcgi_param GIT_HTTP_EXPORT_ALL "";
-      fastcgi_param GIT_PROJECT_ROOT /dbcr/storage/repos/$remote_user; # Location of all git repositories.
+      fastcgi_param GIT_PROJECT_ROOT /dbcr/storage/repos; # Location of all git repositories.
       fastcgi_param REMOTE_USER $remote_user;
       fastcgi_param PATH_INFO $uri; # Takes the capture group from our location directive and gives git that.
       fastcgi_pass  unix:/var/run/fcgiwrap.socket; # Pass the request to fastcgi
