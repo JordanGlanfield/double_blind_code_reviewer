@@ -49,6 +49,7 @@ class User(db.Model, UserMixin, Crud):
     first_name = db.Column(db.String(128))
     surname = db.Column(db.String(128))
     password_hash = db.Column(db.String(128))
+    is_admin = db.Column(db.Boolean, default=False)
     repos = db.relationship("Repo", back_populates="owner", lazy="dynamic")
     anon_users = db.relationship("AnonUser", back_populates="user")
     reviewer_pools = db.relationship("ReviewerPool", secondary=pool_members, back_populates="members")
