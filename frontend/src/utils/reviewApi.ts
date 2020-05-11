@@ -34,6 +34,13 @@ export async function createReviewerPool(name: string, description: string): Pro
   return await extractData(response);
 }
 
+export async function startPoolReviews(pool_name: string, repo_name: string) {
+  const requestOptions = buildPost({pool_name, repo_name});
+  const response = await fetch(apiPrefix + "start");
+
+  return await extractData(response)
+}
+
 export async function addUserToPool(pool_name: string, username: string) {
   const requestOptions = buildPost({pool_name, username});
   const response = await fetch(apiPrefix + "add/pool/user", requestOptions);

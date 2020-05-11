@@ -1,11 +1,13 @@
+import random
 from http import HTTPStatus
 from typing import List
+from uuid import uuid4
 
 from backend import ReviewerPool, Repo, Review, File, Comment, AnonUser
 from ..fixtures import *
 from ..utils import status_code
 from ...db.api_models import ReviewerPoolSummaryDto
-from ...reviews.reviews import reviews_bp
+from ...reviews.reviews import reviews_bp, get_reviewer_assignments
 from ...utils.json import from_response_json
 
 
@@ -180,4 +182,28 @@ def test_can_view_comments(db, authed_user, api):
         assert comment_dtos[i]["contents"] == comments[i].contents
 
 
+def test_can_assign_reviewers(db, authed_user):
+    random.seed(0)
+    for _ in range(0, 10):
+        uuids = [uuid4() for i in range(0, 10)]
 
+        expected_review_count = 3
+        assignments = get_reviewer_assignments(uuids, expected_review_count)
+
+        # All assigned
+        assert len(assignments) == len(uuids)
+
+        # All giving two reviews and no one reviewing self
+        for reviewer in assignments.keys():
+            assert len(assignments[reviewer]) == expected_review_count
+            assert not reviewer in assignments[reviewer]
+
+        reviewed = {uuid: 0 for uuid in uuids}
+
+        for reviewing in assignments.values():
+            for uuid in reviewing:
+                reviewed[uuid] += 1
+
+        # All receiving two reviews
+        for review_count in reviewed.values():
+            assert review_count == expected_review_count

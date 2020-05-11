@@ -1,6 +1,6 @@
 import React from "react";
 import { useDataSourceWithMessages } from "../../utils/hooks";
-import { addUserToPool, getReviewerPool, removeUserFromPool } from "../../utils/reviewApi";
+import { addUserToPool, getReviewerPool, removeUserFromPool, startPoolReviews } from "../../utils/reviewApi";
 import { Button, Descriptions, Form, Input, List, Typography } from "antd";
 import { getUsername } from "../../utils/authenticationService";
 import User from "../../types/User";
@@ -24,6 +24,16 @@ const ReviewerPoolDashboard = () => {
   }
 
   const reviewerPool: ReviewerPool = poolSource.data;
+
+  const startReviews = (values: any) => {
+    startPoolReviews(reviewerPool.name, values.repoName).then(response => {
+        if (response.error) {
+          console.log("Started review with errors")
+        }
+        poolSource.forceRefetch();
+      }
+    )
+  };
 
   const addUser = (values: any) => {
     addUserToPool(reviewerPool.name, values.username).then(poolSource.forceRefetch);
@@ -53,6 +63,15 @@ const ReviewerPoolDashboard = () => {
         <CreateRepo shouldRedirect={false}
                     creationApi={(repoName) => createRepoForPool(repoName, reviewerPool.name)}
         />
+        <Typography.Title level={4}>Start Review Process</Typography.Title>
+        <Form title="Start Reviews" labelCol={{span: 4}} wrapperCol={{span: 16}} onFinish={startReviews}>
+          <Form.Item label="Repo Name" name="repoName">
+            <Input />
+          </Form.Item>
+          <Form.Item wrapperCol={{offset: 4, span: 16}}>
+            <Button type="primary" htmlType="submit">Start Reviews</Button>
+          </Form.Item>
+        </Form>
         <Typography.Title level={4}>Add User</Typography.Title>
         <Form title="Add Users" labelCol={{span: 4}} wrapperCol={{span: 16}} onFinish={addUser}>
           <Form.Item label="Username" name="username">
