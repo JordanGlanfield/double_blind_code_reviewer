@@ -10,7 +10,7 @@ from flask_login import login_required
 from git import Repo
 
 from .file_util import get_directory_contents
-from .. import User, DB, ENV
+from .. import User, DB, ENV, ReviewerPool
 from ..db import models
 from ..db.api_models import RepoDto
 from ..dbcr.comments import Comment, CommentDto, comment_to_dto
@@ -59,7 +59,7 @@ def init_new_repo(repo_name: str, user: User) -> models.Repo:
     repo = models.Repo(name=repo_name, owner_id=user.id)
 
     if not repo.save():
-        abort(HTTPStatus.INTERNAL_SERVER_ERROR)
+        return None
 
     repo_path = get_repo_path(repo.id)
 
@@ -67,7 +67,7 @@ def init_new_repo(repo_name: str, user: User) -> models.Repo:
 
     if not local_repo:
         DB.delete(repo)
-        abort(HTTPStatus.INTERNAL_SERVER_ERROR)
+        return None
 
     with local_repo.config_writer() as writer:
         writer.set_value("receive", "denyCurrentBranch", "updateInstead")
@@ -83,7 +83,7 @@ def init_new_repo(repo_name: str, user: User) -> models.Repo:
             DB.delete(repo)
             shutil.rmtree(repo_path)
             current_app.logger.error("Failed to change " + repo_path + " ownership to www-data")
-            abort(HTTPStatus.INTERNAL_SERVER_ERROR)
+            return None
 
     return repo
 
@@ -158,17 +158,52 @@ def get_base_url():
     return request.base_url.split(repos_bp.url_prefix)[0]
 
 
+def is_valid_repo_name(repo_name: str):
+    return not (repo_name == "" or "\\" in repo_name or "/" in repo_name)
+
+
 @repos_bp.route("/create", methods=["POST"])
 @login_required
 def create_repo():
     repo_name, = check_request_json(["repo_name"])
 
-    if repo_name == "" or "\\" in repo_name or "/" in repo_name:
+    if not is_valid_repo_name(repo_name):
         abort(HTTPStatus.BAD_REQUEST)
 
     repo = init_new_repo(repo_name, get_active_user())
 
+    if not repo:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR)
+
     return jsonify(RepoDto.from_db(repo, get_base_url()))
+
+
+@repos_bp.route("/pool_create", methods=["POST"])
+@login_required
+def create_repos_for_pool():
+    repo_name, pool_name = check_request_json(["repo_name", "pool_name"])
+
+    if not is_valid_repo_name(repo_name):
+        abort(HTTPStatus.BAD_REQUEST)
+
+    pool = ReviewerPool.find_by_name(pool_name)
+
+    if not pool or not get_active_user().id == pool.owner_id:
+        abort(HTTPStatus.UNAUTHORIZED)
+
+    failure_usernames = []
+
+    for member in pool.members.all():
+        repo = None
+        try:
+            repo = init_new_repo(repo_name, member)
+        except:
+            pass
+
+        if not repo:
+            failure_usernames.append(member.username)
+
+    return jsonify(failure_usernames)
 
 
 @repos_bp.route("/view/all", methods=["GET"])

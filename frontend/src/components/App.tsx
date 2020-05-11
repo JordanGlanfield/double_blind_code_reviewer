@@ -1,11 +1,8 @@
 import React, { useState } from "react"
 
-import { ThemeProvider } from "@material-ui/styles"
-
 import { BrowserRouter, Route, Switch } from "react-router-dom"
 import Login from "./routes/Login/Login"
 import routes from "../constants/routes"
-import theme from "../theme"
 import RepoDir from "./routes/ViewRepo/RepoDir";
 import Home from "./routes/Home/Home";
 import RepoFile from "./routes/RepoFile/RepoFile";
@@ -15,9 +12,9 @@ import Signup from "./routes/Signup/Signup";
 import { Layout } from "antd"
 import styled from "styled-components";
 import { Centered } from "./styles/Centered";
-import CreateRepo from "./routes/CreateRepo/CreateRepo";
 import { checkIsAuthenticated } from "../utils/authenticationService";
 import NotFound from "./routes/NotFound/NotFound";
+import CreateRepoPage from "./routes/CreateRepo/CreateRepoPage";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(undefined as undefined | boolean);
@@ -55,7 +52,7 @@ const App = () => {
               <Route path={routes.REPO_DIRS} component={RepoDir} />
               <Route path={routes.REPO_FILES} component={RepoFile} />
               <Route path={routes.REVIEWER_POOL} component={ReviewerPoolDashboard} />
-              <Route path={routes.CREATE_REPO} component={CreateRepo} />
+              <Route path={routes.CREATE_REPO} component={CreateRepoPage} />
               <Route component={NotFound} />
             </Switch>
           </ContentDiv>

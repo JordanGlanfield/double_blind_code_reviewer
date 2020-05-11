@@ -1,4 +1,4 @@
-import { extractData } from "./apiUtil";
+import { buildPost, extractData } from "./apiUtil";
 import Repo from "../types/Repo";
 
 async function get(uriSuffix: string) {
@@ -34,4 +34,16 @@ export async function createRepo(repo_name: string): Promise<Repo> {
   let response = await fetch(uri, requestOptions);
 
   return extractData(response);
+}
+
+export async function createRepoForPool(repo_name: string, pool_name: string) {
+  const uri = "/api/v1.0/repos/pool_create";
+  const requestOptions = buildPost({repo_name, pool_name});
+  const response = await fetch(uri, requestOptions);
+
+  const failed_usernames: string[] = await extractData(response);
+
+  if (failed_usernames.length > 0) {
+    console.log("Repo creation failed for some users", failed_usernames)
+  }
 }
