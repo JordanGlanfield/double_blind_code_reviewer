@@ -2,7 +2,7 @@ import * as React from "react"
 import ViewRepos from "../ViewRepos/ViewRepos";
 import { Button, PageHeader, Typography } from "antd";
 import ReviewList from "../../review/ReviewList";
-import { getReviewStats, getReviewSubmissionStats } from "../../../utils/reviewApi";
+import { getReviewStats } from "../../../utils/reviewApi";
 import ReviewerPools from "../../review/ReviewerPools";
 import styled from "styled-components";
 import routes from "../../../constants/routes";
@@ -23,11 +23,6 @@ const Home = () => {
           <Link to={routes.CREATE_REPO}><Button type="primary"><PlusOutlined /> Create New Repository</Button></Link>
         </NewRepoSection>
         <ViewRepos />
-      </Section>
-
-      <Section>
-        <Title level={3}>Reviews received:</Title>
-        <ReviewList getReviews={getReviewSubmissionStats}/>
       </Section>
 
       <Section>

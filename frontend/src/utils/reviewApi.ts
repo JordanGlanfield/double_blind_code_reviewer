@@ -7,12 +7,15 @@ import ReviewerPool from "../types/ReviewerPool";
 
 const apiPrefix = "/api/v1.0/reviews/";
 
-export async function getReviewSubmissionStats(): Promise<ReviewStats[]> {
-  return reviewSubmissionInfos;
-}
+// export async function getReviewSubmissionStats(): Promise<ReviewStats[]> {
+//   return reviewSubmissionInfos;
+// }
 
 export async function getReviewStats(): Promise<ReviewStats[]> {
-  return reviewInfos;
+  const response = await fetch(apiPrefix + "view/reviews");
+  let data = await extractData(response);
+  console.log(data)
+  return data;
 }
 
 export async function getReviewerPools(): Promise<ReviewerPoolSummary[]> {
