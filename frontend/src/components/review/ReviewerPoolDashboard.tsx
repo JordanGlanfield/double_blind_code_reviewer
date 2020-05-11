@@ -10,6 +10,8 @@ import { useParams } from "react-router-dom";
 import { DeleteOutlined } from "@ant-design/icons/lib";
 import ContentArea from "../styles/ContentArea";
 import GoBackPageHeader from "../layout/GoBackPageHeader";
+import CreateRepo from "../routes/CreateRepo/CreateRepo";
+import { createRepoForPool } from "../../utils/repoApi";
 
 
 const ReviewerPoolDashboard = () => {
@@ -47,6 +49,10 @@ const ReviewerPoolDashboard = () => {
       </DescriptionsDiv>
       {reviewerPool.owner.username === getUsername() &&
       <>
+        <Typography.Title level={4}>Set Up A Repo</Typography.Title>
+        <CreateRepo shouldRedirect={false}
+                    creationApi={(repoName) => createRepoForPool(repoName, reviewerPool.name)}
+        />
         <Typography.Title level={4}>Add User</Typography.Title>
         <Form title="Add Users" labelCol={{span: 4}} wrapperCol={{span: 16}} onFinish={addUser}>
           <Form.Item label="Username" name="username">
@@ -72,6 +78,12 @@ const ReviewerPoolDashboard = () => {
     </ContentArea>
   </>
 };
+
+const StartReviewButtonDiv = styled.div`
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: 16.67%;
+`;
 
 const DescriptionsDiv = styled.div`
   margin-bottom: 20px;

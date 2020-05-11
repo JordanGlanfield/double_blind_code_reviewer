@@ -195,7 +195,7 @@ class ReviewerPool(db.Model, Crud):
                 .filter(pool_members.c.reviewer_pool_id == ReviewerPool.id))
 
     @classmethod
-    def find_by_name(cls, name):
+    def find_by_name(cls, name) -> "ReviewerPool":
         return cls.query.filter_by(name=name).first()
 
 
