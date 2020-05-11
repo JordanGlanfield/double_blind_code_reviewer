@@ -12,8 +12,8 @@ interface Props {
 
 const ReviewInfo = (props: Props) => {
   const {reviewUrl, reviewStats} = props;
-  const approvalsMessage = "" + reviewStats.approvals + " approvals";
-  const rejectionsMessage = "" + reviewStats.rejections + " rejections";
+  // const approvalsMessage = "" + reviewStats.approvals + " approvals";
+  // const rejectionsMessage = "" + reviewStats.rejections + " rejections";
 
   return <BoundingDiv><Row>
     <Col span={6}>
@@ -22,17 +22,14 @@ const ReviewInfo = (props: Props) => {
       </LeftAligned>
     </Col>
     <Col span={6}>
-      <LeftAligned>
-        <BellFilled />
-        <Badge count={reviewStats.newComments} />
-      </LeftAligned>
+        <Tag color="yellow">{reviewStats.status}</Tag>
     </Col>
-    <Col span={6}>
-      <Tag color={reviewStats.approvals ? "green" : undefined}>{approvalsMessage}</Tag>
-    </Col>
-    <Col span={6}>
-      <Tag color={reviewStats.rejections ? "red" : undefined}>{rejectionsMessage}</Tag>
-    </Col>
+    {/*<Col span={6}>*/}
+    {/*  <Tag color={reviewStats.approvals ? "green" : undefined}>{approvalsMessage}</Tag>*/}
+    {/*</Col>*/}
+    {/*<Col span={6}>*/}
+    {/*  <Tag color={reviewStats.rejections ? "red" : undefined}>{rejectionsMessage}</Tag>*/}
+    {/*</Col>*/}
   </Row></BoundingDiv>
 };
 

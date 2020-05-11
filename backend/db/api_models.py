@@ -1,6 +1,6 @@
 from typing import NamedTuple, List
 
-from backend import User, ReviewerPool, File, Comment, Repo
+from backend import User, ReviewerPool, File, Comment, Repo, Review
 
 
 class UserDto():
@@ -55,6 +55,16 @@ class ReviewerPoolSummariesDto(NamedTuple):
     @staticmethod
     def from_db(reviewer_pools: List[ReviewerPool]):
         return [ReviewerPoolSummaryDto.from_db(pool) for pool in reviewer_pools]
+
+
+class ReviewDto():
+    def __init__(self, repo_name: str, status: str):
+        self.repo_name = repo_name
+        self.status = status
+
+    @staticmethod
+    def from_db(review: Review):
+        return ReviewDto(Repo.get(review.repo_id).name, "Pending")
 
 
 class CommentDto():

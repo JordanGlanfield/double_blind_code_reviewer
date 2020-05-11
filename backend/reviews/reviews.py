@@ -7,7 +7,7 @@ from flask import Blueprint, jsonify, make_response, request, abort, current_app
 from flask_login import login_required
 
 from .. import ReviewerPool, DB, User, Repo, Review, File, Comment, AnonUser
-from ..db.api_models import ReviewerPoolSummariesDto, ReviewerPoolDto, CommentListDto
+from ..db.api_models import ReviewerPoolSummariesDto, ReviewerPoolDto, CommentListDto, ReviewDto
 from ..utils.json import check_request_json
 from ..utils.session import get_active_user, no_content_response
 
@@ -163,6 +163,15 @@ def start_reviews():
             anon_user.save()
 
     return jsonify({error: error})
+
+
+@reviews_bp.route("/view/reviews", methods=["GET"])
+@login_required
+def get_reviews():
+    user = get_active_user()
+    reviews = User.query.filter_by(id=user.id).join(Review).with_entities(Review).all()
+
+    return jsonify([ReviewDto.from_db(review) for review in reviews])
 
 
 @reviews_bp.route("/create/comment", methods=["POST"])
