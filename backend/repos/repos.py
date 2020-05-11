@@ -56,6 +56,9 @@ def flatten_directories(dir_contents):
 
 
 def init_new_repo(repo_name: str, user: User) -> models.Repo:
+    if models.Repo.find_by_names(repo_name, user.username):
+        return None
+
     repo = models.Repo(name=repo_name, owner_id=user.id)
 
     if not repo.save():
