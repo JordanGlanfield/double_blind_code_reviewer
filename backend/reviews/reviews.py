@@ -1,7 +1,9 @@
+import random
 from http import HTTPStatus
+from typing import List, Dict
 from uuid import UUID
 
-from flask import Blueprint, jsonify, make_response, request, abort
+from flask import Blueprint, jsonify, make_response, request, abort, current_app
 from flask_login import login_required
 
 from .. import ReviewerPool, DB, User, Repo, Review, File, Comment, AnonUser
@@ -93,19 +95,74 @@ def get_pool(pool_name: str):
 
 # Reviews
 
-# TODO: decide how to use this. Admin functionality only? Users submit their reviews?
-@reviews_bp.route("/create/review", methods=["POST"])
+# # TODO: decide how to use this. Admin functionality only? Users submit their reviews?
+# @reviews_bp.route("/create/review", methods=["POST"])
+# @login_required
+# def start_review():
+#     username, repo_name = check_request_json(["username", "repo_name"])
+#
+#     repo = Repo.find_by_names(repo_name, username)
+#     user = User.find_by_username(username)
+#
+#     review = Review(repo_id=repo.id, submitter_id=user.id)
+#     review.save()
+#
+#     return jsonify({"review_id": review.id.hex})
+
+
+def get_reviewer_assignments(ids: List[UUID], num_reviews: int) -> Dict[UUID, List[UUID]]:
+    if num_reviews >= len(ids):
+        num_reviews = len(ids) - 1
+
+    ids = list(ids)
+    random.shuffle(ids)
+    assignments = {id: set({}) for id in ids} # The ids to be reviewed by each reviewer
+
+    for i in range(0, len(ids)):
+        reviewer_id = ids[i]
+
+        for j in range(i + 1, i + 1 + num_reviews):
+            assignments[reviewer_id].add(ids[j % len(ids)])
+
+    return assignments
+
+
+@reviews_bp.route("/start", methods=["POST"])
 @login_required
-def start_review():
-    username, repo_name = check_request_json(["username", "repo_name"])
+def start_reviews():
+    pool_name, repo_name = check_request_json(["pool_name", "repo_name"])
 
-    repo = Repo.find_by_names(repo_name, username)
-    user = User.find_by_username(username)
+    pool = ReviewerPool.find_by_name(pool_name)
+    members_by_id = {member.id: member for member in pool.members.all()}
 
-    review = Review(repo_id=repo.id, submitter_id=user.id)
-    review.save()
+    if not pool:
+        abort(HTTPStatus.NOT_FOUND)
 
-    return jsonify({"review_id": review.id.hex})
+    members = [member.id for member in pool.members.all()]
+    review_count = 2
+
+    assignments = get_reviewer_assignments(members, review_count)
+
+    error = False
+
+    for reviewer_id in assignments.keys():
+        for member_id in assignments[reviewer_id]:
+            user = members_by_id[member_id]
+            repo = Repo.find_by_names(repo_name, user.username)
+
+            if not user or not repo:
+                current_app.logger.error(f"User {user if user else member_id} or Repo {repo if repo else repo_name} "
+                                         f"not present")
+                error = True
+                continue
+
+            review = Review(repo_id=repo.id, submitter_id=member_id)
+            review.save()
+
+            anon_user = AnonUser(name="Anonymous", user_id=reviewer_id, review_id=review.id)
+            anon_user.save()
+
+    return jsonify({error: error})
 
 
 @reviews_bp.route("/create/comment", methods=["POST"])
