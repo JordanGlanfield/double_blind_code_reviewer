@@ -35,7 +35,7 @@ function getRepoDir(user: string, reviewId: string | undefined, repoId: string, 
 }
 
 function getRepoFile(user: string, reviewId: string | undefined, repoId: string, repoName: string, path: string) {
-  return `/${user}/${reviewId ? reviewId + "/" : ""}repofiles/${repoId}/${repoName}`;
+  return `/${user}/${reviewId ? reviewId + "/" : ""}repofiles/${repoId}/${repoName}/${path}`;
 }
 
 function getReviewerPool(user: string, pool_name: string) {

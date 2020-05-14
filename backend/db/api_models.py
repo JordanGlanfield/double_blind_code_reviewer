@@ -56,16 +56,17 @@ class ReviewerPoolSummariesDto():
 
 
 class ReviewDto():
-    def __init__(self, review_id: str, repo_id: str, repo_name: str, status: str):
+    def __init__(self, review_id: str, repo_id: str, repo_name: str, clone_url: str, status: str):
         self.review_id = review_id
         self.repo_id = repo_id
         self.repo_name = repo_name
+        self.clone_url = clone_url
         self.status = status
 
     @staticmethod
-    def from_db(review: Review):
+    def from_db(review: Review, base_url: str):
         repo = Repo.get(review.repo_id)
-        return ReviewDto(str(review.id), str(repo.id), repo.name, "Pending")
+        return ReviewDto(str(review.id), str(repo.id), repo.name, get_clone_url(repo, base_url), "Pending")
 
 
 class CommentDto():
@@ -113,5 +114,9 @@ class RepoDto():
 
     @staticmethod
     def from_db(repo: Repo, base_url: str):
-        clone_url = "/".join([base_url, repo.id.hex, ".git"])
+        clone_url = get_clone_url(repo, base_url)
         return RepoDto(str(repo.id), repo.name, clone_url)
+
+
+def get_clone_url(repo: Repo, base_url: str):
+    return "/".join([base_url, repo.id.hex, ".git"])

@@ -16,7 +16,7 @@ class PasswordManager:
     def update_password(self, username: str, password: str):
         self.app.logger.info(f"Updated password for {username}")
         if self.password_file:
-            subprocess.run(["htpasswd", "-bc", self.password_file, username, password])
+            subprocess.run(["htpasswd", "-b", self.password_file, username, password])
 
 
 PASSWORD_MANAGER = PasswordManager()
