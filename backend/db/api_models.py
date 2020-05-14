@@ -50,12 +50,10 @@ class ReviewerPoolSummaryDto():
 
 
 class ReviewerPoolSummariesDto():
-    def __init__(self, reviewer_pools: List[ReviewerPoolSummaryDto]):
-        self.reviewer_pools = reviewer_pools
 
     @staticmethod
     def from_db(reviewer_pools: List[ReviewerPool]):
-        return ReviewerPoolSummariesDto([ReviewerPoolSummaryDto.from_db(pool) for pool in reviewer_pools])
+        return [ReviewerPoolSummaryDto.from_db(pool) for pool in reviewer_pools]
 
 
 class ReviewDto():
