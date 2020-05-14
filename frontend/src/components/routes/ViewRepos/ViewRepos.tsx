@@ -29,7 +29,7 @@ const ViewRepos = () => {
           let cloneString = "git clone " + repo.clone_url + " " + repo.name
           return <List.Item>
             <Space>
-              <Link to={routes.getRepoDir(userString, repo.id, repo.name,"")}>
+              <Link to={routes.getRepoDir(userString, undefined, repo.id, repo.name,"")}>
                 <Button type="primary" ghost>{repo.name}</Button>
               </Link>
               <ClonableText>

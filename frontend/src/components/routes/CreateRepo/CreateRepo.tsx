@@ -32,7 +32,7 @@ const CreateRepo = (props: Props) => {
   };
 
   if (newRepo && shouldRedirect) {
-    return <Redirect to={routes.getRepoDir(getUsername(), newRepo.id, newRepo.name, "")} />
+    return <Redirect to={routes.getRepoDir(getUsername(), undefined, newRepo.id, newRepo.name, "")} />
   }
 
   return <>

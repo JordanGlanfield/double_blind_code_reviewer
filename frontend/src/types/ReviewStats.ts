@@ -1,9 +1,13 @@
 export class ReviewStats {
-  repoName: string;
+  review_id: string;
+  repo_id: string;
+  repo_name: string;
   status: string;
 
-  constructor(repoName: string, status: string) {
-    this.repoName = repoName;
+  constructor(reviewId: string, repoId: string, repoName: string, status: string) {
+    this.review_id = reviewId;
+    this.repo_id = repoId;
+    this.repo_name = repoName;
     this.status = status;
   }
 }

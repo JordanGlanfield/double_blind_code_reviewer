@@ -7,8 +7,8 @@ export default {
   REFRESH: "/token/refresh",
   NAV: "/:user",
   HOME: "/:user/home",
-  REPO_DIRS: "/:user/repo/:repoId/:repoName",
-  REPO_FILES: "/:user/repofiles/:repoId/:repoName",
+  REPO_DIRS: "/:user/:reviewId?/repo/:repoId/:repoName",
+  REPO_FILES: "/:user/:reviewId?/repofiles/:repoId/:repoName",
   REVIEWER_POOL: "/:user/pool/:pool",
   CREATE_REPO: "/repo/new",
   getHome: getHome,
@@ -24,8 +24,8 @@ function getHome(user: string) {
   return "/" + user + "/home";
 }
 
-function getRepoDir(user: string, repoId: string, repoName: string, path: string) {
-  let baseUri = "/" + user + "/repo/" + repoId + "/" + repoName;
+function getRepoDir(user: string, reviewId: string | undefined, repoId: string, repoName: string, path: string) {
+  let baseUri = `/${user}/${reviewId ? reviewId + "/" : ""}repo/${repoId}/${repoName}`;
 
   if (path !== "") {
     return baseUri + "/" + path;
@@ -34,8 +34,8 @@ function getRepoDir(user: string, repoId: string, repoName: string, path: string
   return baseUri
 }
 
-function getRepoFile(user: string, repoId: string, repoName: string, path: string) {
-  return "/" + user + "/repofiles/" + repoId + "/" + repoName + "/" + path;
+function getRepoFile(user: string, reviewId: string | undefined, repoId: string, repoName: string, path: string) {
+  return `/${user}/${reviewId ? reviewId + "/" : ""}repofiles/${repoId}/${repoName}`;
 }
 
 function getReviewerPool(user: string, pool_name: string) {

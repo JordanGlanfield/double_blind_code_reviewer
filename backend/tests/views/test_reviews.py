@@ -207,3 +207,4 @@ def test_can_assign_reviewers(db, authed_user):
         # All receiving two reviews
         for review_count in reviewed.values():
             assert review_count == expected_review_count
+
