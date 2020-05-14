@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Form, Input, PageHeader } from "antd";
+import { Button, Form, Input } from "antd";
 import { signUp } from "../../../utils/userApi";
 import { Redirect } from "react-router-dom";
 import routes from "../../../constants/routes";

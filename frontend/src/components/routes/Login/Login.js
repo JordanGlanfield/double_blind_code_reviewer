@@ -2,16 +2,14 @@ import React, { useState } from "react"
 import { Link, Redirect } from "react-router-dom"
 import { Button, Container, CssBaseline, TextField, Typography } from "@material-ui/core/index"
 import useStyles from "./style"
-import { checkIsAuthenticated, getUsername, login, setUsername } from "../../../utils/authenticationService"
+import { getUsername, login, setUsername } from "../../../utils/authenticationService"
 import routes from "../../../constants/routes"
-import { useDataSource } from "../../../utils/hooks";
 
 export default props => {
   const classes = useStyles()
   const [username, setUser] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState(false)
-  let { from } = props.location.state || { from: { pathname: routes.getHome(username) } }
 
   if (props.isLoggedIn) {
     return <Redirect to={{pathname: routes.getHome(getUsername())}} />

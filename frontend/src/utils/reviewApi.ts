@@ -1,5 +1,3 @@
-import reviewSubmissionInfos from "../data/reviewSubmissionInfos.json";
-import reviewInfos from "../data/reviewInfos.json";
 import { ReviewStats } from "../types/ReviewStats";
 import ReviewerPoolSummary from "../types/ReviewerPoolSummary";
 import { buildDelete, buildPost, extractData } from "./apiUtil";
@@ -39,7 +37,7 @@ export async function createReviewerPool(name: string, description: string): Pro
 
 export async function startPoolReviews(pool_name: string, repo_name: string) {
   const requestOptions = buildPost({pool_name, repo_name});
-  const response = await fetch(apiPrefix + "start");
+  const response = await fetch(apiPrefix + "start", requestOptions);
 
   return await extractData(response)
 }

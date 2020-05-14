@@ -14,7 +14,7 @@ interface Props {
 const CreateRepo = (props: Props) => {
   const [newRepo, setNewRepo] = useState(undefined as undefined | Repo);
 
-  const shouldRedirect = props.shouldRedirect == undefined ? true : props.shouldRedirect;
+  const shouldRedirect = props.shouldRedirect === undefined ? true : props.shouldRedirect;
   const creationApi = props.creationApi ? props.creationApi : createRepo;
 
   const createNewRepo = (values: any) => {

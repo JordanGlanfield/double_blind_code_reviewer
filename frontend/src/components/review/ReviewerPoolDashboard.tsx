@@ -99,12 +99,6 @@ const ReviewerPoolDashboard = () => {
   </>
 };
 
-const StartReviewButtonDiv = styled.div`
-  margin-top: 20px;
-  margin-bottom: 20px;
-  margin-left: 16.67%;
-`;
-
 const DescriptionsDiv = styled.div`
   margin-bottom: 20px;
   border-bottom: #dbdbdb;
