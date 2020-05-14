@@ -19,11 +19,13 @@ interface DirEntry {
 }
 
 const RepoDir = (props: Props) => {
-  let {repoId, repoName} = useParams();
+  let {reviewId, repoId, repoName} = useParams();
   let currentDir = extractPathFromRoute(props);
 
   const dirSource = useDataSource(() => getDir(repoId ? repoId : "", currentDir));
   const [redirect, setRedirect] = useState(undefined as undefined | string);
+
+  let isReviewing = reviewId !== undefined;
 
   if (!repoId || !repoName) {
     return <Redirect to={{
@@ -43,7 +45,7 @@ const RepoDir = (props: Props) => {
   } else if (!dirSource.data) {
     return <Typography>Failed to fetch repository data</Typography>;
   } else {
-    dirContents = getDirectoryEntries(getUsername(), repoId, repoName, currentDir, dirSource.data);
+    dirContents = getDirectoryEntries(getUsername(), reviewId, repoId, repoName, currentDir, dirSource.data);
   }
 
   return <>
@@ -57,6 +59,7 @@ const RepoDir = (props: Props) => {
                      isDir={item.isDir}
                      href={item.href}
                      onClick={dirSource.forceRefetch}
+                     isReviewing={isReviewing}
           />
         </List.Item>}
       />
@@ -68,8 +71,8 @@ function stringCompare(s1: string, s2: string): number {
   return s1.toLowerCase() < s2.toLowerCase() ? -1 : 1;
 }
 
-function getDirectoryEntries(user: string, repoId: string, repoName: string, currentDir: string, directory: any)
-    : DirEntry[] {
+function getDirectoryEntries(user: string, reviewId: string | undefined, repoId: string, repoName: string,
+                             currentDir: string, directory: any): DirEntry[] {
   const atTopLevel = currentDir === "";
 
   const dirEntries = [];
@@ -78,7 +81,7 @@ function getDirectoryEntries(user: string, repoId: string, repoName: string, cur
     dirEntries.push({
       name: "..",
       isDir: true,
-      href: routes.getRepoDir(user, repoId, repoName, getNextDirUp(currentDir))
+      href: routes.getRepoDir(user, reviewId, repoId, repoName, getNextDirUp(currentDir))
     })
   }
 
@@ -92,7 +95,7 @@ function getDirectoryEntries(user: string, repoId: string, repoName: string, cur
     dirEntries.push({
       name: dir,
       isDir: true,
-      href: routes.getRepoDir(user, repoId, repoName, path + dir)
+      href: routes.getRepoDir(user, reviewId, repoId, repoName, path + dir)
     })
   }
 
@@ -100,7 +103,7 @@ function getDirectoryEntries(user: string, repoId: string, repoName: string, cur
     dirEntries.push({
       name: file,
       isDir: false,
-      href: routes.getRepoFile(user, repoId, repoName, path + file)
+      href: routes.getRepoFile(user, reviewId, repoId, repoName, path + file)
     })
   }
   return dirEntries;

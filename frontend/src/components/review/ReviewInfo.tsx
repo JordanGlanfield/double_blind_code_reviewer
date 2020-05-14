@@ -1,6 +1,6 @@
 import * as React from "react"
 import { ReviewStats } from "../../types/ReviewStats";
-import { Badge, Button, Col, Row, Tag } from "antd";
+import { Badge, Button, Col, Row, Tag, Typography } from "antd";
 import styled from "styled-components";
 import { BellFilled } from "@ant-design/icons/lib";
 import { Link } from "react-router-dom";
@@ -18,8 +18,11 @@ const ReviewInfo = (props: Props) => {
   return <BoundingDiv><Row>
     <Col span={6}>
       <LeftAligned>
-        <Link to={reviewUrl}><Button type="primary" ghost>{reviewStats.repoName}</Button></Link>
+        <Link to={reviewUrl}><Button type="primary" ghost>{reviewStats.repo_name}</Button></Link>
       </LeftAligned>
+    </Col>
+    <Col span={6}>
+      <Typography>{reviewStats.repo_id}</Typography>
     </Col>
     <Col span={6}>
         <Tag color="yellow">{reviewStats.status}</Tag>

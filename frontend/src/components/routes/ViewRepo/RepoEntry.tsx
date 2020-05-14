@@ -9,7 +9,8 @@ interface Props {
   name: string;
   isDir: boolean;
   href: string;
-  onClick: () => void
+  onClick: () => void;
+  isReviewing: boolean;
 }
 
 const RepoEntry = (props: Props) => {

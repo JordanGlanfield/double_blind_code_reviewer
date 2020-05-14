@@ -141,6 +141,13 @@ class Review(db.Model, Crud):
         self.anon_users.append(anon_user)
         db.session.commit()
 
+    def is_user_in_review(self, user: User):
+        for anon in self.anon_users.all():
+            if anon.user_id == user.id:
+                return True
+
+        return False
+
     def get_comments_flat(self, file_path: str) -> List[Comment]:
         file = File.find_by_path(self.repo_id, file_path)
 

@@ -56,13 +56,16 @@ class ReviewerPoolSummariesDto():
 
 
 class ReviewDto():
-    def __init__(self, repo_name: str, status: str):
+    def __init__(self, review_id: str, repo_id: str, repo_name: str, status: str):
+        self.review_id = review_id
+        self.repo_id = repo_id
         self.repo_name = repo_name
         self.status = status
 
     @staticmethod
     def from_db(review: Review):
-        return ReviewDto(Repo.get(review.repo_id).name, "Pending")
+        repo = Repo.get(review.repo_id)
+        return ReviewDto(str(review.id), str(repo.id), repo.name, "Pending")
 
 
 class CommentDto():

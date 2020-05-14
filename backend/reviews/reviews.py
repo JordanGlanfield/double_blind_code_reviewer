@@ -3,11 +3,12 @@ from http import HTTPStatus
 from typing import List, Dict
 from uuid import UUID
 
-from flask import Blueprint, jsonify, make_response, request, abort, current_app
+from flask import Blueprint, jsonify, make_response, abort, current_app, request
 from flask_login import login_required
 
 from .. import ReviewerPool, DB, User, Repo, Review, File, Comment, AnonUser
-from ..db.api_models import ReviewerPoolSummariesDto, ReviewerPoolDto, CommentListDto, ReviewDto
+from ..db.api_models import ReviewerPoolSummariesDto, ReviewerPoolDto, CommentListDto, ReviewDto, RepoDto
+from ..repos.repos import get_base_url
 from ..utils.json import check_request_json
 from ..utils.session import get_active_user, no_content_response
 
@@ -174,11 +175,35 @@ def get_reviews():
     return jsonify([ReviewDto.from_db(review) for review in reviews])
 
 
+@reviews_bp.route("/view/repo/<string:review_id>/<path:path>", defaults={"path": ""}, methods=["GET"])
+@login_required
+def get_repo_summary(review_id: str, path: str):
+    user = get_active_user()
+
+    review: Review = Review.get(review_id)
+
+    if not review:
+        abort(HTTPStatus.NOT_FOUND)
+
+    if not review.is_user_in_review(user):
+        abort(HTTPStatus.UNAUTHORIZED)
+
+    repo = Repo.get(review.repo_id)
+
+    # return repos.get_repo(review.repo_id, path)
+    return RepoDto.from_db(repo, get_base_url())
+
+
 @reviews_bp.route("/create/comment", methods=["POST"])
 @login_required
 def add_comment():
-    review_id, file_path, parent_id, contents, line_number = \
-        check_request_json(["review_id", "file_path", "parent_id", "contents", "line_number"])
+    review_id, file_path, contents, line_number = \
+        check_request_json(["review_id", "file_path", "contents", "line_number"])
+
+    parent_id = None
+
+    if "parent_id" in request.json:
+        parent_id = request.json["parent_id"]
 
     # TODO: check file existence in repo
 

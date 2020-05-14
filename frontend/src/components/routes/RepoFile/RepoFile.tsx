@@ -35,7 +35,7 @@ interface Props extends RouteComponentProps {
 }
 
 const RepoFile = (props: Props) => {
-  const {repoId, repoName} = useParams();
+  const {reviewId, repoId, repoName} = useParams();
   const filePath = extractPathFromRoute(props);
 
   useEffect(() => {
@@ -45,7 +45,9 @@ const RepoFile = (props: Props) => {
   const [newCommentLine, setNewCommentLine] = useState(undefined as undefined | number);
 
   let fileSource = useDataSource(() => getFile(repoId ? repoId : "", filePath));
-  let commentsSource = useDataSource(() => getComments(repoId ? repoId : "", filePath));
+  let commentsSource = useDataSource(reviewId
+    ? () => getComments(reviewId, filePath)
+    : async () => new Map<Number, Comment[]>());
 
   if (!repoId || !repoName) {
     return <div>Invalid parameters</div>;
@@ -68,14 +70,14 @@ const RepoFile = (props: Props) => {
   }
 
   const onClickComment = (comment: string) => {
-    postComment(repoId, filePath, newCommentLine, undefined, comment)
+    postComment(reviewId ? reviewId : "", filePath, newCommentLine ? newCommentLine : 0, undefined, comment)
       .then(() => {
         commentsSource.forceRefetch();
         setNewCommentLine(undefined);
       });
   };
 
-  const dirHref = routes.getRepoDir(getUsername(), repoId, repoName, getNextDirUp(filePath));
+  const dirHref = routes.getRepoDir(getUsername(), reviewId, repoId, repoName, getNextDirUp(filePath));
 
   return <ContentArea>
     <Link to={dirHref}><Button>Back To Folder</Button></Link>
