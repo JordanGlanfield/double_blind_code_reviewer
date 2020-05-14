@@ -1,4 +1,4 @@
-from typing import NamedTuple, List
+from typing import List
 
 from backend import User, ReviewerPool, File, Comment, Repo, Review
 
@@ -49,12 +49,13 @@ class ReviewerPoolSummaryDto():
                                       len(reviewer_pool.get_members().all()))
 
 
-class ReviewerPoolSummariesDto(NamedTuple):
-    reviewer_pools: List[ReviewerPoolSummaryDto]
+class ReviewerPoolSummariesDto():
+    def __init__(self, reviewer_pools: List[ReviewerPoolSummaryDto]):
+        self.reviewer_pools = reviewer_pools
 
     @staticmethod
     def from_db(reviewer_pools: List[ReviewerPool]):
-        return [ReviewerPoolSummaryDto.from_db(pool) for pool in reviewer_pools]
+        return ReviewerPoolSummariesDto([ReviewerPoolSummaryDto.from_db(pool) for pool in reviewer_pools])
 
 
 class ReviewDto():
