@@ -4,15 +4,14 @@ from backend import User, ReviewerPool, File, Comment, Repo, Review
 
 
 class UserDto():
-    def __init__(self, id: str, username: str, first_name: str, surname: str):
-        self.id: str = id
+    def __init__(self, username: str, first_name: str, surname: str):
         self.username: str = username
         self.first_name: str = first_name
         self.surname: str = surname
 
     @staticmethod
     def from_db(user: User):
-        return UserDto(user.id, user.username, user.first_name, user.surname)
+        return UserDto(user.username, user.first_name, user.surname)
 
 
 class ReviewerPoolDto():
@@ -25,7 +24,7 @@ class ReviewerPoolDto():
 
     @staticmethod
     def from_db(reviewer_pool: ReviewerPool):
-        return ReviewerPoolDto(reviewer_pool.id,
+        return ReviewerPoolDto(str(reviewer_pool.id),
                                reviewer_pool.name,
                                reviewer_pool.description,
                                UserDto.from_db(reviewer_pool.owner),
@@ -42,7 +41,7 @@ class ReviewerPoolSummaryDto():
 
     @staticmethod
     def from_db(reviewer_pool: ReviewerPool):
-        return ReviewerPoolSummaryDto(reviewer_pool.id,
+        return ReviewerPoolSummaryDto(str(reviewer_pool.id),
                                       reviewer_pool.name,
                                       reviewer_pool.description,
                                       UserDto.from_db(reviewer_pool.owner),
@@ -112,4 +111,4 @@ class RepoDto():
     @staticmethod
     def from_db(repo: Repo, base_url: str):
         clone_url = "/".join([base_url, repo.id.hex, ".git"])
-        return RepoDto(repo.id.hex, repo.name, clone_url)
+        return RepoDto(str(repo.id), repo.name, clone_url)
