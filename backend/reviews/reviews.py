@@ -170,9 +170,11 @@ def start_reviews():
 @login_required
 def get_reviews():
     user = get_active_user()
-    reviews = User.query.filter_by(id=user.id).join(Review).with_entities(Review).all()
+    # TODO - constant for submitter
+    reviews = User.query.filter_by(id=user.id).join(AnonUser).filter(AnonUser.name != "Submitter").join(Review)\
+        .with_entities(Review).all()
 
-    return jsonify([ReviewDto.from_db(review) for review in reviews])
+    return jsonify([ReviewDto.from_db(review, get_base_url(reviews_bp)) for review in reviews])
 
 
 @reviews_bp.route("/view/repo/<string:review_id>/<path:path>", defaults={"path": ""}, methods=["GET"])
@@ -191,7 +193,7 @@ def get_repo_summary(review_id: str, path: str):
     repo = Repo.get(review.repo_id)
 
     # return repos.get_repo(review.repo_id, path)
-    return RepoDto.from_db(repo, get_base_url())
+    return RepoDto.from_db(repo, get_base_url(reviews_bp))
 
 
 @reviews_bp.route("/create/comment", methods=["POST"])

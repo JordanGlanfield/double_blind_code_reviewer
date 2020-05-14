@@ -8,6 +8,7 @@ import { getDir } from "../../../utils/repoApi";
 import { useDataSource } from "../../../utils/hooks";
 import { getUsername } from "../../../utils/authenticationService";
 import ContentArea from "../../styles/ContentArea";
+import ClonePrompt from "../ViewRepos/ClonePrompt";
 
 interface Props extends RouteComponentProps {
 }

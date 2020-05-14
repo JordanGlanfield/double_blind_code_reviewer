@@ -2,7 +2,7 @@ import json
 from datetime import date, time
 from typing import List, Tuple
 
-from flask import request, abort, Response, Request, current_app
+from flask import request, abort, Response
 from flask.json import JSONEncoder
 
 
@@ -17,8 +17,6 @@ class ObjectJsonEncoder(JSONEncoder):
         if isinstance(obj, time):
             serial = obj.isoformat()
             return serial
-
-        current_app.logger.info(type(obj))
 
         return obj.__dict__
 

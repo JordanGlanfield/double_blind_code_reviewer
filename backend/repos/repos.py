@@ -100,11 +100,14 @@ def check_push_auth(user: User, repo: models.Repo):
 
 def check_pull_auth(user: User, repo: models.Repo):
     if repo.owner_id == user.id:
+        current_app.logger.info("Puller owns repo")
         return no_content_response()
 
     if repo.is_user_a_contributor(user.id):
+        current_app.logger.info("Puller is contributor")
         return no_content_response()
 
+    current_app.logger.info("Puller not relevant, rejecting")
     abort(HTTPStatus.UNAUTHORIZED)
 
 
@@ -120,6 +123,7 @@ def check_auth():
     original_uri_header = "X-Original-URI"
 
     if "Username" not in request.headers or original_uri_header not in request.headers:
+        current_app.logger.info("Username not passed")
         abort(HTTPStatus.UNAUTHORIZED)
 
     current_app.logger.info(request)
@@ -139,14 +143,14 @@ def check_auth():
     repo = models.Repo.query.get(repo_id)
 
     if not repo:
+        current_app.logger.info("Repo not found")
         abort(HTTPStatus.NOT_FOUND)
 
     user = User.find_by_username(username)
 
     if not user:
+        current_app.logger.info("Username invalid")
         abort(HTTPStatus.UNAUTHORIZED)
-
-    # TODO: authorisation checks on user
 
     if push_service in original_uri:
         return check_push_auth(user, repo)
@@ -154,11 +158,12 @@ def check_auth():
     if pull_service in original_uri:
         return check_pull_auth(user, repo)
 
+    current_app.logger.info("Something went wrong")
     abort(HTTPStatus.UNAUTHORIZED)
 
 
-def get_base_url():
-    return request.base_url.split(repos_bp.url_prefix)[0]
+def get_base_url(blueprint):
+    return request.base_url.split(blueprint.url_prefix)[0]
 
 
 def is_valid_repo_name(repo_name: str):
@@ -178,7 +183,7 @@ def create_repo():
     if not repo:
         abort(HTTPStatus.INTERNAL_SERVER_ERROR)
 
-    return jsonify(RepoDto.from_db(repo, get_base_url()))
+    return jsonify(RepoDto.from_db(repo, get_base_url(repos_bp)))
 
 
 @repos_bp.route("/pool_create", methods=["POST"])
@@ -213,7 +218,7 @@ def create_repos_for_pool():
 @login_required
 def get_repos():
     repos = get_active_user().get_repos()
-    return jsonify([RepoDto.from_db(repo, get_base_url()) for repo in repos])
+    return jsonify([RepoDto.from_db(repo, get_base_url(repos_bp)) for repo in repos])
 
 
 @repos_bp.route("/view/dir/<string:repo_id>/", defaults={"path": ""}, methods=["GET"])

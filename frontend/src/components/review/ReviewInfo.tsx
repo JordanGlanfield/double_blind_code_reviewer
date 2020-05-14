@@ -4,10 +4,11 @@ import { Badge, Button, Col, Row, Tag, Typography } from "antd";
 import styled from "styled-components";
 import { BellFilled } from "@ant-design/icons/lib";
 import { Link } from "react-router-dom";
+import ClonePrompt from "../routes/ViewRepos/ClonePrompt";
 
 interface Props {
-  reviewUrl: string,
-  reviewStats: ReviewStats
+  reviewUrl: string;
+  reviewStats: ReviewStats;
 }
 
 const ReviewInfo = (props: Props) => {
@@ -16,17 +17,17 @@ const ReviewInfo = (props: Props) => {
   // const rejectionsMessage = "" + reviewStats.rejections + " rejections";
 
   return <BoundingDiv><Row>
-    <Col span={6}>
+    <Col span={5}>
       <LeftAligned>
         <Link to={reviewUrl}><Button type="primary" ghost>{reviewStats.repo_name}</Button></Link>
       </LeftAligned>
     </Col>
-    <Col span={6}>
-      <Typography>{reviewStats.repo_id}</Typography>
+    <Col span={19}>
+      <ClonePrompt name={reviewStats.repo_name} clone_url={reviewStats.clone_url}/>
     </Col>
-    <Col span={6}>
-        <Tag color="yellow">{reviewStats.status}</Tag>
-    </Col>
+    {/*<Col span={6}>*/}
+    {/*    <Tag color="yellow">{reviewStats.status}</Tag>*/}
+    {/*</Col>*/}
     {/*<Col span={6}>*/}
     {/*  <Tag color={reviewStats.approvals ? "green" : undefined}>{approvalsMessage}</Tag>*/}
     {/*</Col>*/}

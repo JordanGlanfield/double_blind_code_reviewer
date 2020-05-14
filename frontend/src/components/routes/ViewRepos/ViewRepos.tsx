@@ -7,6 +7,7 @@ import { getRepos } from "../../../utils/repoApi";
 import { useDataSourceWithMessages } from "../../../utils/hooks";
 import Repo from "../../../types/Repo";
 import styled from "styled-components";
+import ClonePrompt from "./ClonePrompt";
 
 const ViewRepos = () => {
     let repoSource = useDataSourceWithMessages(getRepos);
@@ -33,7 +34,7 @@ const ViewRepos = () => {
                 <Button type="primary" ghost>{repo.name}</Button>
               </Link>
               <ClonableText>
-                <Typography.Paragraph copyable>{cloneString}</Typography.Paragraph>
+                <ClonePrompt name={repo.name} clone_url={repo.clone_url} />
               </ClonableText>
             </Space>
           </List.Item>
@@ -42,8 +43,6 @@ const ViewRepos = () => {
 };
 
 const ClonableText = styled.div`
-  font-size: 13pt;
-  vertical-align: center;
   padding: 5px 0;
   margin-top: 1em;
 `;
