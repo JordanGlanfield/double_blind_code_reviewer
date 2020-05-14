@@ -19,14 +19,13 @@ const TopBar = (props: Props) => {
 
   return <Menu theme="dark" mode="horizontal">
     <Menu.Item>
-      <NoHighlightLink to={!isLoggedIn
-        ? routes.LOGIN
-        : routes.getHome(getUsername())}>Home</NoHighlightLink>
+      {!isLoggedIn ? <NoHighlightLink to={routes.LOGIN}>Login</NoHighlightLink>
+                   : <NoHighlightLink to={routes.getHome(getUsername())}>Home</NoHighlightLink>}
     </Menu.Item>
     <Menu.Item>
       {isLoggedIn
-        ? <a onClick={logOutClicked} href={routes.LOGIN}>Log Out</a>
-        : <a href={routes.SIGNUP}>Sign Up</a>}
+        ? <NoHighlightLink onClick={logOutClicked} to={routes.LOGIN}>Log Out</NoHighlightLink>
+        : <NoHighlightLink to={routes.SIGNUP}>Sign Up</NoHighlightLink>}
     </Menu.Item>
   </Menu>
 };

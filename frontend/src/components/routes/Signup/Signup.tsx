@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, Typography } from "antd";
 import { signUp } from "../../../utils/userApi";
-import { Redirect } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import routes from "../../../constants/routes";
 import { setUsername } from "../../../utils/authenticationService";
 import GoBackPageHeader from "../../layout/GoBackPageHeader";
+import styled from "styled-components";
 
 interface Props {
   loggedIn: () => void;
@@ -32,7 +33,28 @@ const Signup = (props: Props) => {
   }
 
   return <>
-    <GoBackPageHeader title={"Sign up to DBCR"} getUrl={() => routes.LOGIN}/>
+    <TitleDiv>
+      <Typography.Title level={1}>DBCR</Typography.Title>
+    </TitleDiv>
+    <DbcrDiv>
+      <Typography.Paragraph>
+        Hey there! Welcome to the <strong>Double Blind Code Review</strong> tool! This tool allows you to upload your code
+        via <strong>Git</strong> and request others to review it. However, during the review process, you won't know the identity of your
+        reviewers, and they won't know your identity.
+
+      </Typography.Paragraph>
+      <Typography.Paragraph>
+        This is part of an experiment to investigate anonymisation in code review:
+        <ul>
+          <li>Can we reduce subconscious biases present in the review process?</li>
+          <li>What effects does anonymisation have on review quality?</li>
+          <li>Why does such a tool not exist already, is double blind code review feasible in practice?</li>
+        </ul>
+      </Typography.Paragraph>
+      <Typography.Paragraph>
+        To help out, sign up below!
+      </Typography.Paragraph>
+    </DbcrDiv>
     <Form labelCol={{span: 4}} wrapperCol={{span: 16}} onFinish={sendSignUp}>
       <Form.Item label="Username"
                  name="username"
@@ -53,7 +75,20 @@ const Signup = (props: Props) => {
         <Button type="primary" htmlType="submit">Sign Up</Button>
       </Form.Item>
     </Form>
+    <Link to={routes.LOGIN}>Already a user? Sign in!</Link>
   </>
 };
+
+const TitleDiv = styled.div`
+  margin-top: 20px;
+  text-align: center;
+`;
+
+const DbcrDiv = styled.div`
+  font-size: 12pt;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #cccccc;
+`;
 
 export default Signup;

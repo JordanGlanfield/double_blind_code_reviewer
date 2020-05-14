@@ -2,8 +2,8 @@
 // for routes.
 
 export default {
-  LOGIN: "/",
-  SIGNUP: "/signup",
+  LOGIN: "/login",
+  SIGNUP: "/",
   REFRESH: "/token/refresh",
   NAV: "/:user",
   HOME: "/:user/home",
@@ -19,7 +19,7 @@ export default {
 
 function getHome(user: string) {
   if (user === "") {
-    return "/";
+    return "/login";
   }
   return "/" + user + "/home";
 }
