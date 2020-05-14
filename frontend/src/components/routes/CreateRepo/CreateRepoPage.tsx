@@ -1,20 +1,12 @@
-import { PageHeader } from "antd";
 import React from "react";
 import CreateRepo from "./CreateRepo";
-import { useRedirector } from "../../../utils/hooks";
 import routes from "../../../constants/routes";
 import { getUsername } from "../../../utils/authenticationService";
+import GoBackPageHeader from "../../layout/GoBackPageHeader";
 
 const CreateRepoPage = () => {
-  const redirector = useRedirector(() => routes.getHome(getUsername()));
-
-  if (redirector.shouldRedirect) {
-    return redirector.element;
-  }
-
-
   return <>
-    <PageHeader title={"Create a New Repository"} onBack={redirector.setRedirect} />
+    <GoBackPageHeader title={"Create a New Repository"} getUrl={() => routes.getHome(getUsername())} />
     <CreateRepo />
   </>
 };
