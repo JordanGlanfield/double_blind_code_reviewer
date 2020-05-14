@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { Button, Comment as AntdComment, Input, InputNumber, Typography } from "antd";
+import { Button, Comment as AntdComment, Input, Typography } from "antd";
 import Prism from "prismjs";
 import "./prism-vs.css"
 import { extractPathFromRoute, getFileExtension, getFileName, getNextDirUp } from "../../../utils/routeUtil";
@@ -99,7 +99,6 @@ function getFileComponents(filePath: string, fileContents: string, commentsMap: 
                            onNewComment: (text: string) => void) {
   let lines = fileContents.split("\n");
   let components: JSX.Element[] = [];
-  let lastLine = 0;
   let key = 0;
   const language = getFileExtension(getFileName(filePath));
 

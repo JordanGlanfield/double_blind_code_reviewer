@@ -4,7 +4,7 @@ import { Menu } from "antd";
 
 import routes from "../../../constants/routes";
 import { getUsername, logout } from "../../../utils/authenticationService";
-import { Link, NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 interface Props {
