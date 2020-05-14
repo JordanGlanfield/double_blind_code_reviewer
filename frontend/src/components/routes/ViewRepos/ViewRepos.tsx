@@ -32,16 +32,20 @@ const ViewRepos = () => {
               <Link to={routes.getRepoDir(userString, repo.id, repo.name,"")}>
                 <Button type="primary" ghost>{repo.name}</Button>
               </Link>
-              <Typography>Clone: </Typography>
-              <CloneInput value={cloneString} onFocus={event => event.target.select()}/>
+              <ClonableText>
+                <Typography.Paragraph copyable>{cloneString}</Typography.Paragraph>
+              </ClonableText>
             </Space>
           </List.Item>
         }}
     />
 };
 
-const CloneInput = styled(Input)`
-  width: 70ch;
+const ClonableText = styled.div`
+  font-size: 13pt;
+  vertical-align: center;
+  padding: 5px 0;
+  margin-top: 1em;
 `;
 
 export default ViewRepos
