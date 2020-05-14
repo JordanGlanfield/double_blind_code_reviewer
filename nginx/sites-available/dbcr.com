@@ -24,7 +24,7 @@ server {
     # Running port
     listen 80;
 
-    server_name dbcr.com www.dbcr.com;
+    server_name dbcr.org.uk www.dbcr.org.uk dbcr.com;
 
     root /dbcr/backend/repos;
 
