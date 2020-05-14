@@ -4,6 +4,7 @@ import { signUp } from "../../../utils/userApi";
 import { Redirect } from "react-router-dom";
 import routes from "../../../constants/routes";
 import { setUsername } from "../../../utils/authenticationService";
+import GoBackPageHeader from "../../layout/GoBackPageHeader";
 
 interface Props {
   loggedIn: () => void;
@@ -31,7 +32,7 @@ const Signup = (props: Props) => {
   }
 
   return <>
-    <PageHeader title={"Sign up to DBCR"} onBack={() => window.history.back()}/>
+    <GoBackPageHeader title={"Sign up to DBCR"} getUrl={() => routes.LOGIN}/>
     <Form labelCol={{span: 4}} wrapperCol={{span: 16}} onFinish={sendSignUp}>
       <Form.Item label="Username"
                  name="username"

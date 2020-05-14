@@ -12,6 +12,7 @@ import ContentArea from "../styles/ContentArea";
 import GoBackPageHeader from "../layout/GoBackPageHeader";
 import CreateRepo from "../routes/CreateRepo/CreateRepo";
 import { createRepoForPool } from "../../utils/repoApi";
+import routes from "../../constants/routes";
 
 
 const ReviewerPoolDashboard = () => {
@@ -47,7 +48,7 @@ const ReviewerPoolDashboard = () => {
     a.username.toLowerCase().localeCompare(b.username.toLowerCase()));
 
   return <>
-    <GoBackPageHeader title={`Currently Viewing: ${reviewerPool.name}`} />
+    <GoBackPageHeader title={`Currently Viewing: ${reviewerPool.name}`} getUrl={() => routes.getHome(getUsername())}/>
     <ContentArea>
       <DescriptionsDiv>
         <Typography.Title level={4}>Pool Details</Typography.Title>

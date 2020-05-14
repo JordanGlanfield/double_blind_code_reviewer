@@ -50,22 +50,3 @@ export function useDataSourceWithMessages(api: () => Promise<any>): FetchableDat
 
   return {data, isFetching, hasError, forceRefetch, message}
 }
-
-export interface Redirector {
-  setRedirect: () => void;
-  shouldRedirect: boolean;
-  element: JSX.Element;
-}
-
-export function useRedirector(getUrl: () => string): Redirector {
-  const [shouldRedirect, setShouldRedirect] = useState(false);
-  let redirector: Redirector  = {setRedirect: () => setShouldRedirect(true),
-    shouldRedirect: shouldRedirect,
-    element: <></>};
-
-  if (shouldRedirect) {
-    redirector.element = <Redirect to={getUrl()} />
-  }
-
-  return redirector;
-}
