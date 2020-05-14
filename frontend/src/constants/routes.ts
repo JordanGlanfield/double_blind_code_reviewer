@@ -18,6 +18,9 @@ export default {
 }
 
 function getHome(user: string) {
+  if (user === "") {
+    return "/";
+  }
   return "/" + user + "/home";
 }
 

@@ -11,7 +11,6 @@ export default props => {
   const [username, setUser] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState(false)
-  const [allowRedirection, setAllowRedirection] = useState(false)
   let { from } = props.location.state || { from: { pathname: routes.getHome(username) } }
 
   if (props.isLoggedIn) {
@@ -24,7 +23,6 @@ export default props => {
     if (success) {
       setUsername().then(() => {
         props.loggedIn();
-        setAllowRedirection(true);
       });
     }
     else {
@@ -34,9 +32,6 @@ export default props => {
     }
   }
 
-  if (allowRedirection) {
-    return <Redirect to={from} />
-  }
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />

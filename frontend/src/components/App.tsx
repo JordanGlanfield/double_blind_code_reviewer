@@ -20,16 +20,12 @@ const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(undefined as undefined | boolean);
   let isLoggedIn: boolean;
 
-  console.log("Authed:", isAuthenticated);
-
   if (isAuthenticated === undefined) {
     isLoggedIn = false;
     checkIsAuthenticated().then(setIsAuthenticated);
   } else {
     isLoggedIn = isAuthenticated;
   }
-
-  console.log("Logged in: ", isLoggedIn);
 
   const loggedIn = () => setIsAuthenticated(true);
   const loggedOut = () => setIsAuthenticated(false);

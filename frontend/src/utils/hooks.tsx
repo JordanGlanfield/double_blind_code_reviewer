@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Redirect } from "react-router-dom";
 
 export interface FetchableData {
   data: any,
@@ -15,19 +14,23 @@ export function useDataSource(api: () => Promise<any>): FetchableData {
 
   useEffect(() => {
     const requestId = fetchId;
+    let isActive = true;
 
     api()
       .then(data => {
-        if (requestId === fetchId) {
+        if (requestId === fetchId && isActive) {
           setState({ data: data, isFetching: false, hasError: false })
         }
       })
       .catch(error => {
-        if (requestId === fetchId) {
+        if (requestId === fetchId && isActive) {
           console.log(error);
           setState({ data: undefined, isFetching: false, hasError: true })
         }
       });
+    return () => {
+      isActive = false;
+    }
   }, [fetchId]);
 
   return {
