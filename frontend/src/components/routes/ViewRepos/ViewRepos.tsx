@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Link, useParams } from "react-router-dom";
 
-import { Button, List, Typography, Space, Input } from "antd"
+import { Button, List, Space, Typography } from "antd"
 import routes from "../../../constants/routes";
 import { getRepos } from "../../../utils/repoApi";
 import { useDataSourceWithMessages } from "../../../utils/hooks";

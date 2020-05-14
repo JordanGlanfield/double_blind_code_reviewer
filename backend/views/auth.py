@@ -8,7 +8,7 @@ from backend import LOGIN_MANAGER, DB
 from ..db.api_models import UserDto
 from ..db.models import User
 from ..utils.json import check_request_json
-from ..utils.session import no_content_response
+from ..utils.session import no_content_response, get_active_user
 
 bp = Blueprint("auth", __name__, url_prefix="/api")
 
@@ -91,7 +91,7 @@ def is_authenticated():
 @bp.route("/userinfo")
 @login_required
 def user_info():
-    return jsonify(UserDto.from_db(current_user))
+    return jsonify(UserDto.from_db(get_active_user()))
 
 
 ##################################################################

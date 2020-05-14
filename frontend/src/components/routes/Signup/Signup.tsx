@@ -4,7 +4,6 @@ import { signUp } from "../../../utils/userApi";
 import { Link, Redirect } from "react-router-dom";
 import routes from "../../../constants/routes";
 import { setUsername } from "../../../utils/authenticationService";
-import GoBackPageHeader from "../../layout/GoBackPageHeader";
 import styled from "styled-components";
 
 interface Props {
