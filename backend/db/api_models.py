@@ -45,7 +45,7 @@ class ReviewerPoolSummaryDto():
                                       reviewer_pool.name,
                                       reviewer_pool.description,
                                       UserDto.from_db(reviewer_pool.owner),
-                                      len(reviewer_pool.get_members().all()))
+                                      reviewer_pool.get_num_members())
 
 
 class ReviewerPoolSummariesDto():

@@ -38,14 +38,14 @@ def test_can_retrieve_nested_comments(db, authed_user):
     comments2 = gen_comments(2, comments1[1].id)
     comments3 = gen_comments(1, comments2[0].id)
 
-    dtos = CommentListDto.from_comments_nested(comments1)
+    comments = CommentListDto.from_comments_nested(comments1)
 
-    assert len(dtos.comments) == 3
-    assert len(dtos.comments[1].replies) == 2
-    assert len(dtos.comments[1].replies[0].replies) == 1
+    assert len(comments) == 3
+    assert len(comments[1].replies) == 2
+    assert len(comments[1].replies[0].replies) == 1
 
-    for i in range(0, len(dtos.comments[1].replies)):
-        reply = dtos.comments[1].replies[i]
+    for i in range(0, len(comments[1].replies)):
+        reply = comments[1].replies[i]
         assert reply.id == str(comments2[i].id)
 
 

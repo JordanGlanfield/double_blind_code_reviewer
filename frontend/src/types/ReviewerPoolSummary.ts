@@ -2,13 +2,13 @@ class ReviewerPoolSummary {
   id: number;
   name: string;
   description: string;
-  numMembers: number;
+  num_members: number;
 
-  constructor(id:number, name: string, description: string, numMembers: number) {
+  constructor(id:number, name: string, description: string, num_members: number) {
     this.id = id;
     this.name = name;
     this.description = description;
-    this.numMembers = numMembers;
+    this.num_members = num_members;
   }
 }
 
