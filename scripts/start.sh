@@ -1,3 +1,4 @@
+touch /dbcr/storage/.htpasswd
 export FLASK_ENV="production"
 export FLASK_APP="backend"
 service nginx start
