@@ -10,6 +10,12 @@ const apiPrefix = "/api/v1.0/reviews/";
 //   return reviewSubmissionInfos;
 // }
 
+export async function getReviewsReceived(): Promise<ReviewStats[]> {
+  const response = await fetch(apiPrefix + "view/received");
+  let data = await extractData(response);
+  return data;
+}
+
 export async function getReviewStats(): Promise<ReviewStats[]> {
   const response = await fetch(apiPrefix + "view/reviews");
   let data = await extractData(response);

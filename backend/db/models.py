@@ -75,6 +75,17 @@ class User(db.Model, UserMixin, Crud):
     def get_repos(self) -> List["Repo"]:
         return self.repos.all()
 
+    def _get_relevant_reviews(self, user_condition):
+        return User.query.filter_by(id=self.id).join(AnonUser).filter(user_condition).join(Review) \
+            .with_entities(Review).all()
+
+    def get_reviews(self) -> List["Review"]:
+        # TODO - constant for submitter
+        return self._get_relevant_reviews(AnonUser.name != "Submitter")
+
+    def get_reviews_received(self):
+        return self._get_relevant_reviews(AnonUser.name == "Submitter")
+
     @property
     def is_anonymous(self):
         return False
