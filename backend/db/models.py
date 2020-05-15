@@ -175,6 +175,8 @@ class Review(db.Model, Crud):
 
         return self.comments.filter_by(file_id=file.id, parent_id=None).all()
 
+    def is_submitter(self, user_id: uuid.UUID):
+        return user_id == self.submitter_id
 
 class ReviewerPool(db.Model, Crud):
     id = db.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)

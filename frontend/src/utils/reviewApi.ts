@@ -10,10 +10,16 @@ const apiPrefix = "/api/v1.0/reviews/";
 //   return reviewSubmissionInfos;
 // }
 
+export async function isReviewer(review_id: string): Promise<boolean> {
+  const response = await fetch(`${apiPrefix}is/reviewer/${review_id}`);
+  let data = await extractData(response);
+
+  return data.is_reviewer;
+}
+
 export async function getReviewsReceived(): Promise<ReviewStats[]> {
   const response = await fetch(apiPrefix + "view/received");
-  let data = await extractData(response);
-  return data;
+  return await extractData(response);
 }
 
 export async function getReviewStats(): Promise<ReviewStats[]> {

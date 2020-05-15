@@ -9,6 +9,7 @@ import ClonePrompt from "../routes/ViewRepos/ClonePrompt";
 interface Props {
   reviewUrl: string;
   reviewStats: ReviewStats;
+  isReceiver: boolean;
 }
 
 const ReviewInfo = (props: Props) => {
@@ -22,9 +23,11 @@ const ReviewInfo = (props: Props) => {
         <Link to={reviewUrl}><Button type="primary" ghost>{reviewStats.repo_name}</Button></Link>
       </LeftAligned>
     </Col>
-    <Col span={19}>
-      <ClonePrompt name={reviewStats.repo_name} clone_url={reviewStats.clone_url}/>
-    </Col>
+    {!props.isReceiver &&
+      <Col span={19}>
+        <ClonePrompt name={reviewStats.repo_name} clone_url={reviewStats.clone_url}/>
+      </Col>
+    }
     {/*<Col span={6}>*/}
     {/*    <Tag color="yellow">{reviewStats.status}</Tag>*/}
     {/*</Col>*/}
