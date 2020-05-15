@@ -24,13 +24,12 @@ RUN apt-get update && apt-get -y install nginx && \
     git config --global receive.denyCurrentBranch updateInstead
 
 # Set up python virtual environment
-RUN apt-get update && apt-get -y install libsasl2-dev python-dev libldap2-dev libssl-dev && \
+RUN apt-get update && apt-get -y install libsasl2-dev python-dev libldap2-dev libssl-dev sqlite3 && \
     python3 -m venv venv && source venv/bin/activate
 
 # Set up persistence volume. TODO: move this to a later stage
 RUN mkdir storage && \
-    mkdir storage/repos && \
-    touch storage/.htpasswd
+    mkdir storage/repos
 
 VOLUME storage
 

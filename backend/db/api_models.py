@@ -84,12 +84,10 @@ class CommentDto():
 
 
 class CommentListDto():
-    def __init__(self, comments: List[CommentDto]):
-        self.comments = comments
 
     @staticmethod
-    def from_comments_nested(comments: List[Comment]) -> "CommentListDto":
-        return CommentListDto([CommentDto.from_comment(comment) for comment in comments])
+    def from_comments_nested(comments: List[Comment]) -> List[CommentDto]:
+        return [CommentDto.from_comment(comment) for comment in comments]
 
 
 class FileCommentsDto():
