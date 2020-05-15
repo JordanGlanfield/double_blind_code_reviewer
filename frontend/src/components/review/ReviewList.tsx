@@ -7,7 +7,8 @@ import { getUsername } from "../../utils/authenticationService";
 import routes from "../../constants/routes";
 
 interface Props {
-  getReviews: () => Promise<ReviewStats[]>
+  getReviews: () => Promise<ReviewStats[]>;
+  isReceiver: boolean;
 }
 
 const ReviewList = (props: Props) => {
@@ -21,7 +22,9 @@ const ReviewList = (props: Props) => {
                dataSource={data}
                renderItem={(stats: ReviewStats) => <List.Item><ReviewInfo
                  reviewUrl={routes.getRepoDir(getUsername(), stats.review_id, stats.repo_id, stats.repo_name, "")}
-                 reviewStats={stats}/></List.Item>}
+                 reviewStats={stats}
+                 isReceiver={props.isReceiver}
+               /></List.Item>}
   />
 };
 

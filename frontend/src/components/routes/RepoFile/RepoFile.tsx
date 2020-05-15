@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { Button, Comment as AntdComment, Input, PageHeader, Typography } from "antd";
+import { Button, Comment as AntdComment, Input, Typography } from "antd";
 import Prism from "prismjs";
 import "./prism-vs.css"
 import { extractPathFromRoute, getFileExtension, getFileName, getNextDirUp } from "../../../utils/routeUtil";
@@ -31,6 +31,7 @@ import { getUsername } from "../../../utils/authenticationService";
 import ContentArea from "../../styles/ContentArea";
 import styled from "styled-components";
 import GoBackPageHeader from "../../layout/GoBackPageHeader";
+import { isReviewer } from "../../../utils/reviewApi";
 
 interface Props extends RouteComponentProps {
 }
@@ -38,6 +39,11 @@ interface Props extends RouteComponentProps {
 const RepoFile = (props: Props) => {
   const {reviewId, repoId, repoName} = useParams();
   const filePath = extractPathFromRoute(props);
+  const isReviewerSource = useDataSource(reviewId
+    ? () => isReviewer(reviewId)
+    : async () => false);
+
+  const isUserReviewer = !isReviewerSource.isFetching && isReviewerSource.data;
 
   useEffect(() => {
     Prism.highlightAll();
@@ -92,7 +98,7 @@ const RepoFile = (props: Props) => {
             fileSource.data,
             commentsSource.data ? commentsSource.data : new Map(),
             newCommentLine,
-            reviewId ? setNewCommentLine : () => {},
+            isUserReviewer ? setNewCommentLine : () => {},
             onClickComment)}
         </tbody>
       </table>

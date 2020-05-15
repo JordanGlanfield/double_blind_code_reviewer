@@ -166,6 +166,19 @@ def start_reviews():
     return jsonify({error: error})
 
 
+@reviews_bp.route("/is/reviewer/<string:review_id>", methods=["GET"])
+@login_required
+def is_reviewer(review_id: str):
+    user = get_active_user()
+
+    review = Review.get(review_id)
+
+    if not review:
+        abort(HTTPStatus.NOT_FOUND)
+
+    return jsonify(is_reviewer=review.is_user_in_review(user) and not review.is_submitter(user.id))
+
+
 @reviews_bp.route("/view/reviews", methods=["GET"])
 @login_required
 def get_reviews():
@@ -221,9 +234,14 @@ def add_comment():
     if not review:
         abort(HTTPStatus.BAD_REQUEST)
 
+    user = get_active_user()
+
+    if not review.is_user_in_review(user):
+        abort(HTTPStatus.UNAUTHORIZED)
+
     file = File.find_or_create(review.repo_id, file_path)
 
-    anon_user = AnonUser.find_or_create(get_active_user().id, review.id)
+    anon_user = AnonUser.find_or_create(user.id, review.id)
 
     if not anon_user:
         # TODO - look at specific error conditions
@@ -245,6 +263,9 @@ def view_comments(review_id: str, file_path: str):
 
     if not review:
         abort(HTTPStatus.NOT_FOUND)
+
+    if not review.is_user_in_review(get_active_user()):
+        abort(HTTPStatus.UNAUTHORIZED)
 
     comments = CommentListDto.from_comments_nested(review.get_comments_nested(file_path))
 
