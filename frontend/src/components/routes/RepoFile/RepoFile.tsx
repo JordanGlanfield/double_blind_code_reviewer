@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { Button, Comment as AntdComment, Input, Typography } from "antd";
+import { Button, Comment as AntdComment, Input, PageHeader, Typography } from "antd";
 import Prism from "prismjs";
 import "./prism-vs.css"
 import { extractPathFromRoute, getFileExtension, getFileName, getNextDirUp } from "../../../utils/routeUtil";
@@ -30,6 +30,7 @@ import { useDataSource } from "../../../utils/hooks";
 import { getUsername } from "../../../utils/authenticationService";
 import ContentArea from "../../styles/ContentArea";
 import styled from "styled-components";
+import GoBackPageHeader from "../../layout/GoBackPageHeader";
 
 interface Props extends RouteComponentProps {
 }
@@ -79,21 +80,24 @@ const RepoFile = (props: Props) => {
 
   const dirHref = routes.getRepoDir(getUsername(), reviewId, repoId, repoName, getNextDirUp(filePath));
 
-  return <ContentArea>
-    <Link to={dirHref}><Button>Back To Folder</Button></Link>
-    <Typography>{filePath}</Typography>
-    {commentInformation}
-    <table>
-      <tbody>
-        {getFileComponents(filePath,
-          fileSource.data,
-          commentsSource.data ? commentsSource.data : new Map(),
-          newCommentLine,
-          setNewCommentLine,
-          onClickComment)}
-      </tbody>
-    </table>
-  </ContentArea>
+  return <>
+    <GoBackPageHeader title={`Currently Viewing: ${repoName}`} getUrl={() => routes.getHome(getUsername())}/>
+    <ContentArea>
+      <Link to={dirHref}><Button>Back To Folder</Button></Link>
+      <Typography>{filePath}</Typography>
+      {commentInformation}
+      <table>
+        <tbody>
+          {getFileComponents(filePath,
+            fileSource.data,
+            commentsSource.data ? commentsSource.data : new Map(),
+            newCommentLine,
+            reviewId ? setNewCommentLine : () => {},
+            onClickComment)}
+        </tbody>
+      </table>
+    </ContentArea>
+  </>
 };
 
 function getFileComponents(filePath: string, fileContents: string, commentsMap: Map<number, Comment[]>,

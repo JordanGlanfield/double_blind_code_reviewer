@@ -197,9 +197,10 @@ class ReviewerPool(db.Model, Crud):
         return self.members.filter(pool_members.c.user_id == user.id).count() > 0
 
     def get_members(self):
-        return (User.query
-                .join(pool_members, (pool_members.c.user_id == User.id))
-                .filter(pool_members.c.reviewer_pool_id == ReviewerPool.id))
+        return self.members.all()
+
+    def get_num_members(self):
+        return self.members.count()
 
     @classmethod
     def find_by_name(cls, name) -> "ReviewerPool":
