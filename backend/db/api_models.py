@@ -69,6 +69,13 @@ class ReviewDto():
         return ReviewDto(str(review.id), str(repo.id), repo.name, get_clone_url(repo, base_url), "Pending")
 
 
+class ReviewListDto():
+
+    @staticmethod
+    def from_db(reviews: List[Review], base_url: str):
+        return [ReviewDto.from_db(review, base_url) for review in reviews]
+
+
 class CommentDto():
     def __init__(self, id: str, author_pseudonym: str, contents: str, line_number: int, replies: List):
         self.id = id

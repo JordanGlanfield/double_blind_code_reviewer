@@ -60,6 +60,15 @@ const ReviewerPoolDashboard = () => {
       </DescriptionsDiv>
       {reviewerPool.owner.username === getUsername() &&
       <>
+        <Typography.Title level={4}>Add Users</Typography.Title>
+        <Form title="Add Users" labelCol={{span: 4}} wrapperCol={{span: 16}} onFinish={addUser}>
+          <Form.Item label="Username" name="username">
+            <Input />
+          </Form.Item>
+          <Form.Item wrapperCol={{offset: 4, span: 16}}>
+            <Button type="primary" htmlType="submit">Add User</Button>
+          </Form.Item>
+        </Form>
         <Typography.Title level={4}>Set Up A Repo</Typography.Title>
         <CreateRepo shouldRedirect={false}
                     creationApi={(repoName) => createRepoForPool(repoName, reviewerPool.name)}
@@ -71,15 +80,6 @@ const ReviewerPoolDashboard = () => {
           </Form.Item>
           <Form.Item wrapperCol={{offset: 4, span: 16}}>
             <Button type="primary" htmlType="submit">Start Reviews</Button>
-          </Form.Item>
-        </Form>
-        <Typography.Title level={4}>Add User</Typography.Title>
-        <Form title="Add Users" labelCol={{span: 4}} wrapperCol={{span: 16}} onFinish={addUser}>
-          <Form.Item label="Username" name="username">
-            <Input />
-          </Form.Item>
-          <Form.Item wrapperCol={{offset: 4, span: 16}}>
-            <Button type="primary" htmlType="submit">Add User</Button>
           </Form.Item>
         </Form>
       </>

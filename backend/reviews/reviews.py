@@ -7,7 +7,7 @@ from flask import Blueprint, jsonify, make_response, abort, current_app, request
 from flask_login import login_required
 
 from .. import ReviewerPool, DB, User, Repo, Review, File, Comment, AnonUser
-from ..db.api_models import ReviewerPoolSummariesDto, ReviewerPoolDto, CommentListDto, ReviewDto, RepoDto
+from ..db.api_models import ReviewerPoolSummariesDto, ReviewerPoolDto, CommentListDto, ReviewDto, RepoDto, ReviewListDto
 from ..repos.repos import get_base_url
 from ..utils.json import check_request_json
 from ..utils.session import get_active_user, no_content_response
@@ -170,11 +170,18 @@ def start_reviews():
 @login_required
 def get_reviews():
     user = get_active_user()
-    # TODO - constant for submitter
-    reviews = User.query.filter_by(id=user.id).join(AnonUser).filter(AnonUser.name != "Submitter").join(Review)\
-        .with_entities(Review).all()
+    reviews = user.get_reviews()
 
-    return jsonify([ReviewDto.from_db(review, get_base_url(reviews_bp)) for review in reviews])
+    return jsonify(ReviewListDto.from_db(reviews, get_base_url(reviews_bp)))
+
+
+@reviews_bp.route("/view/received", methods=["GET"])
+@login_required
+def get_reviews_received():
+    user = get_active_user()
+    reviews = user.get_reviews_received()
+
+    return jsonify(ReviewListDto.from_db(reviews, get_base_url(reviews_bp)))
 
 
 @reviews_bp.route("/view/repo/<string:review_id>/<path:path>", defaults={"path": ""}, methods=["GET"])
