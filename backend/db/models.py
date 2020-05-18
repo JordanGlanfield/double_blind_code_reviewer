@@ -178,6 +178,7 @@ class Review(db.Model, Crud):
     def is_submitter(self, user_id: uuid.UUID):
         return user_id == self.submitter_id
 
+
 class ReviewerPool(db.Model, Crud):
     id = db.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
     name = db.Column(db.String(128))
