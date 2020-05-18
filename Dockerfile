@@ -11,15 +11,14 @@ COPY frontend/ frontend/
 RUN cd frontend/ && \
     yarn build
 
-#FROM buster AS git_build
-#
-#RUN apt update && apt-get -y install make libssl-dev libghc-zlib-dev libcurl4-gnutls-dev libexpat1-dev gettext unzip && \
-#    wget https://github.com/git/git/archive/v2.26.1.zip -O git.zip && \
-#    unzip git.zip && \
-#    cd git-2.26.1 && \
-#    make prefix=/usr/local all && \
-#    make prefix=/usr/local install
+FROM python:3.7.7-buster AS git_build
 
+RUN apt update && apt-get -y install make libssl-dev libghc-zlib-dev libcurl4-gnutls-dev libexpat1-dev gettext unzip && \
+    wget https://github.com/git/git/archive/v2.26.1.zip -O git.zip && \
+    unzip git.zip && \
+    cd git-2.26.1 && \
+    make prefix=/usr/local all && \
+    make prefix=/usr/local install
 
 ###################################################
 FROM python:3.7.7-buster AS setup
@@ -35,6 +34,8 @@ RUN apt-get update && apt-get -y install nginx && \
 # Set up python virtual environment
 RUN apt-get update && apt-get -y install libsasl2-dev python-dev libldap2-dev libssl-dev sqlite3 && \
     python3 -m venv venv && source venv/bin/activate
+
+COPY --from=git_build /usr/local/bin/ /usr/local/bin/
 
 RUN apt-get update && \
 #    add-apt-repository -y ppa:git-core/ppa && \
