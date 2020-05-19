@@ -1,6 +1,5 @@
 import os
 
-
 class BaseConfig:
     """Base configuration extended by environment-specific subclasses."""
 
@@ -16,6 +15,7 @@ class BaseConfig:
 
     # Database ===================================================
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    ANONYMISER_PATH = os.path.sep.join([os.path.dirname(__file__), "dbcr", "anonymous_filter"])
 
 
 class DevConfig(BaseConfig):
