@@ -62,11 +62,13 @@ def get_blacklisted_names(user: User) -> List[str]:
 
 def init_new_repo(repo_name: str, user: User) -> models.Repo:
     if models.Repo.find_by_names(repo_name, user.username):
+        current_app.logger.error(f"User {user} already has repo named {repo_name}")
         return None
 
     repo = models.Repo(name=repo_name, owner_id=user.id)
 
     if not repo.save():
+        current_app.logger.error(f"Failed to save repo {repo_name}")
         return None
 
     repo_path = get_repo_path(repo.id)
@@ -74,6 +76,7 @@ def init_new_repo(repo_name: str, user: User) -> models.Repo:
     local_repo = Repo.init(repo_path, mkdir=True)
 
     if not local_repo:
+        current_app.logger.error(f"Failed to create repo locally")
         DB.delete(repo)
         return None
 
@@ -91,22 +94,27 @@ def init_new_repo(repo_name: str, user: User) -> models.Repo:
     if ENV == "production":
         try:
             recursive_chown(repo_path, "www-data", "www-data")
-        except:
+        except RuntimeError as err:
             rollback()
             current_app.logger.error("Failed to change " + repo_path + " ownership to www-data")
+            current_app.logger.error(err)
             return None
 
         hook_path = os.path.sep.join([repo_path, ".git", "hooks", "post-receive"])
 
         try:
-            with open(hook_path, "w") as hook_script:
-                hook_script.write(get_anonymiser_hook(repo_path, user))
+            with open(hook_path, "w+") as hook_script:
+                hook_script_contents = get_anonymiser_hook(repo_path, user)
+                hook_script.write(hook_script_contents)
 
             st = os.stat(hook_path)
-            os.chmod(hook_path, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
-        except:
+            new_permissions = st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+            os.chmod(hook_path, new_permissions)
+        except RuntimeError as err:
             rollback()
             current_app.logger.error(f"Failed to write post-receive hook to {hook_path}")
+            current_app.logger.error(err)
+            return None
 
     return repo
 
@@ -204,6 +212,8 @@ def create_repo():
         abort(HTTPStatus.BAD_REQUEST)
 
     repo = init_new_repo(repo_name, get_active_user())
+
+    current_app.logger.info(f"Repo created: {repo}")
 
     if not repo:
         abort(HTTPStatus.INTERNAL_SERVER_ERROR)
