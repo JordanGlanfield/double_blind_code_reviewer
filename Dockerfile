@@ -13,7 +13,12 @@ RUN cd frontend/ && \
 
 FROM python:3.7.7-buster AS git_build
 
-
+RUN apt update && apt-get -y install make libssl-dev libghc-zlib-dev libcurl4-gnutls-dev libexpat1-dev gettext unzip && \
+    wget https://github.com/git/git/archive/v2.26.1.zip -O git.zip && \
+    unzip git.zip && \
+    cd git-2.26.1 && \
+    make prefix=/usr/local all && \
+    make prefix=/usr/local install
 
 ###################################################
 FROM python:3.7.7-buster AS setup
@@ -30,19 +35,12 @@ RUN apt-get update && apt-get -y install nginx && \
 RUN apt-get update && apt-get -y install libsasl2-dev python-dev libldap2-dev libssl-dev sqlite3 && \
     python3 -m venv venv && source venv/bin/activate
 
-RUN apt-get update && \
-    apt-get -y remove git && \
-    apt-get -y install make libssl-dev libghc-zlib-dev libcurl4-gnutls-dev libexpat1-dev gettext unzip && \
-    wget https://github.com/git/git/archive/v2.26.1.zip -O git.zip && \
-    unzip git.zip && \
-    cd git-2.26.1 && \
-    make prefix=/usr/local all && \
-    make prefix=/usr/local install && \
-    cd .. && \
-    rm git.zip && \
-    rm -rf git-2.26.1
+COPY --from=git_build /usr/local/bin/ /usr/local/bin/
 
-RUN git config --global receive.denyCurrentBranch updateInstead
+RUN apt-get update && \
+#    add-apt-repository -y ppa:git-core/ppa && \
+    apt-get -y install git && \
+    git config --global receive.denyCurrentBranch updateInstead
 
 # Set up persistence volume. TODO: move this to a later stage
 RUN mkdir storage && \
