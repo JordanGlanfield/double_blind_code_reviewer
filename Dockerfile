@@ -40,9 +40,8 @@ RUN apt-get update && \
     make prefix=/usr/local install && \
     cd .. && \
     rm git.zip && \
-    rm -rf git-2.26.1
-
-RUN git config --global receive.denyCurrentBranch updateInstead
+    rm -rf git-2.26.1 && \
+    git config --global receive.denyCurrentBranch updateInstead
 
 # Set up persistence volume. TODO: move this to a later stage
 RUN mkdir storage && \

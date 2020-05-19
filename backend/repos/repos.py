@@ -1,9 +1,7 @@
 import os
 import shutil
-import stat
-from collections import defaultdict
 from http import HTTPStatus
-from typing import Dict, List
+from typing import List
 from uuid import UUID
 
 from flask import Blueprint, jsonify, abort, send_from_directory, make_response, request, current_app
@@ -17,6 +15,7 @@ from ..db.api_models import RepoDto
 from ..utils.file_utils import recursive_chown
 from ..utils.json import check_request_json
 from ..utils.session import get_active_user, no_content_response
+from ..dbcr import anonymous_filter
 
 repos_bp = Blueprint("repos", __name__, url_prefix="/api/v1.0/repos", static_folder="static")
 
@@ -100,28 +99,14 @@ def init_new_repo(repo_name: str, user: User) -> models.Repo:
             current_app.logger.error(err)
             return None
 
-        hook_path = os.path.sep.join([repo_path, ".git", "hooks", "post-receive"])
-
-        try:
-            with open(hook_path, "w+") as hook_script:
-                hook_script_contents = get_anonymiser_hook(repo_path, user)
-                hook_script.write(hook_script_contents)
-
-            st = os.stat(hook_path)
-            new_permissions = st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
-            os.chmod(hook_path, new_permissions)
-        except RuntimeError as err:
-            rollback()
-            current_app.logger.error(f"Failed to write post-receive hook to {hook_path}")
-            current_app.logger.error(err)
-            return None
-
     return repo
 
 
-def get_anonymiser_hook(repo_path: str, user: User) -> str:
-    anonymiser_script = current_app.config["ANONYMISER_PATH"]
-    return " ".join([anonymiser_script, repo_path] + get_blacklisted_names(user))
+def anonymise_repo(repo: models.Repo, user: User):
+    if ENV != "production":
+        return
+
+    anonymous_filter.anonymise(get_repo_path(repo.id), get_blacklisted_names(user))
 
 
 def check_push_auth(user: User, repo: models.Repo):
