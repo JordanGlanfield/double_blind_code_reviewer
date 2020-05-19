@@ -113,9 +113,6 @@ class Repo(db.Model, Crud):
     def is_user_a_contributor(self, user_id: uuid.UUID) -> bool:
         return bool(self._get_anon_users().filter_by(user_id=user_id).first())
 
-    def __repr__(self):
-        return f"<Repo {self.name}, {self.id}>"
-
     # TODO: test
     @classmethod
     def find_by_names(cls, repo_name: str, owner_name: str):

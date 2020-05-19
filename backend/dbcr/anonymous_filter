@@ -33,18 +33,14 @@ def name_callback(name):
 def email_callback(email):
     return anonymous_name
 
+os.chdir(args.path[0])
 
 options = gfr.FilteringOptions.default_options()
 options.force = True
-options.source = args.path[0]
 
 filter = gfr.RepoFilter(options,
                         message_callback=message_callback,
                         name_callback=name_callback,
                         email_callback=email_callback)
 
-try:
-    filter.run()
-except RuntimeError as err:
-    print("Failed to anonymise repo")
-    print(err)
+filter.run()
