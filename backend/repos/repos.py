@@ -1,5 +1,6 @@
 import os
 import shutil
+import stat
 from collections import defaultdict
 from http import HTTPStatus
 from typing import Dict, List
@@ -13,7 +14,6 @@ from .file_util import get_directory_contents
 from .. import User, DB, ENV, ReviewerPool
 from ..db import models
 from ..db.api_models import RepoDto
-from ..dbcr.comments import Comment, CommentDto, comment_to_dto
 from ..utils.file_utils import recursive_chown
 from ..utils.json import check_request_json
 from ..utils.session import get_active_user, no_content_response
@@ -55,6 +55,11 @@ def flatten_directories(dir_contents):
     return flattened
 
 
+def get_blacklisted_names(user: User) -> List[str]:
+    # TODO - include user names from the same pool
+    return [user.username, user.first_name, user.surname]
+
+
 def init_new_repo(repo_name: str, user: User) -> models.Repo:
     if models.Repo.find_by_names(repo_name, user.username):
         return None
@@ -79,16 +84,36 @@ def init_new_repo(repo_name: str, user: User) -> models.Repo:
 
     local_repo.close()
 
+    def rollback():
+        DB.delete(repo)
+        shutil.rmtree(repo_path)
+
     if ENV == "production":
         try:
             recursive_chown(repo_path, "www-data", "www-data")
         except:
-            DB.delete(repo)
-            shutil.rmtree(repo_path)
+            rollback()
             current_app.logger.error("Failed to change " + repo_path + " ownership to www-data")
             return None
 
+        hook_path = os.path.sep.join([repo_path, ".git", "hooks", "post-receive"])
+
+        try:
+            with open(hook_path, "w") as hook_script:
+                hook_script.write(get_anonymiser_hook(repo_path, user))
+
+            st = os.stat(hook_path)
+            os.chmod(hook_path, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+        except:
+            rollback()
+            current_app.logger.error(f"Failed to write post-receive hook to {hook_path}")
+
     return repo
+
+
+def get_anonymiser_hook(repo_path: str, user: User) -> str:
+    anonymiser_script = current_app.config["ANONYMISER_PATH"]
+    return " ".join([anonymiser_script, repo_path] + get_blacklisted_names(user))
 
 
 def check_push_auth(user: User, repo: models.Repo):
