@@ -8,7 +8,7 @@ from flask_login import login_required
 
 from .. import ReviewerPool, DB, User, Repo, Review, File, Comment, AnonUser
 from ..db.api_models import ReviewerPoolSummariesDto, ReviewerPoolDto, CommentListDto, ReviewDto, RepoDto, ReviewListDto
-from ..repos.repos import get_base_url
+from ..repos.repos import get_base_url, anonymise_repo
 from ..utils.json import check_request_json
 from ..utils.session import get_active_user, no_content_response
 
@@ -134,22 +134,37 @@ def start_reviews():
     pool_name, repo_name = check_request_json(["pool_name", "repo_name"])
 
     pool = ReviewerPool.find_by_name(pool_name)
-    members_by_id = {member.id: member for member in pool.members.all()}
+    members: List[User] = pool.members.all()
+    members_by_id = {member.id: member for member in members}
 
     if not pool:
         abort(HTTPStatus.NOT_FOUND)
 
-    members = [member.id for member in pool.members.all()]
+    members_ids = [member.id for member in members]
     review_count = 2
 
-    assignments = get_reviewer_assignments(members, review_count)
+    assignments = get_reviewer_assignments(members_ids, review_count)
 
     error = False
+
+    repos = {}
+
+    for member in members:
+        repo = Repo.find_by_names(repo_name, member.username)
+
+        if repo:
+            try:
+                anonymise_repo(repo, repo.owner)
+            except RuntimeError as err:
+                current_app.logger.error(f"Failed to anonymise repo {repo_name} for {member.username}:")
+                current_app.logger.error(err)
+
+            repos[member.id] = repo
 
     for reviewer_id in assignments.keys():
         for member_id in assignments[reviewer_id]:
             user = members_by_id[member_id]
-            repo = Repo.find_by_names(repo_name, user.username)
+            repo = repos[member_id]
 
             if not user or not repo:
                 current_app.logger.error(f"User {user if user else member_id} or Repo {repo if repo else repo_name} "
