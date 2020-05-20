@@ -9,7 +9,7 @@ interface Props {
 
 const ReviewForm = (props: Props) => {
 
-  const onFinish = () => submitReview(props.reviewId);
+  const onFinish = () => submitReview(props.reviewId).catch(error => alert(error));
 
   return <DbcrForm title="Submit Review" onFinish={onFinish}>
     <Form.Item label="General Feedback" name="Feedback">

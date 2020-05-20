@@ -1,5 +1,5 @@
-export function extractData(response: Response) {
-  if (response.ok) {
+export function extractData(response: Response, requireOk = true) {
+  if (!requireOk || response.ok) {
     let data;
 
     let contentType = response.headers.get("Content-Type");
