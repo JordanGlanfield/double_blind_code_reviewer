@@ -105,6 +105,8 @@ The application's frontend is served by Flask (see `tapp/views/index.py`). To ac
 
 Note that the _gunicorn_ web-server conveniently dumps all its activity to `$HOME/tapp.log`.
 
+If you wish to set up configuration for the DB migrations in the docker build you may update the configuration under migrations_prod/
+
 ### Logging in with the default configuration
 
 As already mentioned, the default configuration runs with a fake instance of the LDAP service (to make things easier
