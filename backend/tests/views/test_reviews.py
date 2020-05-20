@@ -208,3 +208,24 @@ def test_can_assign_reviewers(db, authed_user):
         for review_count in reviewed.values():
             assert review_count == expected_review_count
 
+
+def test_can_only_complete_a_review_with_comments(db, authed_user, api):
+    repo = Repo(name="Test Repo", owner_id=authed_user.id)
+    repo.save()
+
+    review = Review(repo_id=repo.id, submitter_id=authed_user.id)
+    review.save()
+
+    user = add_user()
+
+    anon_user = AnonUser.find_or_create(user.id, review.id)
+
+    api.post(get_url(f"/complete/review/{review.id}"), {})
+
+    assert not review.is_completed
+
+    Comment(review_id=review.id, contents="Test comment", line_number=0, author_id=anon_user.id).save()
+
+    api.post(get_url(f"/complete/review/{review.id}"), {})
+
+    assert review.is_completed

@@ -75,16 +75,16 @@ class User(db.Model, UserMixin, Crud):
     def get_repos(self) -> List["Repo"]:
         return self.repos.all()
 
-    def _get_relevant_reviews(self, user_condition):
+    def _get_relevant_reviews(self, user_condition, review_condition=True):
         return User.query.filter_by(id=self.id).join(AnonUser).filter(user_condition).join(Review) \
-            .with_entities(Review).all()
+            .filter(review_condition).with_entities(Review).all()
 
     def get_reviews(self) -> List["Review"]:
         # TODO - constant for submitter
         return self._get_relevant_reviews(AnonUser.name != "Submitter")
 
     def get_reviews_received(self):
-        return self._get_relevant_reviews(AnonUser.name == "Submitter")
+        return self._get_relevant_reviews(AnonUser.name == "Submitter", Review.is_completed == True)
 
     @property
     def is_anonymous(self):
@@ -126,7 +126,7 @@ class Comment(db.Model, Crud):
     id = db.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
     review_id = db.Column(UUIDType(binary=False), db.ForeignKey("review.id"), nullable=False)
     review = db.relationship("Review", back_populates="comments", uselist=False)
-    file_id = db.Column(UUIDType(binary=False), db.ForeignKey("file.id"), nullable=False)
+    file_id = db.Column(UUIDType(binary=False), db.ForeignKey("file.id"), nullable=True)
     parent_id = db.Column(UUIDType(binary=False), db.ForeignKey("comment.id"), nullable=True)
     parent = db.relationship("Comment", remote_side=[id], backref="replies", uselist=False)
     author_id = db.Column(UUIDType(binary=False), db.ForeignKey("anon_user.id"), nullable=False)
@@ -142,6 +142,7 @@ class Review(db.Model, Crud):
     id = db.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
     repo_id = db.Column(UUIDType(binary=False), db.ForeignKey("repo.id"), nullable=False)
     submitter_id = db.Column(UUIDType(binary=False), db.ForeignKey("user.id"), nullable=False)
+    is_completed = db.Column(db.Boolean, default=False)
     anon_users = db.relationship("AnonUser", back_populates="review", lazy="dynamic")
     comments = db.relationship("Comment", back_populates="review", lazy="dynamic")
 
@@ -153,6 +154,10 @@ class Review(db.Model, Crud):
         anon_user.save()
 
         self.anon_users.append(anon_user)
+        db.session.commit()
+
+    def complete_review(self):
+        self.is_completed = True
         db.session.commit()
 
     def is_user_in_review(self, user: User):
@@ -243,7 +248,7 @@ class AnonUser(db.Model, Crud):
         anon_user = cls.query.filter_by(user_id=user_id, review_id=review_id).first()
 
         if not anon_user:
-            new_name = f"Anonymous{review.reviewers.count()}"
+            new_name = f"Anonymous{review.anon_users.count()}"
             anon_user = AnonUser(user_id=user_id, review_id=review_id, name=new_name)
             anon_user.save()
 

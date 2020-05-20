@@ -56,17 +56,17 @@ class ReviewerPoolSummariesDto():
 
 
 class ReviewDto():
-    def __init__(self, review_id: str, repo_id: str, repo_name: str, clone_url: str, status: str):
+    def __init__(self, review_id: str, repo_id: str, repo_name: str, clone_url: str, is_completed: bool):
         self.review_id = review_id
         self.repo_id = repo_id
         self.repo_name = repo_name
         self.clone_url = clone_url
-        self.status = status
+        self.is_completed = is_completed
 
     @staticmethod
     def from_db(review: Review, base_url: str):
         repo = Repo.get(review.repo_id)
-        return ReviewDto(str(review.id), str(repo.id), repo.name, get_clone_url(repo, base_url), "Pending")
+        return ReviewDto(str(review.id), str(repo.id), repo.name, get_clone_url(repo, base_url), review.is_completed)
 
 
 class ReviewListDto():

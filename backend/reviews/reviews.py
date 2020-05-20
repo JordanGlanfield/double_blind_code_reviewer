@@ -203,6 +203,20 @@ def get_reviews():
     return jsonify(ReviewListDto.from_db(reviews, get_base_url(reviews_bp)))
 
 
+@reviews_bp.route("/complete/review/<string:review_id>", methods=["POST"])
+def complete_review(review_id: str):
+    review = Review.get(review_id)
+
+    if not review:
+        abort(HTTPStatus.NOT_FOUND)
+
+    if review.comments.count() == 0:
+        abort(make_response(jsonify(error="Review must have at least 1 comment"), HTTPStatus.BAD_REQUEST))
+
+    review.complete_review()
+    return no_content_response()
+
+
 @reviews_bp.route("/view/received", methods=["GET"])
 @login_required
 def get_reviews_received():
