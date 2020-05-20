@@ -82,7 +82,7 @@ export async function getRepo(review_id?: string): Promise<Repo | undefined> {
 export async function submitReview(review_id: string) {
   const response = await fetch(apiPrefix + `complete/review/${review_id}`, {method: "POST"})
 
-  let data = await extractData(response);
+  let data = await extractData(response, false);
   let error = data["error"];
 
   if (error) {

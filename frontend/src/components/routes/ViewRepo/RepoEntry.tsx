@@ -14,7 +14,6 @@ interface Props {
 }
 
 const RepoEntry = (props: Props) => {
-  console.log(props.href)
   return <Link to={props.href} onClick={props.onClick}>
     <Button>
       {props.isDir ? <FolderFilled /> : <FileOutlined />}
