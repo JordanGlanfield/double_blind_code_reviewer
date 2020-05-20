@@ -3,6 +3,7 @@ import ReviewerPoolSummary from "../types/ReviewerPoolSummary";
 import { buildDelete, buildPost, extractData } from "./apiUtil";
 import ReviewerPool from "../types/ReviewerPool";
 import Repo from "../types/Repo";
+import { Simulate } from "react-dom/test-utils";
 
 const apiPrefix = "/api/v1.0/reviews/";
 
@@ -76,4 +77,15 @@ export async function getRepo(review_id?: string): Promise<Repo | undefined> {
   const response = await fetch(apiPrefix + `view/repo/${review_id}`)
 
   return await extractData(response);
+}
+
+export async function submitReview(review_id: string) {
+  const response = await fetch(apiPrefix + `complete/review/${review_id}`, {method: "POST"})
+
+  let data = await extractData(response);
+  let error = data["error"];
+
+  if (error) {
+    throw error;
+  }
 }
