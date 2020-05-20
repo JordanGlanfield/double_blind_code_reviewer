@@ -45,7 +45,13 @@ RUN apt-get update && \
 
 # Set up persistence volume. TODO: move this to a later stage
 RUN mkdir storage && \
-    mkdir storage/repos
+    mkdir storage/repos && \
+    mkdir storage/migrations && \
+    mkdir storage/migrations/versions
+
+COPY migrations_prod/alembic.ini storage/migrations
+COPY migrations_prod/env.py storage/migrations
+COPY migrations_prod/script.py.mako storage/migrations
 
 VOLUME storage
 
@@ -57,7 +63,6 @@ COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY backend backend/
-COPY migrations migrations/
 COPY scripts/dev_exports.sh scripts/
 
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
@@ -72,8 +77,8 @@ COPY scripts/start.sh .
 RUN export FLASK_APP=backend && \
     export FLASK_ENV=production && \
     mkdir /dbcr/logs/ && \
-    flask db migrate && \
-    flask db upgrade
+    flask db migrate --directory=/dbcr/storage/migrations && \
+    flask db upgrade --directory=/dbcr/storage/migrations
 
 
 # Include frontend
