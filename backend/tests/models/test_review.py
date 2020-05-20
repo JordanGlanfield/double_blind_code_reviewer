@@ -6,7 +6,7 @@ def get_review(authed_user) -> Review:
     repo = Repo(name="Test Repo", owner_id=authed_user.id)
     repo.save()
 
-    review = Review(repo_id=repo.id, submitter_id=authed_user.id)
+    review = Review(repo_id=repo.id, submitter_id=authed_
     review.save()
 
     return review
