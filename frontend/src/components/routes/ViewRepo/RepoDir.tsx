@@ -9,6 +9,8 @@ import { useDataSource } from "../../../utils/hooks";
 import { getUsername } from "../../../utils/authenticationService";
 import ContentArea from "../../styles/ContentArea";
 import ClonePrompt from "../ViewRepos/ClonePrompt";
+import ReviewForm from "./ReviewForm";
+import styled from "styled-components";
 
 interface Props extends RouteComponentProps {
 }
@@ -52,6 +54,7 @@ const RepoDir = (props: Props) => {
   return <>
     <PageHeader title={`Currently Viewing: ${repoName}`} onBack={() => setRedirect(routes.getHome(getUsername()))}/>
     <ContentArea>
+      {currentDir === "" && isReviewing && <ReviewDiv><ReviewForm reviewId={reviewId ? reviewId : ""} /></ReviewDiv>}
       <Typography>Current directory: {currentDir === "" ? "/" : ""}{currentDir}</Typography>
       <List
         dataSource={dirContents}
@@ -109,5 +112,10 @@ function getDirectoryEntries(user: string, reviewId: string | undefined, repoId:
   }
   return dirEntries;
 }
+
+const ReviewDiv = styled.div`
+  border-bottom: 1px solid #dbdbdb;
+  margin-bottom: 10px;
+`;
 
 export default RepoDir;
