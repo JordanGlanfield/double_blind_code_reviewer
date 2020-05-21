@@ -250,6 +250,7 @@ def get_anonymisation_feedback(sureness: int, guess_username: str, reason: str, 
     return AnonymisationFeedback(sureness=sureness, user_id=get_active_user().id, guess_id=guess_id,
                                                    reason=reason, is_reviewer=is_reviewer)
 
+
 @reviews_bp.route("/feedback/<string:review_id>", methods=["POST"])
 @login_required
 def submit_feedback(review_id: str):
@@ -282,10 +283,28 @@ def submit_feedback(review_id: str):
     return no_content_response()
 
 
+@reviews_bp.route("/is/feedback/complete/<string:review_id>", methods=["GET"])
+@login_required
+def is_feedback_complete(review_id: str):
+    review = Review.get(review_id)
+
+    if not review:
+        abort(HTTPStatus.NOT_FOUND)
+
+    if not review.is_user_in_review(get_active_user()):
+        abort(HTTPStatus.UNAUTHORIZED)
+
+    feedback = ReviewFeedback.get(review_id)
+
+    return jsonify({"is_complete": bool(feedback)})
+
+
 @reviews_bp.route("/anon/feedback/<string:review_id>", methods=["POST"])
 @login_required
 def submit_reviewer_anonymisation_feedback(review_id: str):
     sureness, guess_username, reason = check_request_json(["sureness", "guess_username", "reason"])
+
+
 
     try:
         anonymisation_feedback = get_anonymisation_feedback(sureness, guess_username, reason, True)

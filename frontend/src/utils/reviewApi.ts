@@ -12,7 +12,11 @@ const apiPrefix = "/api/v1.0/reviews/";
 //   return reviewSubmissionInfos;
 // }
 
-export async function isReviewer(review_id: string): Promise<boolean> {
+export async function isReviewer(review_id: string | undefined): Promise<boolean> {
+  if (!review_id) {
+    return false;
+  }
+
   const response = await fetch(`${apiPrefix}is/reviewer/${review_id}`);
   let data = await extractData(response);
 
@@ -91,6 +95,21 @@ export async function submitReview(review_id: string) {
   }
 }
 
+export async function submitReviewFeedback(review_id: string, constructiveness: number, specificity: number,
+                                           justification: number, politeness: number, sureness: number,
+                                           guess_username: string, reason: string) {
+  const requestOptions = buildPost({constructiveness, specificity, justification, politeness, sureness,
+    guess_username, reason});
+
+  const response = await fetch(apiPrefix + `feedback/${review_id}`);
+
+  let data = await extractData(response, false);
+
+  if (data.error) {
+    throw data.error;
+  }
+}
+
 export async function submitReviewerAnonymisationFeedback(review_id: string, sureness: number, guess_username: string,
                                                           reason: string) {
   const requestOptions = buildPost({sureness, guess_username, reason});
@@ -109,6 +128,15 @@ export async function isReviewComplete(review_id: string | undefined): Promise<b
   }
 
   const response = await fetch(apiPrefix + `is/complete/${review_id}`);
+  return (await extractData(response))["is_complete"];
+}
+
+export async function isReviewFeedbackComplete(review_id: string): Promise<boolean> {
+  if (!review_id) {
+    return false;
+  }
+
+  const response = await fetch(apiPrefix + `is/feedback/complete/${review_id}`);
   return (await extractData(response))["is_complete"];
 }
 

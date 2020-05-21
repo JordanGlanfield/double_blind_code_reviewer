@@ -11,7 +11,8 @@ import ContentArea from "../../styles/ContentArea";
 import ClonePrompt from "../ViewRepos/ClonePrompt";
 import ReviewForm from "./ReviewForm";
 import styled from "styled-components";
-import { isReviewComplete } from "../../../utils/reviewApi";
+import { isReviewComplete, isReviewer } from "../../../utils/reviewApi";
+import ReviewFeedbackForm from "./ReviewFeedbackForm";
 
 interface Props extends RouteComponentProps {
 }
@@ -27,10 +28,10 @@ const RepoDir = (props: Props) => {
   let currentDir = extractPathFromRoute(props);
 
   const dirSource = useDataSource(() => getDir(repoId ? repoId : "", currentDir));
-  const reviewCompletedSource = useDataSource(() => isReviewComplete(reviewId));
+  const isReviewerSource = useDataSource(() => isReviewer(reviewId));
   const [redirect, setRedirect] = useState(undefined as undefined | string);
 
-  let isReviewing = reviewId !== undefined;
+  let reviewPresent = reviewId !== undefined;
 
   if (!repoId || !repoName) {
     return <Redirect to={{
@@ -53,8 +54,10 @@ const RepoDir = (props: Props) => {
     dirContents = getDirectoryEntries(getUsername(), reviewId, repoId, repoName, currentDir, dirSource.data);
   }
 
-  const shouldSubmitReview = currentDir === "" && isReviewing && !reviewCompletedSource.isFetching
-    && !reviewCompletedSource.data;
+  const shouldSubmitReview = currentDir === "" && !isReviewerSource.isFetching && isReviewerSource.data
+    && reviewPresent;
+
+  const shouldSubmitFeedback = !shouldSubmitReview && reviewPresent && !isReviewerSource.isFetching && !isReviewerSource.data;
 
   return <>
     <PageHeader title={`Currently Viewing: ${repoName}`} onBack={() => setRedirect(routes.getHome(getUsername()))}/>
@@ -67,11 +70,12 @@ const RepoDir = (props: Props) => {
                      isDir={item.isDir}
                      href={item.href}
                      onClick={dirSource.forceRefetch}
-                     isReviewing={isReviewing}
+                     isReviewing={reviewPresent}
           />
         </List.Item>}
       />
       {shouldSubmitReview && <ReviewDiv><ReviewForm reviewId={reviewId ? reviewId : ""} /></ReviewDiv>}
+      {shouldSubmitFeedback && <ReviewDiv><ReviewFeedbackForm reviewId={reviewId ? reviewId : ""}/></ReviewDiv>}
     </ContentArea>
   </>
 };
