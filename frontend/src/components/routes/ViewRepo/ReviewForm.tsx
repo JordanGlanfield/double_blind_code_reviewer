@@ -31,11 +31,11 @@ const ReviewForm = (props: Props) => {
     return <Typography>You have submitted your review</Typography>
   }
 
-  return <DbcrForm labelSpan={8} wrapperColSpan={16} title="Submit Review" layout="vertical" onFinish={onFinish}>
-    <Form.Item label="General Feedback" name="Feedback">
-      <Input.TextArea rows={4} />
-    </Form.Item>
-    <Form.Item label="Could you tell who the submitter is?" name="sureness" required={true}>
+  return <DbcrForm labelSpan={20} wrapperColSpan={20} title="Submit Review" layout="vertical" onFinish={onFinish}>
+    {/*<Form.Item label="General Feedback" name="Feedback">*/}
+    {/*  <Input.TextArea rows={4} />*/}
+    {/*</Form.Item>*/}
+    <Form.Item label="Could you tell who the submitter was?" name="sureness" required={true}>
       <Radio.Group>
         <Radio value={0}>No</Radio>
         <Radio value={1}>I have a guess</Radio>
