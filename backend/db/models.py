@@ -1,4 +1,5 @@
 import uuid
+from collections import Set
 from datetime import datetime
 from typing import List, Union
 
@@ -85,6 +86,18 @@ class User(db.Model, UserMixin, Crud):
 
     def get_reviews_received(self):
         return self._get_relevant_reviews(AnonUser.name == "Submitter", Review.is_completed == True)
+
+    def get_related_users(self) -> List["User"]:
+        # TODO - use DB engine
+        users = {}
+        for pool in self.reviewer_pools:
+            for member in pool.members.all():
+                users[member.id] = member
+
+        del users[self.id]
+
+        return list(users.values())
+
 
     @property
     def is_anonymous(self):
@@ -185,6 +198,36 @@ class Review(db.Model, Crud):
 
     def is_submitter(self, user_id: uuid.UUID):
         return user_id == self.submitter_id
+
+
+class ReviewFeedback(db.Model, Crud):
+    id = db.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
+    review_id = db.Column(UUIDType(binary=False), db.ForeignKey("review.id"), nullable=False)
+    constructiveness = db.Column(db.Integer)
+    specificity = db.Column(db.Integer)
+    justification = db.Column(db.Integer)
+    politeness = db.Column(db.Integer)
+    feedback = db.Column(db.String(8000))
+
+    def valid_value(self, value: int) -> bool:
+        return 0 <= value <= 2
+
+    def save(self) -> bool:
+        if not self.valid_value(self.constructiveness) \
+                or not self.valid_value(self.specificity) \
+                or not self.valid_value(self.justification) \
+                or not self.valid_value(self.politeness):
+            raise RuntimeError("A survey value was out of range")
+        return super().save()
+
+
+class AnonymisationFeedback(db.Model, Crud):
+    id = db.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
+    is_reviewer = db.Column(db.Boolean, nullable=False)
+    sureness = db.Column(db.Integer)
+    user_id = db.Column(UUIDType(binary=False), db.ForeignKey("user.id"), nullable=False)
+    guess_id = db.Column(UUIDType(binary=False), db.ForeignKey("user.id"), nullable=True)
+    reason = db.Column(db.String(8000))
 
 
 class ReviewerPool(db.Model, Crud):

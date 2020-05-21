@@ -11,6 +11,7 @@ import ContentArea from "../../styles/ContentArea";
 import ClonePrompt from "../ViewRepos/ClonePrompt";
 import ReviewForm from "./ReviewForm";
 import styled from "styled-components";
+import { isReviewComplete } from "../../../utils/reviewApi";
 
 interface Props extends RouteComponentProps {
 }
@@ -26,6 +27,7 @@ const RepoDir = (props: Props) => {
   let currentDir = extractPathFromRoute(props);
 
   const dirSource = useDataSource(() => getDir(repoId ? repoId : "", currentDir));
+  const reviewCompletedSource = useDataSource(() => isReviewComplete(reviewId));
   const [redirect, setRedirect] = useState(undefined as undefined | string);
 
   let isReviewing = reviewId !== undefined;
@@ -51,10 +53,12 @@ const RepoDir = (props: Props) => {
     dirContents = getDirectoryEntries(getUsername(), reviewId, repoId, repoName, currentDir, dirSource.data);
   }
 
+  const shouldSubmitReview = currentDir === "" && isReviewing && !reviewCompletedSource.isFetching
+    && !reviewCompletedSource.data;
+
   return <>
     <PageHeader title={`Currently Viewing: ${repoName}`} onBack={() => setRedirect(routes.getHome(getUsername()))}/>
     <ContentArea>
-      {currentDir === "" && isReviewing && <ReviewDiv><ReviewForm reviewId={reviewId ? reviewId : ""} /></ReviewDiv>}
       <Typography>Current directory: {currentDir === "" ? "/" : ""}{currentDir}</Typography>
       <List
         dataSource={dirContents}
@@ -67,6 +71,7 @@ const RepoDir = (props: Props) => {
           />
         </List.Item>}
       />
+      {shouldSubmitReview && <ReviewDiv><ReviewForm reviewId={reviewId ? reviewId : ""} /></ReviewDiv>}
     </ContentArea>
   </>
 };
@@ -114,8 +119,9 @@ function getDirectoryEntries(user: string, reviewId: string | undefined, repoId:
 }
 
 const ReviewDiv = styled.div`
-  border-bottom: 1px solid #dbdbdb;
-  margin-bottom: 10px;
+  border-top: 1px solid #dbdbdb;
+  margin-top: 10px;
+  padding-top: 10px;
 `;
 
 export default RepoDir;

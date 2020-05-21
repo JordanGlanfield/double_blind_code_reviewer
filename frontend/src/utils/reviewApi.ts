@@ -4,6 +4,7 @@ import { buildDelete, buildPost, extractData } from "./apiUtil";
 import ReviewerPool from "../types/ReviewerPool";
 import Repo from "../types/Repo";
 import { Simulate } from "react-dom/test-utils";
+import User from "../types/User";
 
 const apiPrefix = "/api/v1.0/reviews/";
 
@@ -88,4 +89,30 @@ export async function submitReview(review_id: string) {
   if (error) {
     throw error;
   }
+}
+
+export async function submitReviewerAnonymisationFeedback(review_id: string, sureness: number, guess_username: string,
+                                                          reason: string) {
+  const requestOptions = buildPost({sureness, guess_username, reason});
+  const response = await fetch(apiPrefix + `anon/feedback/${review_id}`, requestOptions);
+
+  let error = (await extractData(response, false))["error"];
+
+  if (error) {
+    throw error;
+  }
+}
+
+export async function isReviewComplete(review_id: string | undefined): Promise<boolean> {
+  if (!review_id) {
+    return false;
+  }
+
+  const response = await fetch(apiPrefix + `is/complete/${review_id}`);
+  return (await extractData(response))["is_complete"];
+}
+
+export async function getRelatedUsers(): Promise<User[]> {
+  const response = await fetch(apiPrefix + "view/users/related");
+  return await extractData(response);
 }
