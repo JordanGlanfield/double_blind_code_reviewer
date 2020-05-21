@@ -96,12 +96,12 @@ export async function submitReview(review_id: string) {
 }
 
 export async function submitReviewFeedback(review_id: string, constructiveness: number, specificity: number,
-                                           justification: number, politeness: number, sureness: number,
+                                           justification: number, politeness: number, feedback: string, sureness: number,
                                            guess_username: string, reason: string) {
-  const requestOptions = buildPost({constructiveness, specificity, justification, politeness, sureness,
+  const requestOptions = buildPost({constructiveness, specificity, justification, politeness, feedback, sureness,
     guess_username, reason});
 
-  const response = await fetch(apiPrefix + `feedback/${review_id}`);
+  const response = await fetch(apiPrefix + `feedback/${review_id}`, requestOptions);
 
   let data = await extractData(response, false);
 

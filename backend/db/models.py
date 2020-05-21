@@ -227,7 +227,12 @@ class AnonymisationFeedback(db.Model, Crud):
     sureness = db.Column(db.Integer)
     user_id = db.Column(UUIDType(binary=False), db.ForeignKey("user.id"), nullable=False)
     guess_id = db.Column(UUIDType(binary=False), db.ForeignKey("user.id"), nullable=True)
+    review_id = db.Column(UUIDType(binary=False), db.ForeignKey("review.id"), nullable=False)
     reason = db.Column(db.String(8000))
+
+    @classmethod
+    def find_by_user_and_review(cls, user_id, review_id) -> "AnonymisationFeedback":
+        return cls.query.filter_by(user_id=user_id, review_id=review_id).first()
 
 
 class ReviewerPool(db.Model, Crud):
