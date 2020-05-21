@@ -62,6 +62,7 @@ const RepoDir = (props: Props) => {
   return <>
     <PageHeader title={`Currently Viewing: ${repoName}`} onBack={() => setRedirect(routes.getHome(getUsername()))}/>
     <ContentArea>
+      {shouldSubmitReview && <InstructionsDiv><Typography>To leave comments. Navigate to the file you are interested in and click the line you wish to comment on</Typography></InstructionsDiv>}
       <Typography>Current directory: {currentDir === "" ? "/" : ""}{currentDir}</Typography>
       <List
         dataSource={dirContents}
@@ -126,6 +127,11 @@ const ReviewDiv = styled.div`
   border-top: 1px solid #dbdbdb;
   margin-top: 10px;
   padding-top: 10px;
+`;
+
+const InstructionsDiv = styled.div`
+  border-bottom: 1px solid #dbdbdb;
+  margin-bottom: 10px;
 `;
 
 export default RepoDir;
