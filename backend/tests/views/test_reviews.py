@@ -229,3 +229,15 @@ def test_can_only_complete_a_review_with_comments(db, authed_user, api):
     api.post(get_url(f"/complete/review/{review.id}"), {})
 
     assert review.is_completed
+
+
+def test_can_get_related_users(db, authed_user, api):
+    reviewer_pool = add_reviewer_pool(authed_user, "Excellent Pool")
+    user = add_user()
+    reviewer_pool.members.append(user)
+    db.db.session.commit()
+
+    related_users = authed_user.get_related_users()
+
+    assert len(related_users) == 1
+    assert related_users[0] == user

@@ -6,8 +6,9 @@ from uuid import UUID
 from flask import Blueprint, jsonify, make_response, abort, current_app, request
 from flask_login import login_required
 
-from .. import ReviewerPool, DB, User, Repo, Review, File, Comment, AnonUser
-from ..db.api_models import ReviewerPoolSummariesDto, ReviewerPoolDto, CommentListDto, ReviewDto, RepoDto, ReviewListDto
+from .. import ReviewerPool, DB, User, Repo, Review, File, Comment, AnonUser, ReviewFeedback, AnonymisationFeedback
+from ..db.api_models import ReviewerPoolSummariesDto, ReviewerPoolDto, CommentListDto, ReviewDto, RepoDto, \
+    ReviewListDto, UserDto
 from ..repos.repos import get_base_url, anonymise_repo
 from ..utils.json import check_request_json
 from ..utils.session import get_active_user, no_content_response
@@ -93,6 +94,12 @@ def get_pool(pool_name: str):
 
     return jsonify(ReviewerPoolDto.from_db(reviewer_pool))
 
+
+@reviews_bp.route("/view/users/related", methods=["GET"])
+@login_required
+def get_related_users():
+    user = get_active_user()
+    return jsonify([UserDto.from_db(related_user) for related_user in user.get_related_users()])
 
 # Reviews
 
@@ -204,6 +211,7 @@ def get_reviews():
 
 
 @reviews_bp.route("/complete/review/<string:review_id>", methods=["POST"])
+@login_required
 def complete_review(review_id: str):
     review = Review.get(review_id)
 
@@ -214,6 +222,79 @@ def complete_review(review_id: str):
         abort(make_response(jsonify(error="Review must have at least 1 comment"), HTTPStatus.BAD_REQUEST))
 
     review.complete_review()
+    return no_content_response()
+
+
+@reviews_bp.route("/is/complete/<string:review_id>", methods=["GET"])
+@login_required
+def is_review_completed(review_id: str):
+    review = Review.get(review_id)
+
+    if not review:
+        abort(HTTPStatus.NOT_FOUND)
+
+    if not review.is_user_in_review(get_active_user()):
+        abort(HTTPStatus.UNAUTHORIZED)
+
+    return jsonify({"is_complete": review.is_completed})
+
+
+def get_anonymisation_feedback(sureness: int, guess_username: str, reason: str, is_reviewer: bool) \
+        -> AnonymisationFeedback:
+    guessed_user = User.find_by_username(guess_username)
+    guess_id = guessed_user if guessed_user else None
+
+    if guess_id == get_active_user().id:
+        raise RuntimeError("User cannot guess themself")
+
+    return AnonymisationFeedback(sureness=sureness, user_id=get_active_user().id, guess_id=guess_id,
+                                                   reason=reason, is_reviewer=is_reviewer)
+
+@reviews_bp.route("/feedback/<string:review_id>", methods=["POST"])
+@login_required
+def submit_feedback(review_id: str):
+    constructiveness, specificity, justification, politeness, feedback, sureness, guess_username, reason = \
+        check_request_json(["constructiveness", "specificity", "justification", "politeness", "feedback", "sureness",
+                            "sureness", "guess_username", "reason"])
+
+    review = Review.get(review_id)
+
+    if not review:
+        abort(make_response(jsonify({"error": "No such review exists"}), HTTPStatus.NOT_FOUND))
+
+    review_feedback = ReviewFeedback(review_id=review_id, constructiveness=constructiveness, specificity=specificity,
+                                     justification=justification, politeness=politeness, feedback=feedback)
+
+    try:
+        anonymisation_feedback = get_anonymisation_feedback(sureness, guess_username, reason, False)
+
+        if not review_feedback.save():
+            raise RuntimeError("Failed to save review feedback")
+
+        if not anonymisation_feedback.save():
+            review_feedback.delete()
+            raise RuntimeError("Failed to save anonymisation feedback")
+    except RuntimeError as err:
+        current_app.logger.error(err)
+        abort(make_response(jsonify({"error": "Failed to save feedback"}), HTTPStatus.BAD_REQUEST))
+
+
+    return no_content_response()
+
+
+@reviews_bp.route("/anon/feedback/<string:review_id>", methods=["POST"])
+@login_required
+def submit_reviewer_anonymisation_feedback(review_id: str):
+    sureness, guess_username, reason = check_request_json(["sureness", "guess_username", "reason"])
+
+    try:
+        anonymisation_feedback = get_anonymisation_feedback(sureness, guess_username, reason, True)
+        if not anonymisation_feedback.save():
+            raise RuntimeError("Failed to save anonymisation feedback")
+    except RuntimeError as err:
+        current_app.logger.error(err)
+        abort(make_response(jsonify({"error": str(err)}), HTTPStatus.BAD_REQUEST))
+
     return no_content_response()
 
 
