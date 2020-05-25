@@ -3,7 +3,6 @@ import ReviewerPoolSummary from "../types/ReviewerPoolSummary";
 import { buildDelete, buildPost, extractData } from "./apiUtil";
 import ReviewerPool from "../types/ReviewerPool";
 import Repo from "../types/Repo";
-import { Simulate } from "react-dom/test-utils";
 import User from "../types/User";
 
 const apiPrefix = "/api/v1.0/reviews/";

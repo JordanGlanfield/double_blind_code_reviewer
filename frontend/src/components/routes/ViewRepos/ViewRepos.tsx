@@ -27,7 +27,6 @@ const ViewRepos = () => {
         size="large"
         dataSource={repoSource.data as Repo[]}
         renderItem={repo => {
-          let cloneString = "git clone " + repo.clone_url + " " + repo.name
           return <List.Item>
             <Space>
               <Link to={routes.getRepoDir(userString, undefined, repo.id, repo.name,"")}>

@@ -45,7 +45,9 @@ const ReviewForm = (props: Props) => {
     <Form.Item label="Submitter" name="submitter" required={false}>
       <Select>
         {relatedUsersSource.data && relatedUsersSource.data.map((user: User) =>
-        <Select.Option key={user.username} value={user.username}>{user.username}</Select.Option>)}
+        <Select.Option key={user.username} value={user.username}>
+          {user.first_name + " " + user.surname}
+        </Select.Option>)}
       </Select>
     </Form.Item>
     <Form.Item label="How could you tell?" name="reason" required={false}>

@@ -3,7 +3,6 @@ import React from "react";
 import DbcrForm, { DbcrFormSubmit } from "../../util/DbcrForm";
 import { getRelatedUsers, isReviewFeedbackComplete, submitReviewFeedback } from "../../../utils/reviewApi";
 import { useDataSource } from "../../../utils/hooks";
-import RelevantUsersSelect from "./RelevantUsersSelect";
 import User from "../../../types/User";
 
 interface Props {
@@ -70,7 +69,9 @@ const ReviewFeedbackForm = (props: Props) => {
     <Form.Item label="Reviewer" name="reviewer" required={false}>
       <Select>
         {relatedUsersSource.data && relatedUsersSource.data.map((user: User) =>
-          <Select.Option key={user.username} value={user.username}>{user.username}</Select.Option>)}
+          <Select.Option key={user.username} value={user.username}>
+            {user.first_name + " " + user.surname}
+          </Select.Option>)}
       </Select>
     </Form.Item>
     <Form.Item label="How could you tell?" name="reason" required={false}>
@@ -79,23 +80,5 @@ const ReviewFeedbackForm = (props: Props) => {
     <DbcrFormSubmit labelSpan={8} wrapperColSpan={16} buttonText="Submit Review" />
   </DbcrForm>
 };
-
-interface FeedbackRadioProps {
-  no?: string;
-  somewhat?: string;
-  yes?: string;
-}
-
-const FeedbackRadio = (props: FeedbackRadioProps) => {
-  const no = props.no ? props.no : "No needs more work";
-  const somewhat = props.somewhat ? props.somewhat : "Somewhat";
-  const yes = props.yes ? props.yes : "Yes it was great";
-  return <Radio.Group>
-    <Radio value={0}>{no}</Radio>
-    <Radio value={1}>{somewhat}</Radio>
-    <Radio value={2}>{yes}</Radio>
-  </Radio.Group>
-};
-
 
 export default ReviewFeedbackForm;
