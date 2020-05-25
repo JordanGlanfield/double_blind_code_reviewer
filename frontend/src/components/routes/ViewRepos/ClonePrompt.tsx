@@ -1,4 +1,4 @@
-import { Space, Typography } from "antd";
+import { Typography } from "antd";
 import * as React from "react";
 import styled from "styled-components";
 

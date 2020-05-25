@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from "react";
-import { Button, Form, Input } from "antd";
+import { Button, Form } from "antd";
 
 interface Props {
   labelSpan?: number;

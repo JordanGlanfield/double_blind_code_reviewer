@@ -8,10 +8,9 @@ import { getDir } from "../../../utils/repoApi";
 import { useDataSource } from "../../../utils/hooks";
 import { getUsername } from "../../../utils/authenticationService";
 import ContentArea from "../../styles/ContentArea";
-import ClonePrompt from "../ViewRepos/ClonePrompt";
 import ReviewForm from "./ReviewForm";
 import styled from "styled-components";
-import { isReviewComplete, isReviewer } from "../../../utils/reviewApi";
+import { isReviewer } from "../../../utils/reviewApi";
 import ReviewFeedbackForm from "./ReviewFeedbackForm";
 
 interface Props extends RouteComponentProps {

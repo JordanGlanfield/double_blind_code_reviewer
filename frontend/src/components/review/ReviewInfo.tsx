@@ -1,8 +1,7 @@
 import * as React from "react"
 import { ReviewStats } from "../../types/ReviewStats";
-import { Badge, Button, Col, Row, Tag, Typography } from "antd";
+import { Button, Col, Row } from "antd";
 import styled from "styled-components";
-import { BellFilled } from "@ant-design/icons/lib";
 import { Link } from "react-router-dom";
 import ClonePrompt from "../routes/ViewRepos/ClonePrompt";
 
