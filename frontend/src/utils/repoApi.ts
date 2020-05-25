@@ -1,10 +1,10 @@
 import { buildPost, extractData } from "./apiUtil";
 import Repo from "../types/Repo";
 
-async function get(uriSuffix: string) {
+async function get(uriSuffix: string, requestOptions: any=undefined) {
   const uri = "/api/v1.0/repos/view/" + uriSuffix;
 
-  const response = await fetch(uri);
+  const response = await fetch(uri, requestOptions);
 
   return extractData(response);
 }
@@ -19,7 +19,14 @@ export function getDir(repoId: string, path: string) {
 }
 
 export async function getFile(repoId: string, path: string) {
-  return get("file/" + repoId + "/" + path);
+  let requestOptions = {
+    headers: {
+      "Pragma": "no-cache",
+      "Cache-Control": "no-cache"
+    }
+  };
+
+  return get("file/" + repoId + "/" + path, requestOptions);
 }
 
 export async function createRepo(repo_name: string): Promise<Repo> {
