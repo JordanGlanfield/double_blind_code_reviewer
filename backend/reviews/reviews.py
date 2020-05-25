@@ -293,10 +293,12 @@ def is_feedback_complete(review_id: str):
     if not review:
         abort(HTTPStatus.NOT_FOUND)
 
-    if not review.is_user_in_review(get_active_user()):
+    user = get_active_user()
+
+    if not review.is_user_in_review(user):
         abort(HTTPStatus.UNAUTHORIZED)
 
-    feedback = ReviewFeedback.query.filter_by(review_id=review_id)
+    feedback = ReviewFeedback.query.filter_by(review_id=review_id).first()
 
     return jsonify({"is_complete": bool(feedback)})
 
