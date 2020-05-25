@@ -1,5 +1,7 @@
 import os
 import shutil
+from distutils.dir_util import copy_tree
+from distutils.file_util import copy_file
 from http import HTTPStatus
 from typing import List
 from uuid import UUID
@@ -59,7 +61,7 @@ def get_blacklisted_names(user: User) -> List[str]:
     return [user.username, user.first_name, user.surname]
 
 
-def init_new_repo(repo_name: str, user: User) -> models.Repo:
+def init_db_repo_only(repo_name: str, user: User) -> models.Repo:
     if models.Repo.find_by_names(repo_name, user.username):
         current_app.logger.error(f"User {user} already has repo named {repo_name}")
         return None
@@ -70,6 +72,11 @@ def init_new_repo(repo_name: str, user: User) -> models.Repo:
         current_app.logger.error(f"Failed to save repo {repo_name}")
         return None
 
+    return repo
+
+
+def init_new_repo(repo_name: str, user: User) -> models.Repo:
+    repo = init_db_repo_only(repo_name, user)
     repo_path = get_repo_path(repo.id)
 
     local_repo = Repo.init(repo_path, mkdir=True)
@@ -206,6 +213,63 @@ def create_repo():
     return jsonify(RepoDto.from_db(repo, get_base_url(repos_bp)))
 
 
+def init_new_repos_for_pool(pool: ReviewerPool, repo_name: str) -> List[str]:
+    current_app.logger.info(f"Creating repos for pool {pool.name} from scratch")
+
+    failure_usernames = []
+    for member in pool.members.all():
+        repo = None
+        try:
+            repo = init_new_repo(repo_name, member)
+        except:
+            pass
+
+        if not repo:
+            failure_usernames.append(member.username)
+
+    return failure_usernames
+
+
+def copy_repo_for_pool(base_repo: models.Repo, pool: ReviewerPool) -> List[str]:
+    current_app.logger.info(f"Pool owner for {pool.name} has existing repo {base_repo.name}, attempting to copy")
+    # Copy all files from base_repo to folders for all the other users
+    get_repo_path(base_repo.id)
+
+    failure_usernames = set()
+    repos = []
+
+    for member in pool.members.all():
+        if member.id == base_repo.owner_id:
+            continue
+
+        repo = init_db_repo_only(base_repo.name, member)
+
+        if not repo:
+            failure_usernames.add(member.username)
+        else:
+            repos.append(repo)
+
+    base_repo_path = get_repo_path(base_repo.id)
+
+    for repo in repos:
+        path = get_repo_path(repo.id)
+        if os.path.exists(path):
+            try:
+                shutil.rmtree(path)
+            except RuntimeError as err:
+                current_app.logger.error("Failed to remove existing repo contents while copying repos", err)
+                failure_usernames.add(repo.owner.username)
+                continue
+
+        try:
+            copy_tree(base_repo_path, path)
+        except RuntimeError as err:
+            current_app.logger.error(f"Failed to copy seed repo files for user {repo.owner.username} ", err)
+            failure_usernames.add(repo.owner.username)
+
+    return list(failure_usernames)
+
+
 @repos_bp.route("/pool_create", methods=["POST"])
 @login_required
 def create_repos_for_pool():
@@ -216,20 +280,17 @@ def create_repos_for_pool():
 
     pool = ReviewerPool.find_by_name(pool_name)
 
-    if not pool or not get_active_user().id == pool.owner_id:
+    user = get_active_user()
+
+    if not pool or not user.id == pool.owner_id:
         abort(HTTPStatus.UNAUTHORIZED)
 
-    failure_usernames = []
+    base_repo = models.Repo.find_by_names(repo_name, user.username)
 
-    for member in pool.members.all():
-        repo = None
-        try:
-            repo = init_new_repo(repo_name, member)
-        except:
-            pass
-
-        if not repo:
-            failure_usernames.append(member.username)
+    if not base_repo:
+        failure_usernames = init_new_repos_for_pool(pool, repo_name)
+    else:
+        failure_usernames = copy_repo_for_pool(base_repo, pool)
 
     return jsonify(failure_usernames)
 
