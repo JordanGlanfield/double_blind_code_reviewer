@@ -255,16 +255,21 @@ def copy_repo_for_pool(base_repo: models.Repo, pool: ReviewerPool) -> List[str]:
         else:
             repos.append(repo)
 
+    def delete_repo(at_path, user):
+        try:
+            shutil.rmtree(path)
+            return True
+        except RuntimeError as err:
+            current_app.logger.error("Failed to remove existing repo contents while copying repos", err)
+            failure_usernames.add(user.username)
+            return False
+
     base_repo_path = get_repo_path(base_repo.id)
 
     for repo in repos:
         path = get_repo_path(repo.id)
         if os.path.exists(path):
-            try:
-                shutil.rmtree(path)
-            except RuntimeError as err:
-                current_app.logger.error("Failed to remove existing repo contents while copying repos", err)
-                failure_usernames.add(repo.owner.username)
+            if not delete_repo(path, repo.owner):
                 continue
 
         try:
@@ -272,6 +277,15 @@ def copy_repo_for_pool(base_repo: models.Repo, pool: ReviewerPool) -> List[str]:
         except RuntimeError as err:
             current_app.logger.error(f"Failed to copy seed repo files for user {repo.owner.username} ", err)
             failure_usernames.add(repo.owner.username)
+
+        try:
+            recursive_chown(path, "www-data", "www-data")
+        except RuntimeError as err:
+            delete_repo(path, repo.owner)
+            current_app.logger.error("Failed to change " + path + " ownership to www-data")
+            current_app.logger.error(err)
+            failure_usernames.add(repo.owner.username)
+            continue
 
     return list(failure_usernames)
 

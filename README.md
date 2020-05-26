@@ -228,5 +228,4 @@ For run configuration in IntelliJ, add the following to the run options:
 - `--publish 80:80 --detach -v storage_volume:/dbcr/storage`
 
 To push to dockerhub:
-- `docker tag dbcr jordanglanfield/dbcr:latest`
-- `docker push jordanglanfield/dbcr`
+- `docker push jordanglanfield/dbcr:latest`
