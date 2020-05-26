@@ -11,7 +11,7 @@ from flask_login import login_required
 from git import Repo
 
 from .file_util import get_directory_contents
-from .. import User, DB, ENV, ReviewerPool
+from .. import User, DB, ENV, ReviewerPool, File, Review
 from ..db import models
 from ..db.api_models import RepoDto
 from ..utils.file_utils import recursive_chown
@@ -308,10 +308,31 @@ def get_repos():
     return jsonify([RepoDto.from_db(repo, get_base_url(repos_bp)) for repo in repos])
 
 
-@repos_bp.route("/view/dir/<string:repo_id>/", defaults={"path": ""}, methods=["GET"])
-@repos_bp.route("/view/dir/<string:repo_id>/<path:path>", methods=["GET"])
+def mark_comments(repo_id, path, directory_contents, review_id):
+    review = Review.get(review_id) if review_id.lower() != "none" else None
+
+    if not review:
+        return {"directories": [{"name": dir, "has_comments": False} for dir in directory_contents["directories"]],
+                "files": [{"name": file, "has_comments": False} for file in directory_contents["files"]]}
+
+    directories = []
+    for dir in directory_contents["directories"]:
+        dir_path = "/".join([path, dir]) if path != "" else dir
+        current_app.logger.info(f"Path: {path} - dir: {dir} - dir_path: {dir_path}")
+        directories.append({"name": dir, "has_comments": File.directory_has_comments(repo_id, dir_path, review_id)})
+
+    files = []
+    for file in directory_contents["files"]:
+        file_path = "/".join([path, file]) if path != "" else file
+        files.append({"name": file, "has_comments": File.file_has_comments(repo_id, file_path, review_id)})
+
+    return {"directories": directories, "files": files}
+
+
+@repos_bp.route("/view/dir/<string:repo_id>/<string:review_id>/", methods=["GET"])
+@repos_bp.route("/view/dir/<string:repo_id>/<string:review_id>/<path:path>", methods=["GET"])
 @login_required
-def get_repo(repo_id: str, path: str):
+def get_repo(repo_id: str, review_id: str, path: str = ""):
     if repo_id == "":
         abort(HTTPStatus.NOT_FOUND)
 
@@ -335,7 +356,9 @@ def get_repo(repo_id: str, path: str):
     if path == "" and git_folder in contents["directories"]:
         contents["directories"].remove(git_folder)
 
-    return jsonify(contents)
+    marked_contents = mark_comments(repo_id, path, contents, review_id)
+
+    return jsonify(marked_contents)
 
 
 @repos_bp.route("/view/file/<string:repo_id>/<path:path>", methods=["GET"])

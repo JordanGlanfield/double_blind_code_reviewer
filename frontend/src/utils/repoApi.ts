@@ -13,9 +13,10 @@ export function getRepos(): Promise<Repo[]> {
   return get("all");
 }
 
-export function getDir(repoId: string, path: string) {
+export function getDir(repoId: string, path = "", review_id= "") {
+  review_id = review_id ? review_id : "None";
   // TODO - safety of using path here?
-  return get("dir/" + repoId + "/" + path);
+  return get("dir/" + repoId + "/" + review_id + "/" + path);
 }
 
 export async function getFile(repoId: string, path: string) {
