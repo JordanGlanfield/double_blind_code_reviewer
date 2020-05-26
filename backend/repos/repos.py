@@ -123,17 +123,23 @@ def check_push_auth(user: User, repo: models.Repo):
     abort(HTTPStatus.UNAUTHORIZED)
 
 
-def check_pull_auth(user: User, repo: models.Repo):
+def user_can_pull(user: User, repo: models.Repo) -> bool:
     if repo.owner_id == user.id:
         current_app.logger.info("Puller owns repo")
-        return no_content_response()
+        return True
 
     if repo.is_user_a_contributor(user.id):
         current_app.logger.info("Puller is contributor")
-        return no_content_response()
+        return True
 
     current_app.logger.info("Puller not relevant, rejecting")
-    abort(HTTPStatus.UNAUTHORIZED)
+    return False
+
+
+def check_pull_auth(user: User, repo: models.Repo):
+    if user_can_pull(user, repo):
+        return no_content_response()
+    return abort(HTTPStatus.UNAUTHORIZED)
 
 
 def extract_repo(git_uri: str) -> str:
@@ -309,7 +315,15 @@ def get_repo(repo_id: str, path: str):
     if repo_id == "":
         abort(HTTPStatus.NOT_FOUND)
 
-    # TODO - verify permission to view repo
+    repo = models.Repo.get(repo_id)
+
+    if not repo:
+        abort(HTTPStatus.NOT_FOUND)
+
+    user = get_active_user()
+
+    if not user_can_pull(user, repo):
+        abort(HTTPStatus.NOT_FOUND)
 
     contents = get_directory_contents(get_repo_path(UUID(hex=repo_id)) + os.path.sep + path)
 
