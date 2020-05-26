@@ -16,9 +16,17 @@ export function extractData(response: Response, requireOk = true) {
   throw response
 }
 
-export function buildPost(body: any) {
+export function buildPost(body: any): any {
+  return buildPayload(body, "POST");
+}
+
+export function buildPut(body: any): any {
+  return buildPayload(body, "PUT");
+}
+
+function buildPayload(body: any, method: string): any {
   return {
-    method: "POST",
+    method: method,
     headers: { "Content-Type": "application/json" },
     body: body ? JSON.stringify(body) : undefined
   };

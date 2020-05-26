@@ -5,4 +5,5 @@ export default interface Comment {
   line_number: number;
   author_pseudonym: string;
   parent_id: string;
+  is_author: boolean;
 }

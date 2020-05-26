@@ -1,6 +1,7 @@
 from typing import List
 
 from backend import User, ReviewerPool, File, Comment, Repo, Review
+from backend.utils.session import get_active_user
 
 
 class UserDto():
@@ -77,17 +78,26 @@ class ReviewListDto():
 
 
 class CommentDto():
-    def __init__(self, id: str, author_pseudonym: str, contents: str, line_number: int, replies: List):
+    def __init__(self, id: str, author_pseudonym: str, contents: str, line_number: int, replies: List, is_author: bool):
         self.id = id
         self.author_pseudonym = author_pseudonym
         self.contents = contents
         self.line_number = line_number
         self.replies = replies
+        self.is_author = is_author
 
     @staticmethod
-    def from_comment(comment: Comment):
-        replies = [CommentDto.from_comment(reply) for reply in comment.replies]
-        return CommentDto(str(comment.id), comment.author.name, comment.contents, comment.line_number, replies)
+    def from_comment(comment: Comment, author: User=None):
+        if author == None:
+            author = get_active_user()
+
+            if author == None:
+                return None
+
+        replies = [CommentDto.from_comment(reply, author) for reply in comment.replies]
+        is_author = author == comment.get_author_user()
+        return CommentDto(str(comment.id), comment.author.name, comment.contents, comment.line_number, replies,
+                          is_author)
 
 
 class CommentListDto():

@@ -150,6 +150,13 @@ class Comment(db.Model, Crud):
 
     # TODO - prevent recursive parental relationships
 
+    def get_author_user(self):
+        return self.author.user
+
+    def update_contents(self, contents: str):
+        self.contents = contents
+        db.session.commit()
+
 
 class Review(db.Model, Crud):
     id = db.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)

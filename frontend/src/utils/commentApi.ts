@@ -1,10 +1,15 @@
-import { buildPost, extractData } from "./apiUtil";
+import { buildPost, buildPut, extractData } from "./apiUtil";
 import Comment from "../types/Comment";
 
 export async function postComment(review_id: string, file_path: string, line_number: number,
                                   parent_id: string | undefined, contents: string) {
   const requestOptions = buildPost({review_id, file_path, line_number, parent_id, contents});
   await fetch("/api/v1.0/reviews/create/comment", requestOptions);
+}
+
+export async function updateComment(comment_id: string, contents: string) {
+  const requestOptions = buildPut({contents});
+  await fetch(`/api/v1.0/reviews/edit/comment/${comment_id}`, requestOptions);
 }
 
 export async function getComments(review_id: string, file_path: string): Promise<Map<number, Comment[]>> {

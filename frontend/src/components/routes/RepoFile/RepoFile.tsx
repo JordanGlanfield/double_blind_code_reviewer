@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { Button, Comment as AntdComment, Input, Typography } from "antd";
+import { Button, Comment as AntdComment, Input, Typography, Form } from "antd";
 import Prism from "prismjs";
 import "./prism-vs.css"
 import { extractPathFromRoute, getFileExtension, getFileName, getNextDirUp } from "../../../utils/routeUtil";
@@ -24,7 +24,7 @@ import "prismjs/components/prism-go";
 import "prismjs/components/prism-typescript";
 import "prismjs/components/prism-css";
 import "prismjs/components/prism-python";
-import { getComments, postComment } from "../../../utils/commentApi";
+import { getComments, postComment, updateComment } from "../../../utils/commentApi";
 import Comment from "../../../types/Comment";
 import { useDataSource } from "../../../utils/hooks";
 import { getUsername } from "../../../utils/authenticationService";
@@ -92,23 +92,25 @@ const RepoFile = (props: Props) => {
       <Link to={dirHref}><Button>Back To Folder</Button></Link>
       <Typography>{filePath}</Typography>
       {commentInformation}
-      <table>
-        <tbody>
-          {getFileComponents(filePath,
-            fileSource.data,
-            commentsSource.data ? commentsSource.data : new Map(),
-            newCommentLine,
-            isUserReviewer ? setNewCommentLine : () => {},
-            onClickComment)}
-        </tbody>
-      </table>
+      <TableDiv>
+        <table>
+          <tbody>
+            {getFileComponents(filePath,
+              fileSource.data,
+              commentsSource.data ? commentsSource.data : new Map(),
+              newCommentLine,
+              isUserReviewer ? setNewCommentLine : () => {},
+              onClickComment, commentsSource.forceRefetch)}
+          </tbody>
+        </table>
+      </TableDiv>
     </ContentArea>
   </>
 };
 
 function getFileComponents(filePath: string, fileContents: string, commentsMap: Map<number, Comment[]>,
                            newCommentLine: number | undefined, onLineClicked: (lineNumber: number) => void,
-                           onNewComment: (text: string) => void) {
+                           onNewComment: (text: string) => void, refetch: () => void) {
   let lines = fileContents.split("\n");
   let components: JSX.Element[] = [];
   let key = 0;
@@ -122,7 +124,7 @@ function getFileComponents(filePath: string, fileContents: string, commentsMap: 
                                  key={key++}/>);
     if (commentsMap.has(index)) {
       (commentsMap.get(index) as Comment[]).forEach(comment => {
-        components.push(<FileComment key={key++} comment={comment}/>)
+        components.push(<FileComment key={key++} comment={comment} refetch={refetch}/>)
       });
     }
     if (index === newCommentLine) {
@@ -153,13 +155,49 @@ const InlineSection = styled.div`
 `;
 
 interface CommentProps {
-  comment: Comment
+  comment: Comment;
+  refetch: () => void;
 }
 
 const FileComment = (props: CommentProps) => {
+  const [isEditing, setIsEditing] = useState(false);
+
+  if (isEditing) {
+    return <InlineSection>
+      <EditableContent comment={props.comment}
+                       refetch={() => {props.refetch(); setIsEditing(false)}}
+                       onCancel={() => setIsEditing(false)}
+      />
+    </InlineSection>;
+  }
+
   return <InlineSection>
     <AntdComment content={<p>{props.comment.contents}</p>} author={props.comment.author_pseudonym}/>
+    {props.comment.is_author
+      && <Button type="default" onClick={() => setIsEditing(true)}>Edit</Button>}
   </InlineSection>
+};
+
+interface EditableContentProps {
+  comment: Comment;
+  refetch: () => void;
+  onCancel: () => void;
+}
+
+const EditableContent = (props: EditableContentProps) => {
+  const onFinish = (values: any) => {
+    updateComment(props.comment.id, values.contents).then(props.refetch);
+  };
+
+  return <Form onFinish={onFinish} initialValues={{["contents"]: props.comment.contents}}>
+    <Form.Item name="contents">
+      <Input.TextArea />
+    </Form.Item>
+    <Form.Item name="submit">
+      <Button type="primary" htmlType="submit">Submit</Button>
+      <Button type="danger" onClick={props.onCancel}>Cancel</Button>
+    </Form.Item>
+  </Form>
 };
 
 interface CodeSectionProps {
@@ -183,7 +221,12 @@ const CodeSection = (props: CodeSectionProps) => {
   </tr>
 };
 
+const TableDiv = styled.div`
+  //overflow-x: auto;
+`;
+
 const HoverablePre = styled.pre`
+  background-color: transparent;
   &:hover {
     background-color: #bae7ff;
   }

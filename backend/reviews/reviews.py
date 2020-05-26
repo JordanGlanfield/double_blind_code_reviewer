@@ -390,6 +390,27 @@ def add_comment():
     return no_content_response()
 
 
+@reviews_bp.route("/edit/comment/<string:comment_id>", methods=["PUT"])
+@login_required
+def update_comment(comment_id: str):
+    contents, = check_request_json(["contents"])
+    user = get_active_user()
+    comment = Comment.get(comment_id)
+
+    if not comment:
+        abort(HTTPStatus.BAD_REQUEST)
+
+    if comment.get_author_user() != user:
+        abort(HTTPStatus.UNAUTHORIZED)
+
+    if comment.review.is_completed:
+        abort(HTTPStatus.CONFLICT)
+
+    comment.update_contents(contents)
+
+    return no_content_response()
+
+
 @reviews_bp.route("/view/comments/<string:review_id>/<path:file_path>")
 @login_required
 def view_comments(review_id: str, file_path: str):
