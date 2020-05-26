@@ -1,12 +1,11 @@
 import uuid
-from collections import Set
 from datetime import datetime
 from typing import List, Union
 
 from flask_login import UserMixin
 from flask_sqlalchemy import BaseQuery
+from sqlalchemy import and_
 from sqlalchemy_utils import UUIDType
-from sqlalchemy import and_, select
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from .database import DB
@@ -314,6 +313,22 @@ class File(db.Model, Crud):
     id = db.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
     repo_id = db.Column(UUIDType(binary=False), db.ForeignKey("repo.id"), nullable=False)
     file_path = db.Column(db.String(4096))
+
+    @classmethod
+    def file_has_comments(cls, repo_id, file_path, review_id):
+        file = cls.find_by_path(repo_id, file_path)
+
+        if not file:
+            return False
+
+        return Comment.query.filter_by(file_id=file.id, review_id=review_id).first() is not None
+
+    @classmethod
+    def directory_has_comments(cls, repo_id, dir_path, review_id):
+        return cls.query.filter_by(repo_id=repo_id).filter(File.file_path.startswith(dir_path))\
+            .join(Comment)\
+            .filter_by(review_id=review_id)\
+            .first() is not None
 
     @classmethod
     def find_or_create(cls, repo_id: str, file_path: str):

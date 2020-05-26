@@ -18,6 +18,7 @@ interface Props extends RouteComponentProps {
 
 interface DirEntry {
   name: string,
+  hasComments: boolean,
   isDir: boolean,
   href: string
 }
@@ -26,7 +27,7 @@ const RepoDir = (props: Props) => {
   let {reviewId, repoId, repoName} = useParams();
   let currentDir = extractPathFromRoute(props);
 
-  const dirSource = useDataSource(() => getDir(repoId ? repoId : "", currentDir));
+  const dirSource = useDataSource(() => getDir(repoId ? repoId : "", currentDir, reviewId));
   const isReviewerSource = useDataSource(() => isReviewer(reviewId));
   const [redirect, setRedirect] = useState(undefined as undefined | string);
 
@@ -67,6 +68,7 @@ const RepoDir = (props: Props) => {
         dataSource={dirContents}
         renderItem={item => <List.Item>
           <RepoEntry name={item.name}
+                     hasComments={item.hasComments}
                      isDir={item.isDir}
                      href={item.href}
                      onClick={dirSource.forceRefetch}
@@ -88,11 +90,12 @@ function getDirectoryEntries(user: string, reviewId: string | undefined, repoId:
                              currentDir: string, directory: any): DirEntry[] {
   const atTopLevel = currentDir === "";
 
-  const dirEntries = [];
+  const dirEntries: DirEntry[] = [];
 
   if (!atTopLevel) {
     dirEntries.push({
       name: "..",
+      hasComments: false,
       isDir: true,
       href: routes.getRepoDir(user, reviewId, repoId, repoName, getNextDirUp(currentDir))
     })
@@ -104,19 +107,21 @@ function getDirectoryEntries(user: string, reviewId: string | undefined, repoId:
     path = currentDir + "/";
   }
 
-  for (let dir of directory.directories.sort(stringCompare)) {
+  for (let dir of directory.directories.sort((dir1: any, dir2: any) => stringCompare(dir1.name, dir2.name))) {
     dirEntries.push({
-      name: dir,
+      name: dir.name,
+      hasComments: dir.has_comments,
       isDir: true,
-      href: routes.getRepoDir(user, reviewId, repoId, repoName, path + dir)
+      href: routes.getRepoDir(user, reviewId, repoId, repoName, path + dir.name)
     })
   }
 
-  for (let file of directory.files.sort(stringCompare)) {
+  for (let file of directory.files.sort((file1: any, file2: any) => stringCompare(file1.name, file2.name))) {
     dirEntries.push({
-      name: file,
+      name: file.name,
+      hasComments: file.has_comments,
       isDir: false,
-      href: routes.getRepoFile(user, reviewId, repoId, repoName, path + file)
+      href: routes.getRepoFile(user, reviewId, repoId, repoName, path + file.name)
     })
   }
   return dirEntries;
