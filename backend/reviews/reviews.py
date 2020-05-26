@@ -216,11 +216,7 @@ def get_reviews_with_status(is_completed: bool):
 
     review_dtos = ReviewListDto.from_db(reviews, get_base_url(reviews_bp))
 
-    for i in range(0, len(review_dtos)):
-        if review_dtos[i].is_completed != is_completed:
-            del review_dtos[i]
-
-    return jsonify(review_dtos)
+    return jsonify([review_dto for review_dto in review_dtos if review_dto.is_completed == is_completed])
 
 
 @reviews_bp.route("/view/completed/reviews", methods=["GET"])
