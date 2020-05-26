@@ -73,12 +73,7 @@ RUN ln -s /etc/nginx/sites-available/dbcr.com /etc/nginx/sites-enabled/ && \
 # Add start up script
 COPY scripts/start.sh .
 
-# Run database migrations
-RUN export FLASK_APP=backend && \
-    export FLASK_ENV=production && \
-    mkdir /dbcr/logs/ && \
-    flask db migrate --directory=/dbcr/storage/migrations && \
-    flask db upgrade --directory=/dbcr/storage/migrations
+RUN mkdir /dbcr/logs/
 
 
 # Include frontend

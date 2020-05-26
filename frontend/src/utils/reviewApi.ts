@@ -27,11 +27,16 @@ export async function getReviewsReceived(): Promise<ReviewStats[]> {
   return await extractData(response);
 }
 
-export async function getReviewStats(): Promise<ReviewStats[]> {
-  const response = await fetch(apiPrefix + "view/reviews");
+export async function getPendingReviews(): Promise<ReviewStats[]> {
+  const response = await fetch(apiPrefix + "view/pending/reviews");
   let data = await extractData(response);
   console.log(data);
   return data;
+}
+
+export async function getCompletedReviews(): Promise<ReviewStats[]> {
+  const response = await fetch(apiPrefix + "view/completed/reviews");
+  return await extractData(response);
 }
 
 export async function getReviewerPools(): Promise<ReviewerPoolSummary[]> {

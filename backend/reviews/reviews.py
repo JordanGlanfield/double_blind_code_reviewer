@@ -210,6 +210,31 @@ def get_reviews():
     return jsonify(ReviewListDto.from_db(reviews, get_base_url(reviews_bp)))
 
 
+def get_reviews_with_status(is_completed: bool):
+    user = get_active_user()
+    reviews = user.get_reviews()
+
+    review_dtos = ReviewListDto.from_db(reviews, get_base_url(reviews_bp))
+
+    for i in range(0, len(review_dtos)):
+        if review_dtos[i].is_completed != is_completed:
+            del review_dtos[i]
+
+    return jsonify(review_dtos)
+
+
+@reviews_bp.route("/view/completed/reviews", methods=["GET"])
+@login_required
+def get_completed_reviews():
+    return get_reviews_with_status(True)
+
+
+@reviews_bp.route("/view/pending/reviews", methods=["GET"])
+@login_required
+def get_pending_reviews():
+    return get_reviews_with_status(False)
+
+
 @reviews_bp.route("/complete/review/<string:review_id>", methods=["POST"])
 @login_required
 def complete_review(review_id: str):

@@ -19,7 +19,7 @@ const ReviewInfo = (props: Props) => {
   return <BoundingDiv><Row>
     <Col span={5}>
       <LeftAligned>
-        <Link to={reviewUrl}><Button type="primary" ghost>{reviewStats.repo_name}</Button></Link>
+        <Link to={reviewUrl}><Button type="primary" ghost>{reviewStats.review_name + " | " + reviewStats.repo_name}</Button></Link>
       </LeftAligned>
     </Col>
     {!props.isReceiver &&

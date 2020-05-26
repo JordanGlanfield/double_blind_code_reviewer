@@ -2,7 +2,7 @@ import * as React from "react"
 import ViewRepos from "../ViewRepos/ViewRepos";
 import { Button, PageHeader, Typography } from "antd";
 import ReviewList from "../../review/ReviewList";
-import { getReviewsReceived, getReviewStats } from "../../../utils/reviewApi";
+import { getCompletedReviews, getPendingReviews, getReviewsReceived } from "../../../utils/reviewApi";
 import ReviewerPools from "../../review/ReviewerPools";
 import styled from "styled-components";
 import routes from "../../../constants/routes";
@@ -27,7 +27,12 @@ const Home = () => {
 
       <Section>
         <Title level={3}>Code to review:</Title>
-        <ReviewList getReviews={getReviewStats} isReceiver={false}/>
+        <ReviewList getReviews={getPendingReviews} isReceiver={false}/>
+      </Section>
+
+      <Section>
+        <Title level={3}>Reviews completed:</Title>
+        <ReviewList getReviews={getCompletedReviews} isReceiver={false}/>
       </Section>
 
       <Section>
