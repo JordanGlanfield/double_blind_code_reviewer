@@ -32,7 +32,7 @@ const Home = () => {
 
       <Section>
         <Title level={3}>Reviews completed:</Title>
-        <ReviewList getReviews={getCompletedReviews} isReceiver={false}/>
+        <ReviewList getReviews={getCompletedReviews} isReceiver={false} showFeedback/>
       </Section>
 
       <Section>

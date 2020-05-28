@@ -9,6 +9,7 @@ import routes from "../../constants/routes";
 interface Props {
   getReviews: () => Promise<ReviewStats[]>;
   isReceiver: boolean;
+  showFeedback?: boolean;
 }
 
 const ReviewList = (props: Props) => {
@@ -24,6 +25,7 @@ const ReviewList = (props: Props) => {
                  reviewUrl={routes.getRepoDir(getUsername(), stats.review_id, stats.repo_id, stats.repo_name, "")}
                  reviewStats={stats}
                  isReceiver={props.isReceiver}
+                 hasReceivedFeedback={stats.has_feedback && props.showFeedback}
                /></List.Item>}
   />
 };

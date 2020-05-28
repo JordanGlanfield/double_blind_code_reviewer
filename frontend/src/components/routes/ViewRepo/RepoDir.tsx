@@ -12,6 +12,7 @@ import ReviewForm from "./ReviewForm";
 import styled from "styled-components";
 import { isReviewer } from "../../../utils/reviewApi";
 import ReviewFeedbackForm from "./ReviewFeedbackForm";
+import ReviewFeedbackView from "./ReviewFeedback";
 
 interface Props extends RouteComponentProps {
 }
@@ -78,6 +79,7 @@ const RepoDir = (props: Props) => {
       />
       {shouldSubmitReview && <ReviewDiv><ReviewForm reviewId={reviewId ? reviewId : ""} /></ReviewDiv>}
       {shouldSubmitFeedback && <ReviewDiv><ReviewFeedbackForm reviewId={reviewId ? reviewId : ""}/></ReviewDiv>}
+      {shouldSubmitReview && <ReviewFeedbackView review_id={reviewId} />}
     </ContentArea>
   </>
 };

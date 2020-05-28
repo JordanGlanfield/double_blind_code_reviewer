@@ -8,7 +8,7 @@ from flask_login import login_required
 
 from .. import ReviewerPool, DB, User, Repo, Review, File, Comment, AnonUser, ReviewFeedback, AnonymisationFeedback
 from ..db.api_models import ReviewerPoolSummariesDto, ReviewerPoolDto, CommentListDto, ReviewDto, RepoDto, \
-    ReviewListDto, UserDto
+    ReviewListDto, UserDto, ReviewFeedbackDto
 from ..repos.repos import get_base_url, anonymise_repo
 from ..utils.json import check_request_json
 from ..utils.session import get_active_user, no_content_response
@@ -322,6 +322,23 @@ def is_feedback_complete(review_id: str):
     feedback = ReviewFeedback.query.filter_by(review_id=review_id).first()
 
     return jsonify({"is_complete": bool(feedback)})
+
+
+@reviews_bp.route("/view/feedback/<string:review_id>", methods=["GET"])
+@login_required
+def get_feedback(review_id: str):
+    review = Review.get(review_id)
+    user = get_active_user()
+
+    if not review or not review.is_user_in_review(user):
+        abort(HTTPStatus.NOT_FOUND)
+
+    review_feedback = ReviewFeedback.find_feedback_by_review(review_id)
+
+    if not review_feedback:
+        abort(HTTPStatus.NOT_FOUND)
+
+    return jsonify(ReviewFeedbackDto.from_db(review_feedback))
 
 
 @reviews_bp.route("/anon/feedback/<string:review_id>", methods=["POST"])

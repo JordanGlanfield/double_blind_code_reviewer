@@ -4,6 +4,7 @@ import { buildDelete, buildPost, extractData } from "./apiUtil";
 import ReviewerPool from "../types/ReviewerPool";
 import Repo from "../types/Repo";
 import User from "../types/User";
+import ReviewFeedback from "../types/ReviewFeedback";
 
 const apiPrefix = "/api/v1.0/reviews/";
 
@@ -142,6 +143,15 @@ export async function isReviewFeedbackComplete(review_id: string): Promise<boole
 
   const response = await fetch(apiPrefix + `is/feedback/complete/${review_id}`);
   return (await extractData(response))["is_complete"];
+}
+
+export async function getReviewFeedback(review_id: string): Promise<ReviewFeedback> {
+  if (!review_id) {
+    throw "No review id provided";
+  }
+
+  const response = await fetch(apiPrefix + `view/feedback/${review_id}`);
+  return await extractData(response);
 }
 
 export async function getRelatedUsers(): Promise<User[]> {

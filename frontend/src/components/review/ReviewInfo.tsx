@@ -1,14 +1,16 @@
 import * as React from "react"
 import { ReviewStats } from "../../types/ReviewStats";
-import { Button, Col, Row, Space } from "antd";
+import { Button, Col, Row, Space, Typography } from "antd";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import ClonePrompt from "../routes/ViewRepos/ClonePrompt";
+import { CommentOutlined } from "@ant-design/icons";
 
 interface Props {
   reviewUrl: string;
   reviewStats: ReviewStats;
   isReceiver: boolean;
+  hasReceivedFeedback?: boolean;
 }
 
 const ReviewInfo = (props: Props) => {
@@ -17,9 +19,10 @@ const ReviewInfo = (props: Props) => {
   // const rejectionsMessage = "" + reviewStats.rejections + " rejections";
 
   return <BoundingDiv><Space>
-      <LeftAligned>
-        <Link to={reviewUrl}><Button type="primary" ghost>{reviewStats.review_name + " | " + reviewStats.repo_name}</Button></Link>
-      </LeftAligned>
+    <Link to={reviewUrl}>
+      <Button type="primary" ghost>{reviewStats.review_name + " | " + reviewStats.repo_name}</Button>
+      {props.hasReceivedFeedback && <CommentOutlined /> }
+    </Link>
     {!props.isReceiver &&
         <ClonePrompt name={reviewStats.repo_name} clone_url={reviewStats.clone_url}/>
     }
@@ -39,8 +42,8 @@ const BoundingDiv = styled.div`
   width: 100%;
 `;
 
-const LeftAligned = styled.div`
-  text-align: left;
+const MessageText = styled(Typography.Text)`
+  color: green;
 `;
 
 export default ReviewInfo;
