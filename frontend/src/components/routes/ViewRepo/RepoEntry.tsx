@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Space } from "antd";
-import { FileOutlined, FolderFilled, CommentOutlined } from "@ant-design/icons/lib";
+import { FileOutlined, FolderFilled, CommentOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 
 // Need to show GitLab style view with folders and files. Most important is the name, alphabetic
