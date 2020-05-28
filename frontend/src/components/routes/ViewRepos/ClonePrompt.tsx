@@ -16,8 +16,10 @@ const ClonePrompt = (props: Props) => {
 };
 
 const ClonableText = styled.div`
-  font-size: 13pt;
+  font-size: 12pt;
   vertical-align: center;
+  padding: 5px 0;
+  margin-top: 1em;
 `;
 
 export default ClonePrompt;

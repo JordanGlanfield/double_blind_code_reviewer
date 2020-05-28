@@ -32,18 +32,11 @@ const ViewRepos = () => {
               <Link to={routes.getRepoDir(userString, undefined, repo.id, repo.name,"")}>
                 <Button type="primary" ghost>{repo.name}</Button>
               </Link>
-              <ClonableText>
-                <ClonePrompt name={repo.name} clone_url={repo.clone_url} />
-              </ClonableText>
+              <ClonePrompt name={repo.name} clone_url={repo.clone_url} />
             </Space>
           </List.Item>
         }}
     />
 };
-
-const ClonableText = styled.div`
-  padding: 5px 0;
-  margin-top: 1em;
-`;
 
 export default ViewRepos
