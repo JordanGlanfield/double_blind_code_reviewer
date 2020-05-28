@@ -1,6 +1,7 @@
+import re
 from typing import List
 
-from backend import User, ReviewerPool, File, Comment, Repo, Review
+from backend import User, ReviewerPool, File, Comment, Repo, Review, ReviewFeedback
 from backend.utils.session import get_active_user
 
 
@@ -57,18 +58,22 @@ class ReviewerPoolSummariesDto():
 
 
 class ReviewDto():
-    def __init__(self, review_id: str, repo_id: str, repo_name: str, review_name: str, clone_url: str, is_completed: bool):
+    def __init__(self, review_id: str, repo_id: str, repo_name: str, review_name: str, clone_url: str,
+                 is_completed: bool, has_feedback: bool):
         self.review_id = review_id
         self.repo_id = repo_id
         self.repo_name = repo_name
         self.review_name = review_name
         self.clone_url = clone_url
         self.is_completed = is_completed
+        self.has_feedback = has_feedback
 
     @staticmethod
     def from_db(review: Review, base_url: str, review_name: str):
         repo = Repo.get(review.repo_id)
-        return ReviewDto(str(review.id), str(repo.id), repo.name, review_name, get_clone_url(repo, base_url), review.is_completed)
+        has_feedback = ReviewFeedback.find_feedback_by_review(review.id) is not None
+        return ReviewDto(str(review.id), str(repo.id), repo.name, review_name, get_clone_url(repo, base_url),
+                         review.is_completed, has_feedback)
 
 
 class ReviewListDto():
@@ -79,6 +84,27 @@ class ReviewListDto():
         for i in range(0, len(reviews)):
             review_dtos.append(ReviewDto.from_db(reviews[i], base_url, f"Review {i + 1}"))
         return review_dtos
+
+
+class ReviewFeedbackDto():
+    def __init__(self, constructiveness: int, specificity: int, justification: int, politeness: int, feedback: str):
+        self.constructiveness = constructiveness
+        self.specificity = specificity
+        self.justification = justification
+        self.politeness = politeness
+        self.feedback = feedback
+
+    @staticmethod
+    def sanitise_feedback(user: User, feedback: str):
+        for name in [user.username, user.first_name, user.surname]:
+            regex = re.compile(name, re.IGNORECASE)
+        return regex.sub("Anonymous", feedback)
+
+    @staticmethod
+    def from_db(review_feedback: ReviewFeedback):
+        rf = review_feedback
+        return ReviewFeedbackDto(rf.constructiveness, rf.specificity, rf.justification, rf.politeness,
+                                 ReviewFeedbackDto.sanitise_feedback(rf.get_submitter(), rf.feedback))
 
 
 class CommentDto():

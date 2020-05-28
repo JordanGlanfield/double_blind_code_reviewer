@@ -226,6 +226,14 @@ class ReviewFeedback(db.Model, Crud):
             raise RuntimeError("A survey value was out of range")
         return super().save()
 
+    def get_submitter(self):
+        submitter_id = Review.get(self.review_id).submitter_id
+        return User.get(submitter_id)
+
+    @classmethod
+    def find_feedback_by_review(cls, review_id: uuid.UUID):
+        return cls.query.filter_by(review_id=review_id).first()
+
 
 class AnonymisationFeedback(db.Model, Crud):
     id = db.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)

@@ -77,7 +77,7 @@ const ReviewFeedbackForm = (props: Props) => {
     <Form.Item label="How could you tell?" name="reason" required={false}>
       <Input.TextArea rows={4} />
     </Form.Item>
-    <DbcrFormSubmit labelSpan={8} wrapperColSpan={16} buttonText="Submit Review" />
+    <DbcrFormSubmit labelSpan={8} wrapperColSpan={16} buttonText="Submit Feedback" />
   </DbcrForm>
 };
 
