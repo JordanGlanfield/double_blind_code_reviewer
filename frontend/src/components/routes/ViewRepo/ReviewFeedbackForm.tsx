@@ -14,7 +14,7 @@ const ReviewFeedbackForm = (props: Props) => {
   const relatedUsersSource = useDataSource(getRelatedUsers);
   const onFinish = (values: any) => {
     submitReviewFeedback(props.reviewId, values.constructiveness, values.specificity, values.justification,
-      values.politeness, values.feedback, values.sureness, values.reviewer, values.reason)
+      values.politeness, values.feedback ? values.feedback : "", values.sureness, values.reviewer, values.reason)
       .then(isFeedbackCompleteSource.forceRefetch)
       .catch(error => alert(error));
   };

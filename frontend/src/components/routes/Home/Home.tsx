@@ -6,7 +6,7 @@ import { getCompletedReviews, getPendingReviews, getReviewsReceived } from "../.
 import ReviewerPools from "../../review/ReviewerPools";
 import styled from "styled-components";
 import routes from "../../../constants/routes";
-import { PlusOutlined } from "@ant-design/icons/lib";
+import { PlusOutlined } from "@ant-design/icons";
 import ContentArea from "../../styles/ContentArea";
 import { Link } from "react-router-dom";
 
@@ -53,6 +53,7 @@ const Bordered = styled.div`
 `;
 
 const Section = styled(Bordered)`
+  border-bottom: 1px solid #f0f0f0;
   padding-bottom: 20px;
   margin-bottom: 20px;
 `;
