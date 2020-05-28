@@ -88,7 +88,7 @@ const ReviewerPoolDashboard = () => {
       <List dataSource={sortedMembers}
             renderItem={(member: User) => <UserDiv><List.Item
               actions={[member.username !== getUsername() &&
-              <Button type="danger" onClick={() => removeUser(member)}>
+              <Button danger onClick={() => removeUser(member)}>
                 {<DeleteOutlined />} Remove User
               </Button>
               ]}>

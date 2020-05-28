@@ -195,7 +195,7 @@ const EditableContent = (props: EditableContentProps) => {
     </Form.Item>
     <Form.Item name="submit">
       <Button type="primary" htmlType="submit">Submit</Button>
-      <Button type="danger" onClick={props.onCancel}>Cancel</Button>
+      <Button type="primary" danger onClick={props.onCancel}>Cancel</Button>
     </Form.Item>
   </Form>
 };
