@@ -70,6 +70,9 @@ def join_pool():
     if not pool:
         abort(HTTPStatus.NOT_FOUND)
 
+    if user in pool.members.all():
+        abort(HTTPStatus.CONFLICT)
+
     pool.members.append(user)
     DB.db.session.commit()
 
@@ -190,14 +193,12 @@ def start_reviews():
 
     for reviewer_id in assignments.keys():
         for member_id in assignments[reviewer_id]:
-            user = members_by_id[member_id]
-            repo = repos[member_id]
-
-            if not user or not repo:
-                current_app.logger.error(f"User {user if user else member_id} or Repo {repo if repo else repo_name} "
-                                         f"not present")
+            if not member_id in members_by_id.keys() or not member_id in repos.keys():
+                current_app.logger.error(f"User {member_id} or Repo {repo_name} not present")
                 error = True
                 continue
+
+            repo = repos[member_id]
 
             review = Review(repo_id=repo.id, submitter_id=member_id)
             review.save()

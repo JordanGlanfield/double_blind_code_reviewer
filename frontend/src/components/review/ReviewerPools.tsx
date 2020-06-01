@@ -20,11 +20,12 @@ const ReviewerPools = () => {
     .map((reviewerPool, index) => ({...reviewerPool, key: index}));
 
   const newPool = (values: any) => {
-    createReviewerPool(values.name, values.description).then(poolsSource.forceRefetch);
+    createReviewerPool(values.name, values.description, values.inviteCode).then(poolsSource.forceRefetch);
   };
 
   const newPoolFailed = (errorInfo: any) => {
     console.log(errorInfo);
+    alert("Failed to create pool. Check console for more details.")
   };
 
   const joinPool = (values: any) => {
@@ -61,10 +62,8 @@ const ReviewerPools = () => {
     </TableDiv>
     <FormDiv>
       {isAdmin && <><Typography.Title level={3}>Create new reviewer pool</Typography.Title>
-      <Form
-        labelCol={{span: 4}}
-        wrapperCol={{span: 16}}
-        name="basic"
+      <DbcrForm
+        title="Create new reviewer pool"
         onFinish={newPool}
         onFinishFailed={newPoolFailed}
       >
@@ -78,10 +77,12 @@ const ReviewerPools = () => {
                    rules={[{required: true, message: "Enter a description for the pool"}]}>
           <Input.TextArea />
         </Form.Item>
-        <Form.Item wrapperCol={{offset: 4, span: 16}}>
-          <Button type="primary" htmlType="submit">Create</Button>
+        <Form.Item label="Invitation Code"
+                   name="inviteCode">
+          <Input />
         </Form.Item>
-      </Form></>}
+        <DbcrFormSubmit buttonText="Create" />
+      </DbcrForm></>}
       {!isAdmin && <><Typography.Title level={3}>Join a reviewer pool</Typography.Title>
         <DbcrForm title="Join reviewer pool" onFinish={joinPool}>
           <Form.Item label="Invite Code" name="inviteCode">
