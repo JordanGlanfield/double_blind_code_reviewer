@@ -7,13 +7,17 @@ interface Props {
   layout?: "vertical" | "horizontal" | "inline";
   title: string;
   onFinish: (values: any) => void;
+  onFinishFailed?: (values: any) => void;
 }
 
-const DbcrForm: FunctionComponent<Props> = ({labelSpan, wrapperColSpan, layout, title, onFinish, children}) =>
+const DbcrForm: FunctionComponent<Props> = ({labelSpan, wrapperColSpan, layout, title, onFinish,
+                                              onFinishFailed, children}) =>
   <Form title={title} labelCol={{span: labelSpan ? labelSpan : 4}}
         wrapperCol={{span: wrapperColSpan ? wrapperColSpan : 16}}
         layout={layout ? layout : "horizontal"}
-        onFinish={onFinish}>
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
+  >
     {children}
   </Form>;
 

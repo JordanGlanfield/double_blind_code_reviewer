@@ -66,7 +66,7 @@ const Empty = () => {
 };
 
 const ContentDiv = styled(Centered)`
-  width: 70%;
+  width: 80%;
   max-width: 1080px;
   //background-color: white;
 `;

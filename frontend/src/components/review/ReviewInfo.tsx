@@ -1,6 +1,6 @@
 import * as React from "react"
 import { ReviewStats } from "../../types/ReviewStats";
-import { Button, Col, Row, Space, Typography } from "antd";
+import { Button, Space, Typography } from "antd";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import ClonePrompt from "../routes/ViewRepos/ClonePrompt";
@@ -40,10 +40,6 @@ const ReviewInfo = (props: Props) => {
 
 const BoundingDiv = styled.div`
   width: 100%;
-`;
-
-const MessageText = styled(Typography.Text)`
-  color: green;
 `;
 
 export default ReviewInfo;

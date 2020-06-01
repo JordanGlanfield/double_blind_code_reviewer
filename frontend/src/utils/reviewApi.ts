@@ -52,8 +52,8 @@ export async function getReviewerPool(name: string): Promise<ReviewerPool> {
   return await extractData(response);
 }
 
-export async function createReviewerPool(name: string, description: string): Promise<number> {
-  const requestOptions = buildPost({name, description});
+export async function createReviewerPool(name: string, description: string, invite_code?: string): Promise<number> {
+  const requestOptions = buildPost({name, description, invite_code});
   const response = await fetch(apiPrefix + "create/pool", requestOptions);
 
   return await extractData(response);

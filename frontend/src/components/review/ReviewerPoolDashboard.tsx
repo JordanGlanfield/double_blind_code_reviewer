@@ -56,6 +56,9 @@ const ReviewerPoolDashboard = () => {
           <Descriptions.Item label="Name">{reviewerPool.name}</Descriptions.Item>
           <Descriptions.Item label="Description">{reviewerPool.description}</Descriptions.Item>
           <Descriptions.Item label="Owner">{reviewerPool.owner.username}</Descriptions.Item>
+          <Descriptions.Item label="Invitation Code">
+            <Typography.Paragraph copyable>{reviewerPool.invite_code}</Typography.Paragraph>
+          </Descriptions.Item>
         </Descriptions>
       </DescriptionsDiv>
       {reviewerPool.owner.username === getUsername() &&
@@ -87,12 +90,14 @@ const ReviewerPoolDashboard = () => {
       <Typography.Title level={4}>Users</Typography.Title>
       <List dataSource={sortedMembers}
             renderItem={(member: User) => <UserDiv><List.Item
-              actions={[member.username !== getUsername() && getUsername() != reviewerPool.owner.username &&
+              actions={[member.username !== getUsername() && getUsername() === reviewerPool.owner.username &&
               <Button danger onClick={() => removeUser(member)}>
                 {<DeleteOutlined />} Remove User
               </Button>
               ]}>
-              <UsernameSpan><Typography.Text strong>{member.username}</Typography.Text></UsernameSpan>
+              <UsernameSpan>
+                <Typography.Text strong>{member.first_name} {member.surname}</Typography.Text>
+              </UsernameSpan>
             </List.Item></UserDiv>}
       />
     </ContentArea>
