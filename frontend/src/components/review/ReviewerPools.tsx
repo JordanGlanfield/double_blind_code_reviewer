@@ -83,7 +83,7 @@ const ReviewerPools = () => {
         </Form.Item>
         <DbcrFormSubmit buttonText="Create" />
       </DbcrForm></>}
-      {!isAdmin && <><Typography.Title level={3}>Join a reviewer pool</Typography.Title>
+      {<><Typography.Title level={3}>Join a reviewer pool</Typography.Title>
         <DbcrForm title="Join reviewer pool" onFinish={joinPool}>
           <Form.Item label="Invite Code" name="inviteCode">
             <Input />
