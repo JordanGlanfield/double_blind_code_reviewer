@@ -21,6 +21,7 @@ const ReviewList = (props: Props) => {
 
   return <List size="large"
                dataSource={data}
+               locale={{ emptyText: <></>}}
                renderItem={(stats: ReviewStats) => <List.Item><ReviewInfo
                  reviewUrl={routes.getRepoDir(getUsername(), stats.review_id, stats.repo_id, stats.repo_name, "")}
                  reviewStats={stats}

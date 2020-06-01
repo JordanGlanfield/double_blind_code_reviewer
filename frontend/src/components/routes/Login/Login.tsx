@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { Link, Redirect } from "react-router-dom"
-import { getUsername, login, setUsername } from "../../../utils/authenticationService"
+import { getUsername, login, setUserDetails } from "../../../utils/authenticationService"
 import routes from "../../../constants/routes"
 import { Button, Form, Input, Typography } from "antd";
 import styled from "styled-components";
@@ -15,7 +15,7 @@ export default (props: any) => {
   const loginPressed = async (values: any) => {
     const success = await login(values.username, values.password)
     if (success) {
-      setUsername().then(() => {
+      setUserDetails().then(() => {
         props.loggedIn();
       });
     }

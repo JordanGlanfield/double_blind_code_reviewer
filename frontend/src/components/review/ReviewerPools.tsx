@@ -1,12 +1,13 @@
 import { Button, Form, Input, Table, Typography } from "antd";
 import React from "react";
 import { useDataSourceWithMessages } from "../../utils/hooks";
-import { createReviewerPool, getReviewerPools } from "../../utils/reviewApi";
+import { createReviewerPool, getReviewerPools, joinReviewerPool } from "../../utils/reviewApi";
 import ReviewerPoolSummary from "../../types/ReviewerPoolSummary";
 import styled from "styled-components";
-import { getUsername } from "../../utils/authenticationService";
+import { getUsername, hasAdminPrivileges } from "../../utils/authenticationService";
 import routes from "../../constants/routes";
 import { Link } from "react-router-dom";
+import DbcrForm, { DbcrFormSubmit } from "../util/DbcrForm";
 
 const ReviewerPools = () => {
   let poolsSource = useDataSourceWithMessages(getReviewerPools);
@@ -26,9 +27,20 @@ const ReviewerPools = () => {
     console.log(errorInfo);
   };
 
+  const joinPool = (values: any) => {
+    joinReviewerPool(values.inviteCode)
+      .then(poolsSource.forceRefetch)
+      .catch(err => {
+        console.log(err);
+        alert("Unable to join pool. Check invite code and try again")
+      });
+  };
+
+  const isAdmin = hasAdminPrivileges();
+
   return <>
     <TableDiv>
-      <Table dataSource={tableData} showHeader={false} pagination={false}>
+      <Table dataSource={tableData} showHeader={false} pagination={false} locale={{ emptyText: <></> }}>
         <Table.Column dataIndex="name"
                       key="name"
                       colSpan={1}
@@ -48,7 +60,7 @@ const ReviewerPools = () => {
         </Table>
     </TableDiv>
     <FormDiv>
-      <Typography.Title level={3}>Create new reviewer pool</Typography.Title>
+      {isAdmin && <><Typography.Title level={3}>Create new reviewer pool</Typography.Title>
       <Form
         labelCol={{span: 4}}
         wrapperCol={{span: 16}}
@@ -69,7 +81,14 @@ const ReviewerPools = () => {
         <Form.Item wrapperCol={{offset: 4, span: 16}}>
           <Button type="primary" htmlType="submit">Create</Button>
         </Form.Item>
-      </Form>
+      </Form></>}
+      {!isAdmin && <><Typography.Title level={3}>Join a reviewer pool</Typography.Title>
+        <DbcrForm title="Join reviewer pool" onFinish={joinPool}>
+          <Form.Item label="Invite Code" name="inviteCode">
+            <Input />
+          </Form.Item>
+          <DbcrFormSubmit buttonText="Join" />
+        </DbcrForm></>}
     </FormDiv>
   </>
 };

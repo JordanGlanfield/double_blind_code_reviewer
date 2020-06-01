@@ -73,7 +73,7 @@ def login():
 
     login_user(user, remember=remember)
 
-    return no_content_response()
+    return jsonify(UserDto.from_db(user))
 
 
 @bp.route("/logout", methods=["POST"])
@@ -86,6 +86,12 @@ def logout():
 @bp.route("/is_authenticated")
 def is_authenticated():
     return jsonify(is_authenticated=current_user.is_authenticated)
+
+
+@bp.route("/is_admin")
+@login_required
+def is_admin():
+    return jsonify(is_admin=get_active_user().is_admin)
 
 
 @bp.route("/userinfo")

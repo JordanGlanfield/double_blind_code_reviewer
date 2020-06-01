@@ -6,21 +6,23 @@ from backend.utils.session import get_active_user
 
 
 class UserDto():
-    def __init__(self, username: str, first_name: str, surname: str):
+    def __init__(self, username: str, first_name: str, surname: str, is_admin: bool):
         self.username: str = username
         self.first_name: str = first_name
         self.surname: str = surname
+        self.is_admin: bool = is_admin
 
     @staticmethod
     def from_db(user: User):
-        return UserDto(user.username, user.first_name, user.surname)
+        return UserDto(user.username, user.first_name, user.surname, user.is_admin)
 
 
 class ReviewerPoolDto():
-    def __init__(self, id: str, name: str, description: str, owner: UserDto, members: List[UserDto]):
+    def __init__(self, id: str, name: str, description: str, invite_code: str, owner: UserDto, members: List[UserDto]):
         self.id: str = id
         self.name: str = name
         self.description: str = description
+        self.invite_code: str = invite_code
         self.owner: UserDto = owner
         self.members: List[UserDto] = members
 
@@ -29,6 +31,7 @@ class ReviewerPoolDto():
         return ReviewerPoolDto(str(reviewer_pool.id),
                                reviewer_pool.name,
                                reviewer_pool.description,
+                               reviewer_pool.invite_code,
                                UserDto.from_db(reviewer_pool.owner),
                                [UserDto.from_db(member) for member in reviewer_pool.members])
 

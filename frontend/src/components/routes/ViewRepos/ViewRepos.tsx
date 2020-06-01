@@ -26,6 +26,7 @@ const ViewRepos = () => {
     return <List
         size="large"
         dataSource={repoSource.data as Repo[]}
+        locale={{ emptyText: <></> }}
         renderItem={repo => {
           return <List.Item>
             <Space>

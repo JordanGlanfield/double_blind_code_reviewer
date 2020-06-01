@@ -59,6 +59,15 @@ export async function createReviewerPool(name: string, description: string): Pro
   return await extractData(response);
 }
 
+export async function joinReviewerPool(invite_code: string) {
+  const requestOptions = buildPost({invite_code});
+  const response = await fetch(apiPrefix + "join/pool", requestOptions);
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+}
+
 export async function startPoolReviews(pool_name: string, repo_name: string) {
   const requestOptions = buildPost({pool_name, repo_name});
   const response = await fetch(apiPrefix + "start", requestOptions);
