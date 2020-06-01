@@ -41,7 +41,7 @@ const Home = () => {
       </Section>
 
       <Section>
-        <Title level={3}>Your reviewer pools</Title>
+        <Title level={3}>Your reviewer pools:</Title>
         <ReviewerPools/>
       </Section>
     </ContentArea>

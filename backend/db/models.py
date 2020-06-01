@@ -253,6 +253,7 @@ class ReviewerPool(db.Model, Crud):
     id = db.Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
     name = db.Column(db.String(128))
     description = db.Column(db.String(8000))
+    invite_code = db.Column(db.String(64), nullable=True)
     members = db.relationship("User",
                                 secondary=pool_members,
                                 back_populates="reviewer_pools",
@@ -289,6 +290,18 @@ class ReviewerPool(db.Model, Crud):
     @classmethod
     def find_by_name(cls, name) -> "ReviewerPool":
         return cls.query.filter_by(name=name).first()
+
+    @classmethod
+    def is_code_taken(cls, invite_code) -> bool:
+        if not invite_code:
+            return False
+        return bool(cls.query.filter_by(invite_code=invite_code).first())
+
+    @classmethod
+    def find_by_code(cls, invite_code) -> "ReviewerPool":
+        if not invite_code:
+            return None
+        return cls.query.filter_by(invite_code=invite_code).first()
 
 
 class AnonUser(db.Model, Crud):

@@ -29,11 +29,13 @@ def not_found(error):
 def create_pool():
     name, description = check_request_json(["name", "description"])
 
-    if ReviewerPool.find_by_name(name):
+    invite_code = request.json["invite_code"] if "invite_code" in request.json else None
+
+    if ReviewerPool.find_by_name(name) or ReviewerPool.is_code_taken(invite_code):
         abort(HTTPStatus.CONFLICT)
 
     active_user = get_active_user()
-    pool = ReviewerPool(name=name, description=description, owner_id=active_user.id)
+    pool = ReviewerPool(name=name, description=description, invite_code=invite_code, owner_id=active_user.id)
 
     pool.save()
     DB.db.session.commit()
@@ -51,6 +53,24 @@ def add_user_to_pool():
     user = check_and_get_user(username)
 
     reviewer_pool.add_user(user)
+    DB.db.session.commit()
+
+    return no_content_response()
+
+
+@reviews_bp.route("/join/pool", methods=["POST"])
+@login_required
+def join_pool():
+    invite_code, = check_request_json(["invite_code"])
+
+    user = get_active_user()
+
+    pool = ReviewerPool.find_by_code(invite_code)
+
+    if not pool:
+        abort(HTTPStatus.NOT_FOUND)
+
+    pool.members.append(user)
     DB.db.session.commit()
 
     return no_content_response()

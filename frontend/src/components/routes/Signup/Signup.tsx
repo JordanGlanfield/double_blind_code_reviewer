@@ -3,7 +3,7 @@ import { Button, Form, Input, Typography } from "antd";
 import { signUp } from "../../../utils/userApi";
 import { Link, Redirect } from "react-router-dom";
 import routes from "../../../constants/routes";
-import { setUsername } from "../../../utils/authenticationService";
+import { setUserDetails } from "../../../utils/authenticationService";
 import styled from "styled-components";
 
 interface Props {
@@ -17,7 +17,7 @@ const Signup = (props: Props) => {
     signUp(values.username, values.firstName, values.surname, values.password)
       .then(signupResult => {
         if (signupResult.success) {
-          setUsername().then(() => {
+          setUserDetails().then(() => {
             props.loggedIn();
             setRedirect(routes.getHome(values.username))
           });
