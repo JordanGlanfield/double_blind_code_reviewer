@@ -31,7 +31,6 @@ export async function getReviewsReceived(): Promise<ReviewStats[]> {
 export async function getPendingReviews(): Promise<ReviewStats[]> {
   const response = await fetch(apiPrefix + "view/pending/reviews");
   let data = await extractData(response);
-  console.log(data);
   return data;
 }
 
@@ -98,17 +97,6 @@ export async function getRepo(review_id?: string): Promise<Repo | undefined> {
   return await extractData(response);
 }
 
-export async function submitReview(review_id: string) {
-  const response = await fetch(apiPrefix + `complete/review/${review_id}`, {method: "POST"})
-
-  let data = await extractData(response, false);
-  let error = data["error"];
-
-  if (error) {
-    throw error;
-  }
-}
-
 export async function submitReviewFeedback(review_id: string, constructiveness: number, specificity: number,
                                            justification: number, politeness: number, feedback: string, sureness: number,
                                            guess_username: string, reason: string) {
@@ -129,10 +117,10 @@ export async function submitReviewerAnonymisationFeedback(review_id: string, sur
   const requestOptions = buildPost({sureness, guess_username, reason});
   const response = await fetch(apiPrefix + `anon/feedback/${review_id}`, requestOptions);
 
-  let error = (await extractData(response, false))["error"];
+  let data = await extractData(response, false);
 
-  if (error) {
-    throw error;
+  if (data.error) {
+    throw data.error;
   }
 }
 

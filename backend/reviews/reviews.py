@@ -252,21 +252,6 @@ def get_pending_reviews():
     return get_reviews_with_status(False)
 
 
-@reviews_bp.route("/complete/review/<string:review_id>", methods=["POST"])
-@login_required
-def complete_review(review_id: str):
-    review = Review.get(review_id)
-
-    if not review:
-        abort(HTTPStatus.NOT_FOUND)
-
-    # if review.comments.count() == 0:
-    #     abort(make_response(jsonify(error="Review must have at least 1 comment"), HTTPStatus.BAD_REQUEST))
-
-    review.complete_review()
-    return no_content_response()
-
-
 @reviews_bp.route("/is/complete/<string:review_id>", methods=["GET"])
 @login_required
 def is_review_completed(review_id: str):
@@ -299,8 +284,13 @@ def submit_feedback(review_id: str):
     constructiveness, specificity, justification, politeness = \
         check_request_json(["constructiveness", "specificity", "justification", "politeness"])
 
-    feedback, sureness, guess_username, reason = check_request_json(["feedback", "sureness",
-                                                                     "guess_username", "reason"])
+    feedback, sureness = check_request_json(["feedback", "sureness"])
+
+    guess_username = request.json["guess_username"] if "guess_username" in request.json else None
+    reason = request.json["reason"] if "reason" in request.json else None
+
+    if int(sureness) > 0 and (not guess_username or not reason):
+        abort(make_response(jsonify({"error": "You must provide your guess and reason"}), HTTPStatus.BAD_REQUEST))
 
     review = Review.get(review_id)
 
@@ -365,7 +355,18 @@ def get_feedback(review_id: str):
 @reviews_bp.route("/anon/feedback/<string:review_id>", methods=["POST"])
 @login_required
 def submit_reviewer_anonymisation_feedback(review_id: str):
-    sureness, guess_username, reason = check_request_json(["sureness", "guess_username", "reason"])
+    review = Review.get(review_id)
+
+    if not review:
+        abort(make_response(jsonify({"error": "Review not valid"}), HTTPStatus.NOT_FOUND))
+
+    sureness, = check_request_json(["sureness"])
+
+    guess_username = request.json["guess_username"] if "guess_username" in request.json else None
+    reason = request.json["reason"] if "reason" in request.json else None
+
+    if int(sureness) > 0 and (not guess_username or not reason):
+        abort(make_response(jsonify({"error": "You must provide your guess and reason"}), HTTPStatus.BAD_REQUEST))
 
     if AnonymisationFeedback.find_by_user_and_review(get_active_user().id, review_id):
         abort(HTTPStatus.CONFLICT)
@@ -377,6 +378,11 @@ def submit_reviewer_anonymisation_feedback(review_id: str):
     except Exception as err:
         current_app.logger.error(err)
         abort(make_response(jsonify({"error": str(err)}), HTTPStatus.BAD_REQUEST))
+
+    # if review.comments.count() == 0:
+    #     abort(make_response(jsonify(error="Review must have at least 1 comment"), HTTPStatus.BAD_REQUEST))
+
+    review.complete_review()
 
     return no_content_response()
 

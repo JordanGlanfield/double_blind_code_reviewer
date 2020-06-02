@@ -56,7 +56,7 @@ const ReviewFeedbackForm = (props: Props) => {
         <Radio value={2}>It was friendly</Radio>
       </Radio.Group>
     </Form.Item>
-    <Form.Item label="Do you have any other comments on the review?" name="feedback">
+    <Form.Item label="Do you have any other comments on the review?" name="feedback" required={true}>
       <Input.TextArea rows={4} />
     </Form.Item>
     <Form.Item label="Could you tell who the reviewer was?" name="sureness" required={true}>
