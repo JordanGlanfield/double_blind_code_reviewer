@@ -1,12 +1,7 @@
-import { Form, Input, Typography, Radio, Select } from "antd";
+import { Form, Input, Radio, Select, Typography } from "antd";
 import React from "react";
 import DbcrForm, { DbcrFormSubmit } from "../../util/DbcrForm";
-import {
-  getRelatedUsers,
-  isReviewComplete,
-  submitReview,
-  submitReviewerAnonymisationFeedback
-} from "../../../utils/reviewApi";
+import { getRelatedUsers, isReviewComplete, submitReviewerAnonymisationFeedback } from "../../../utils/reviewApi";
 import { useDataSource } from "../../../utils/hooks";
 import User from "../../../types/User";
 
@@ -18,8 +13,8 @@ const ReviewForm = (props: Props) => {
   const relatedUsersSource = useDataSource(getRelatedUsers);
   const isReviewCompleteSource = useDataSource(() => isReviewComplete(props.reviewId));
   const onFinish = (values: any) => {
-    submitReview(props.reviewId).catch(error => alert(error)).then(isReviewCompleteSource.forceRefetch);
     submitReviewerAnonymisationFeedback(props.reviewId, values.sureness, values.submitter, values.reason)
+      .then(isReviewCompleteSource.forceRefetch)
       .catch(error => alert(error));
   };
 
