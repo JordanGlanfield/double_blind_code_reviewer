@@ -1,12 +1,13 @@
 import * as React from "react"
 import { ReviewStats } from "../../types/ReviewStats";
-import { Button, Space, Typography } from "antd";
+import { Button, Space } from "antd";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import ClonePrompt from "../routes/ViewRepos/ClonePrompt";
 import { CommentOutlined } from "@ant-design/icons";
 
 interface Props {
+  ghostButton: boolean;
   reviewUrl: string;
   reviewStats: ReviewStats;
   isReceiver: boolean;
@@ -20,8 +21,9 @@ const ReviewInfo = (props: Props) => {
 
   return <BoundingDiv><Space>
     <Link to={reviewUrl}>
-      <Button type="primary" ghost>{reviewStats.review_name + " | " + reviewStats.repo_name}</Button>
-      {props.hasReceivedFeedback && <CommentOutlined /> }
+      <Button type="primary" ghost={props.ghostButton}>
+        {reviewStats.review_name + " | " + reviewStats.repo_name}
+      </Button> {props.hasReceivedFeedback && "View Feedback" }
     </Link>
     {!props.isReceiver &&
         <ClonePrompt name={reviewStats.repo_name} clone_url={reviewStats.clone_url}/>

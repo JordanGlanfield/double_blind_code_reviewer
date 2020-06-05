@@ -27,17 +27,17 @@ const Home = () => {
 
       <Section>
         <Title level={3}>Code to review:</Title>
-        <ReviewList getReviews={getPendingReviews} isReceiver={false}/>
+        <ReviewList ghostButton={false} getReviews={getPendingReviews} isReceiver={false}/>
       </Section>
 
       <Section>
-        <Title level={3}>Reviews completed:</Title>
-        <ReviewList getReviews={getCompletedReviews} isReceiver={false} showFeedback/>
+        <Title level={3}>Completed reviews:</Title>
+        <ReviewList ghostButton={true} getReviews={getCompletedReviews} isReceiver={false} showFeedback/>
       </Section>
 
       <Section>
-        <Title level={3}>Reviews received:</Title>
-        <ReviewList getReviews={getReviewsReceived} isReceiver={true}/>
+        <Title level={3}>Received reviews:</Title>
+        <ReviewList ghostButton={false} getReviews={getReviewsReceived} isReceiver={true}/>
       </Section>
 
       <Section>

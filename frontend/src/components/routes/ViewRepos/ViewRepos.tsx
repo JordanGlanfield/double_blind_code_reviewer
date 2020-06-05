@@ -6,7 +6,6 @@ import routes from "../../../constants/routes";
 import { getRepos } from "../../../utils/repoApi";
 import { useDataSourceWithMessages } from "../../../utils/hooks";
 import Repo from "../../../types/Repo";
-import styled from "styled-components";
 import ClonePrompt from "./ClonePrompt";
 
 const ViewRepos = () => {
