@@ -7,8 +7,10 @@ from backend import ReviewerPool, Repo, Review, File, Comment, AnonUser
 from ..fixtures import *
 from ..utils import status_code
 from ...db.api_models import ReviewerPoolSummaryDto
+from ...repos.repos import repos_bp
 from ...reviews.reviews import reviews_bp, get_reviewer_assignments
 from ...utils.json import from_response_json
+from ...utils.session import get_active_user
 
 
 def get_url(url_suffix: str) -> str:
@@ -204,9 +206,54 @@ def test_can_assign_reviewers(db, authed_user):
             for uuid in reviewing:
                 reviewed[uuid] += 1
 
-        # All receiving two reviews
+        # All receiving correct number of reviews
         for review_count in reviewed.values():
             assert review_count == expected_review_count
+
+
+def test_staggered_review_flow_works(db, authed_user, api):
+    password = "passwordpassword"
+    random.seed(0)
+    for j in range(0, 20):
+        users = []
+        for i in range(0, 5):
+            users.append(User(username=f"{j}user{i}", first_name=i, surname="user"))
+            users[i].save_with_password(password)
+
+        api.post("/api/logout", dict())
+        api.post("/api/login", dict(username=users[0].username, password=password))
+
+        pool = ReviewerPool(name=f"Testing Pool{j}", description="Not available", owner_id=users[0].id)
+        pool.save()
+
+        for user in users:
+            pool.members.append(user)
+
+        db.db.session.commit()
+
+        response = api.post(repos_bp.url_prefix + "/pool_create", dict(pool_name=pool.name, repo_name=f"Test Repo{j}"))
+
+        assert response.status_code == HTTPStatus.OK
+
+        response = api.post(get_url(f"/start"), dict(pool_name=pool.name, repo_name=f"Test Repo{j}"))
+
+        assert response.status_code == HTTPStatus.OK
+
+        for user in users:
+            api.post("/api/logout", dict())
+            api.post("/api/login", dict(username=user.username, password=password))
+
+            response = api.get(get_url(f"/view/pending/reviews"))
+            reviews_dto: dict = from_response_json(response)
+
+            Review.get(reviews_dto[0]["review_id"]).complete_review()
+
+        for user in users:
+            if not len(user.get_reviews_received()) == 1:
+                for user in users:
+                    print(user)
+                    print(user.get_reviews())
+                assert False
 
 
 def test_can_only_complete_a_review_with_comments(db, authed_user, api):

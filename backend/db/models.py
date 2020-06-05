@@ -4,7 +4,7 @@ from typing import List, Union
 
 from flask_login import UserMixin
 from flask_sqlalchemy import BaseQuery
-from sqlalchemy import and_
+from sqlalchemy import and_, func
 from sqlalchemy_utils import UUIDType
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -75,16 +75,21 @@ class User(db.Model, UserMixin, Crud):
     def get_repos(self) -> List["Repo"]:
         return self.repos.all()
 
-    def _get_relevant_reviews(self, user_condition, review_condition=True):
+    def _get_relevant_reviews(self, user_condition, order_condition, review_condition=True):
         return User.query.filter_by(id=self.id).join(AnonUser).filter(user_condition).join(Review) \
-            .filter(review_condition).with_entities(Review).all()
+            .filter(review_condition)\
+            .order_by(order_condition)\
+            .with_entities(Review).all()
 
     def get_reviews(self) -> List["Review"]:
         # TODO - constant for submitter
-        return self._get_relevant_reviews(AnonUser.name != "Submitter")
+        return self._get_relevant_reviews(AnonUser.name != "Submitter",
+                                          Review.assignment_ordinal.asc())
 
     def get_reviews_received(self):
-        return self._get_relevant_reviews(AnonUser.name == "Submitter", Review.is_completed == True)
+        return self._get_relevant_reviews(AnonUser.name == "Submitter",
+                                          Review.completion_timestamp.asc(),
+                                          Review.is_completed == True)
 
     def get_related_users(self) -> List["User"]:
         # TODO - use DB engine
@@ -107,7 +112,7 @@ class User(db.Model, UserMixin, Crud):
         return cls.query.filter_by(username=username).first()
 
     def __repr__(self):
-        return '<User {}>'.format(self.username)
+        return '<User {} {}>'.format(self.username, self.id)
 
 
 class Repo(db.Model, Crud):
@@ -162,6 +167,8 @@ class Review(db.Model, Crud):
     repo_id = db.Column(UUIDType(binary=False), db.ForeignKey("repo.id"), nullable=False)
     submitter_id = db.Column(UUIDType(binary=False), db.ForeignKey("user.id"), nullable=False)
     is_completed = db.Column(db.Boolean, default=False)
+    assignment_ordinal = db.Column(db.Integer, nullable=False, default=0)
+    completion_timestamp = db.Column(db.DateTime, nullable=True)
     anon_users = db.relationship("AnonUser", back_populates="review", lazy="dynamic")
     comments = db.relationship("Comment", back_populates="review", lazy="dynamic")
 
@@ -177,6 +184,7 @@ class Review(db.Model, Crud):
 
     def complete_review(self):
         self.is_completed = True
+        self.completion_timestamp = datetime.utcnow()
         db.session.commit()
 
     def is_user_in_review(self, user: User):
@@ -204,6 +212,9 @@ class Review(db.Model, Crud):
 
     def is_submitter(self, user_id: uuid.UUID):
         return user_id == self.submitter_id
+
+    def __repr__(self):
+        return '<Review: for {} Completed: {}>'.format(self.submitter_id, self.is_completed)
 
 
 class ReviewFeedback(db.Model, Crud):

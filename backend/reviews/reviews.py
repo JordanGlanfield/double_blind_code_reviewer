@@ -147,13 +147,13 @@ def get_reviewer_assignments(ids: List[UUID], num_reviews: int) -> Dict[UUID, Li
 
     ids = list(ids)
     random.shuffle(ids)
-    assignments = {id: set({}) for id in ids} # The ids to be reviewed by each reviewer
+    assignments = {id: [] for id in ids} # The ids to be reviewed by each reviewer
 
     for i in range(0, len(ids)):
         reviewer_id = ids[i]
 
         for j in range(i + 1, i + 1 + num_reviews):
-            assignments[reviewer_id].add(ids[j % len(ids)])
+            assignments[reviewer_id].append(ids[j % len(ids)])
 
     return assignments
 
@@ -192,6 +192,7 @@ def start_reviews():
             repos[member.id] = repo
 
     for reviewer_id in assignments.keys():
+        i = 0
         for member_id in assignments[reviewer_id]:
             if not member_id in members_by_id.keys() or not member_id in repos.keys():
                 current_app.logger.error(f"User {member_id} or Repo {repo_name} not present")
@@ -200,11 +201,13 @@ def start_reviews():
 
             repo = repos[member_id]
 
-            review = Review(repo_id=repo.id, submitter_id=member_id)
+            review = Review(repo_id=repo.id, submitter_id=member_id, assignment_ordinal=i)
             review.save()
 
             anon_user = AnonUser(name="Anonymous", user_id=reviewer_id, review_id=review.id)
             anon_user.save()
+
+            i += 1
 
     return jsonify({error: error})
 
