@@ -436,6 +436,9 @@ def add_comment():
     if not review:
         abort(HTTPStatus.BAD_REQUEST)
 
+    if review.is_completed:
+        abort(HTTPStatus.CONFLICT)
+
     user = get_active_user()
 
     if not review.is_user_in_review(user):

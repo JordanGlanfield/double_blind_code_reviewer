@@ -10,6 +10,7 @@ interface Props {
   getReviews: () => Promise<ReviewStats[]>;
   isReceiver: boolean;
   showFeedback?: boolean;
+  ghostButton: boolean;
 }
 
 const ReviewList = (props: Props) => {
@@ -23,6 +24,7 @@ const ReviewList = (props: Props) => {
                dataSource={data}
                locale={{ emptyText: <></>}}
                renderItem={(stats: ReviewStats) => <List.Item><ReviewInfo
+                 ghostButton={props.ghostButton}
                  reviewUrl={routes.getRepoDir(getUsername(), stats.review_id, stats.repo_id, stats.repo_name, "")}
                  reviewStats={stats}
                  isReceiver={props.isReceiver}
