@@ -1,3 +1,15 @@
 .hoverableCode:hover {
+    /*background-color: #bae7ff;*/
+}
+
+.hoverablePre {
+
+}
+
+.hoverablePre:hover {
     background-color: #bae7ff;
+}
+
+pre[class*=language-] {
+    background-color: transparent;
 }

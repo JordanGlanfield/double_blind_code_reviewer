@@ -211,26 +211,19 @@ interface CodeSectionProps {
 const CodeSection = (props: CodeSectionProps) => {
   return <tr onClick={() => props.onLineClicked(props.lineNumber)}>
     <td>
-      <HoverablePre className="line-numbers"
+      <pre className="line-numbers hoverablePre"
                     data-start={props.lineNumber}
                     style={{paddingTop: 0, paddingBottom: 0, margin: 0, border: "none"}}>
         <code className={"language-" + props.language + " hoverableCode"}>
           {props.lines !== "" ? props.lines : " "}
         </code>
-      </HoverablePre>
+      </pre>
     </td>
   </tr>
 };
 
 const TableDiv = styled.div`
   //overflow-x: auto;
-`;
-
-const HoverablePre = styled.pre`
-  background-color: transparent;
-  &:hover {
-    background-color: #bae7ff;
-  }
 `;
 
 export default RepoFile;
