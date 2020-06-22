@@ -1,56 +1,78 @@
-# TApp: The Template App
+# DBCR
 
-This repository contains the python Flask application template adopted to develop all the applications in the
-_edtech_ family. Such applications are used by staff and students in the Department of Computing.
+This is the double-blind code review tool. It allows a group of people to join a reviewer pool. Members can complete a
+coding exercise and have their code reviewed (in a double-blind anonymous manner) by other members.
 
-## How to use this template
+The initial application structure of the tool is based on Ivan Procaccini's template application which he has lovingly
+developed for use with web apps built at Imperial College London.
 
-It's easy:
+## Installation
 
-1. Fork it
-2. Explore the code
-3. Code a new app
+The tool uses Docker. You can install Docker [here](https://www.docker.com/get-started).
 
-Don't forget to replace the name `tapp` with your project's new name in the project's files. Beware of its presence in strings, which aren't taken care of by the "Rename"
-option in IntelliJ Idea \*sigh\* (tips: look into `config.py`, `fake_ldap_handler.py` and patches in tests).
+To download the latest published image:
+- `docker pull jordanglanfield/dbcr:latest`
+
+To build the application image locally from the top level project directory, run the following:
+- `docker build --tag dbcr:latest .` 
+- You may change the tag from `latest` to whatever you wish, simply change the same tag in the command below to
+run your version of the tool.
+
+## Local Deployment
+
+To run the built image:
+- `docker run --publish 80:80 --detach -v storage_volume:/dbcr/storage --name dbcr dbcr:latest`
+- Visiting `http://localhost:80/` will take you to the tool
 
 ## Overview
 
-The template, developed in Python and React.js, offers a standard application structure. The backend API is available under `tapp/`,
-while the frontend logic can be found under (have a guess) the `frontend/` folder.
+The backend API is available under `backend/` while the frontend logic can be found the `frontend/` folder.
 A quick overview of the application's organisation is given below:
 
 | Package                                     | Content Description                                                          |
 | ------------------------------------------- | ---------------------------------------------------------------------------- |
-| `tapp/auth/`                                | LDAP authentication wrapper and utilities.                                   |
-| `tapp/db/`                                  | Database wrapper (to remove database-specific code duplications) and models. |
-| `tapp/mocks/`                               | Fake implementation of third-party modules (like LDAP).                      |
-| `tapp/messages/`                            | Library to build and encode HTML messages.                                   |
-| `tapp/views/`                               | Application [blueprints](http://flask.pocoo.org/docs/1.0/tutorial/views/).   |
-| `tapp/static/`                              | Location of the frontend's production-build.                                 |
+| `backend/auth/`                                | Authentication utilities.                                   |
+| `backend/db/`                                  | Database wrapper (to remove database-specific code duplications) and models. |
+| `backend/views/`                               | Application [blueprints](http://flask.pocoo.org/docs/1.0/tutorial/views/).   |
+| `backend/repos`                                | Logic for managing user repos |
+| `backend/reviews`                                | Logic for managing reviews and review assignment |
 | `frontend/public`                           | Frontend entry-point.                                                        |
 | `frontend/src/assets`                       | Static elements to serve (like images).                                      |
-| `frontend/src/{components,constants,utils}` | React.js components and various utilities.                                   |
+| `frontend/src/{components,constants,utils}` | React.js components and various utilities in typescript.                                   |
 
-### Configuration
+## Configuration
 
-The application's configuration (in `tapp/config.py`) is object-based. Many preconfigured configurations
+The application's configuration (in `backend/config.py`) is object-based. Many preconfigured configurations
 are provided, one per standard deployment environment. The available
 configurations are _development_, _staging_ and _production_.
 Any configuration other than _development_ (selected by default) can be enabled
 by setting the `FLASK_ENV` environment variable to the desired configuration name
 (e.g. `export FLASK_ENV=production` to enable the _production_ configuration).
-The default _development_ configuration sets up the application to
-run in isolation by replacing any external service provider (like LDAP) with its fake counterpart (in `tapp/mocks/`).
 
-The application's instantiation is performed through the `create_app()` method in `tapp/__init__.py`
+The application's instantiation is performed through the `create_app()` method in `backend/__init__.py`
 (in compliance with the **factory pattern**). The method accepts a dictionary configuration for
 testing purposes, which -when provided- overrides the object-based
 configuration.
 
-## Running the Application during Development
+## Development
 
-### Backend
+The backend of the project lives under `backend` and consists of a Flask application under `backend/__init__.py`.
+You can run a development instance of the backend from here; however, features for working with Git will only
+function in the Docker build, which includes an Nginx reverse proxy, Gunicorn in front of the Flask application, and
+a Git server.
+
+Useful commands:
+- Get shell in docker container: `docker exec -i -t dbcr /bin/bash`
+- Read nginx logs: `tail -f /var/log/nginx/access.log`
+
+Note, "dangling" images may be produced by the build process. Use the following to remove these:
+- `docker rmi $(docker images -f "dangling=true" -q)`
+
+For run configuration in IntelliJ, run the `Dockerfile` to get an initial configuration, and add the following to
+the run options:
+- `--publish 80:80 --detach -v storage_volume:/dbcr/storage`
+
+### Running the Flask backend directly
 
 Before running the application, its dependencies must be available.
 To download all the required dependencies:
@@ -72,18 +94,7 @@ Using gunicorn from above backend directory:
 gunicorn -b 127.0.0.1:5000 tapp.wsgi:app
 ```
 
-Add repository:
-```
-git remote add origin http://dbcr.com/repo/.git
-
-cd to repo
-sudo chown -R tacitus:www-data repo_name
-sudo chmod g+w repo_name 
-
-
-```
-
-### Frontend
+### Running Rract frontend directly
 
 To start the frontend development server:
 
@@ -93,42 +104,14 @@ To start the frontend development server:
 
 Both backend and frontend dev server come with hot-reloading (meaning they will automatically restart on any relevant code change).
 
-## Deployment
-
-To deploy your app (or, well, to run it as you would in a production environment), from the project's root directory:
-
-1. **bundle-up the frontend** by running `yarn --cwd frontend build` or `npm run build --prefix frontend`
-2. **start the _gunicorn_ web-server** by running `source scripts/restart.sh`
-
-The first step runs, in sequence, the _build_ and _postbuild_ commands defined in the _scripts_ section of `frontend/package.json`.
-The application's frontend is served by Flask (see `tapp/views/index.py`). To achieve this, the `template_folder` and `static_folder` of the Flask application instance (in `tapp/__init__.py`) point to `build/` and `build/static` respectively.
-
-Note that the _gunicorn_ web-server conveniently dumps all its activity to `$HOME/tapp.log`.
-
-If you wish to set up configuration for the DB migrations in the docker build you may update the configuration under migrations_prod/
-
-### Logging in with the default configuration
-
-As already mentioned, the default configuration runs with a fake instance of the LDAP service (to make things easier
-locally). The users recognised by this fake service must be defined in `fake_ldap_base/users.json`. You are provided
-with one user, _Logan Howlett_ (sounds familiar?). To log into the application, enter the user name _logan_ and any
-character you wish as password (the actual value is ignored by the fake LDAP).
-
 ## Testing
 
-Backend tests are located under `tests/`.
-This is pretty much empty in this project, apart from the configuration in `conftest.py`, where fixtures for a dummy application
-instance, database and authentication handler are defined.
+Backend tests are located under `tests/`. Fixtures for a dummy application instance, database and authentication
+handler are defined under tests/fixtures.
 To run the tests, from the top directory of the project run `pytest` (with `-v` if you like to see many lines of text
 on your screen).
 
 No tests for the frontend have been written yet, but if they had been written, they'd be [Jest](https://jestjs.io/) tests.
-
-## Continuous Integration
-
-For your benefit, you are provided with a simple GitLabCI script in `txt` format. To use it for your project,
-change the extension to `yml` and push it to your remote repository.
-Note that you need to have a [GitLab Runner](https://docs.gitlab.com/runner/) spinning somewhere for the pipeline to be executed.
 
 ## General Development Conventions
 
@@ -142,23 +125,11 @@ To use pre-commit (RECOMMENDED):
    Whenever a pre-commit check fails, it fixes the code in place for you and aborts the commit.
    You therefore have to `git add .` and reissue the `git commit` command.
 
-### Backend Development
-
-To test endpoints:
-- 'curl -i http://localhost:5000/tapp/api/v1.0/repos/view/dir/gson/' for example
-
-To test repository serving, add a folder corresponding to a username and add repository folders
-beneath there, which will be served when the owner user is logged in.
-
-### Frontend Development
-
-If working with Gunicorn or flask server directly then set proxy to localhost:5000 in package.json. If using nginx web server set port to 80.
-
 #### Global References
 
 Objects that are supposed to be globally accessible across the application (like Flask's
 login manager, the database object or the ldap service) should be instantiated and assigned to an upper-case-named constant in
-the main file of their respective package (see `db/database.py`) and exposed to the app from `tapp/__init__.py` file.
+the main file of their respective package (see `db/database.py`) and exposed to the app from `backend/__init__.py` file.
 This approach ensures one entry point for all the global references, and gives
 the opportunity to seamlessly choose to use a different implementation of an application module
 according to configuration-dependant factors.
@@ -184,48 +155,3 @@ sudo apt-get install \
     lcov            \
     valgrind
 ```
-
-## The Logo
-
-Logos for applications in the _edtech_ group are created with [Faviator](https://www.faviator.xyz/). Not from the
-web interface though. We do it from the command-line, like real men.
-
-```
-$ npm install -g faviator
-$ faviator --size '180' \
-           --text '<first letter of the app's name>' \
-           --dx '0' \
-           --font-size '62' \
-           --font-family 'Fredericka the Great' \
-           --font-color '#ffffff' \
-           --background-color '<the app's theme colour>' \
-           --border-width '3.5' \
-           --border-color '#FFFFFF' \
-           --border-radius '20' \
-           --output favicon.png
-```
-
-To serve the so-obtained `favicon.png` as thumbnail for your app, simply do
-
-```
-mv /path/to/favicon.png /path/to/tapp/frontend/public/static/favicon.ico
-```
-
-## Docker
-
-Run `docker build --tag dbcr:1.0 .` from top level directory of project to build image.
-
-`docker run --publish 80:80 --detach -v storage_volume:/dbcr/storage --name dbcr dbcr:1.0` to start
-
-Get shell in docker container: `docker exec -i -t dbcr /bin/bash`
-
-Read nginx logs: `tail -f /var/log/nginx/access.log`
-
-Note, "dangling" images may be produced by the build process. Use:
-`docker rmi $(docker images -f "dangling=true" -q)` to remove these
-
-For run configuration in IntelliJ, add the following to the run options:
-- `--publish 80:80 --detach -v storage_volume:/dbcr/storage`
-
-To push to dockerhub:
-- `docker push jordanglanfield/dbcr:latest`
