@@ -6,6 +6,8 @@ coding exercise and have their code reviewed (in a double-blind anonymous manner
 The initial application structure of the tool is based on Ivan Procaccini's template application which he has lovingly
 developed for use with web apps built at Imperial College London.
 
+A production version of the tool is live at http://dbcr.org.uk
+
 ## Installation
 
 The tool uses Docker. You can install Docker [here](https://www.docker.com/get-started).
@@ -22,7 +24,7 @@ run your version of the tool.
 
 To run the built image:
 - `docker run --publish 80:80 --detach -v storage_volume:/dbcr/storage --name dbcr dbcr:latest`
-- Visiting `http://localhost:80/` will take you to the tool
+- Visiting http://localhost/ will take you to the tool
 
 ## Overview
 
@@ -68,9 +70,10 @@ Useful commands:
 Note, "dangling" images may be produced by the build process. Use the following to remove these:
 - `docker rmi $(docker images -f "dangling=true" -q)`
 
-For run configuration in IntelliJ, run the `Dockerfile` to get an initial configuration, and add the following to
-the run options:
-- `--publish 80:80 --detach -v storage_volume:/dbcr/storage`
+For run configuration in IntelliJ, run the `Dockerfile` to get an initial configuration then add the following:
+- Image tag: `jordanglanfield/dbcr:latest`
+- Container name: `dbcr`
+- Run options: `--publish 80:80 --detach -v storage_volume:/dbcr/storage`
 
 ### Running the Flask backend directly
 
@@ -94,7 +97,7 @@ Using gunicorn from above backend directory:
 gunicorn -b 127.0.0.1:5000 tapp.wsgi:app
 ```
 
-### Running Rract frontend directly
+### Running React frontend directly
 
 To start the frontend development server:
 
