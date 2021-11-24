@@ -6,8 +6,6 @@ coding exercise and have their code reviewed (in a double-blind anonymous manner
 The initial application structure of the tool is based on Ivan Procaccini's template application which he has lovingly
 developed for use with web apps built at Imperial College London.
 
-A production version of the tool is live at http://dbcr.org.uk
-
 ## Installation
 
 The tool uses Docker. You can install Docker [here](https://www.docker.com/get-started).
